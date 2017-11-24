@@ -1,0 +1,24 @@
+CREATE TABLE IF NOT EXISTS `AdventureMain`.`Player` (
+   `PlayerId` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+   `AccountId` INT(10) DEFAULT NULL COMMENT '账户Id',
+   `Name` VARCHAR(64) DEFAULT NULL COMMENT '游戏名',
+   `PlatformAccountId` INT(11) DEFAULT NULL COMMENT '平台id，只用于存储',
+   `GameZoneId` INT(11) DEFAULT NULL COMMENT '游戏分区ID',
+   `CreateTime` DATETIME DEFAULT NULL COMMENT '创建时间',
+   `LastLoginTime` DATETIME DEFAULT NULL COMMENT '上次登录时间',
+   `LastLogoffTime` DATETIME DEFAULT NULL COMMENT '上次登出时间',
+   `BarrageSet` text NOT NULL COMMENT '弹幕设置',
+   `VipLevel` INT(10) DEFAULT 0 COMMENT 'vip等级',
+   PRIMARY KEY (`PlayerId`)
+) ENGINE=INNODB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8
+
+CREATE TABLE `AdventureMain`.`Account` (
+   `AccountId` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '账户Id',
+   `PlatformAccountId` INT(11) DEFAULT NULL COMMENT '平台账户id，只用于存储',
+   `PlatformId` INT(11) DEFAULT NULL COMMENT '平台id，对应内部枚举值',
+   `ZoneId` INT(11) DEFAULT NULL COMMENT '分配的服务器ID',
+   `AcctountType` INT(11) DEFAULT 0 COMMENT '账户类型, 0:普通用户, 1:超级用户',
+   `CharacterName` VARCHAR(64) DEFAULT NULL COMMENT '创建角色之后的角色名',
+   `IsFrozen` BOOL DEFAULT FALSE COMMENT '是否被封禁',
+   PRIMARY KEY (`AccountId`)
+ ) ENGINE=INNODB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8
