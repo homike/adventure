@@ -1,72 +1,58 @@
 package network
 
-const (
-	Protocol_GetSystemTime_Req       = 3
-	Protocol_GetSystemTime_Resp      = 4
-	Protocol_LoginServerResult_Ntf   = 1001
-	Protocol_CreatePlayer_Req        = 1002
-	Protocol_CreatePlayer_Resp       = 1003
-	Protocol_SyncLoginDataFinish_Ntf = 1006
-	Protocol_LoginServerPlatform_Req = 1007
-	Protocol_SyncPlayerBaseInfo_Ntf  = 1008
-	Protocol_NameExists_Req          = 1009
-	Protocol_NameExists_Resp         = 1010
-	Protocol_SyncUserGuidRecords_Ntf = 1413
+import (
+	"bufio"
+	"encoding/binary"
+	"log"
 )
 
-type GetSystemTimeReq struct {
+// --------------
+// | len | data |
+// --------------
+type MsgParser struct {
+	MsgLen int
+	Endian struct{}
 }
 
-type GetSystemTimeResp struct {
-	Time int64
+func NewMsgParser() *MsgParser {
+	return &MsgParser{
+		MsgLen: 6,
+		Endian: binary.LittleEndian,
+	}
 }
 
-type LoginServerResultNtf struct {
-	Result         int32 // 0: Success
-	IsCreatePlayer bool
+func (m *MsgParser) Read(bufReader *bufio.Reader) (uint16, []byte, error) {
+	var headerSize uint32
+	err := binary.Read(bufReader, binary.LittleEndian, &headerSize)
+	if err != nil {
+		log.Println("read headsize error")
+		return 0, nil, err
+	}
+
+	var msgID uint16
+	err = binary.Read(bufReader, binary.LittleEndian, &msgID)
+	if err != nil {
+		log.Println("read msgid error")
+		return 0, nil, err
+	}
+
+	//fmt.Println("headerSize", headerSize, "msgID:", msgID)
+	bodySize := headerSize - uint32(m.MsgLen)
+	bodyData := make([]byte, bodySize)
+	err = binary.Read(bufReader, binary.LittleEndian, &bodyData)
+	if err != nil {
+		log.Println("read body error")
+		return 0, nil, err
+	}
+
+	return msgID, bodyData, nil
 }
 
-type CreatePlayerReq struct {
-	PlayerName    string
-	HeroTemplaeId int32
-}
+func (m *MsgParser) Write(w *bufio.Writer, msgID uint16, msgStruct interface{}) {
+	message := MsgMarshal(msgStruct)
 
-type CreatePlayerResp struct {
-	Result int32 // 0: Success
-}
-
-type SyncLoginDataFinishNtf struct {
-}
-
-type LoginServerPlatformReq struct {
-	Takon     string
-	Version   int32
-	ChannelID string
-}
-
-type SyncPlayerBaseInfoNtf struct {
-	PlayerID           int32
-	GameZoonID         int32 // 游戏分区ID
-	IsSupperMan        bool  // 是否是GM
-	PlatformType       int32 // 平台类型
-	Viplevel           int32
-	TotalRechargeIngot int32
-}
-
-type NameExistsReq struct {
-	Name string
-}
-
-// 如果存在，则返回一个新名字，如果和传入的名字一样，则说明没有重名
-type NameExistsResp struct {
-	Name string
-}
-
-type GuildRecord struct {
-	UserGuidTypes int32
-	TriggerCount  int32
-}
-
-type SyncUserGuidRecordsNtf struct {
-	Records []GuildRecord
+	binary.Write(w, binary.LittleEndian, uint32(len(message)+6))
+	binary.Write(w, binary.LittleEndian, msgID)
+	binary.Write(w, binary.LittleEndian, message)
+	w.Flush()
 }

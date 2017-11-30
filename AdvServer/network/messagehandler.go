@@ -57,6 +57,53 @@ func MsgUnMarshal(msgBody []byte, msgStruct interface{}) {
 	}
 }
 
+func marshal(v reflect.Value) []byte {
+
+	bytesBuffer := bytes.NewBuffer([]byte{})
+	//fmt.Println("v.Kind()", v.Kind())
+	switch v.Kind() {
+	case reflect.String:
+		binary.Write(bytesBuffer, binary.LittleEndian, v.String())
+		binary.Write(bytesBuffer, binary.LittleEndian, byte(0))
+
+	case reflect.Uint8:
+		binary.Write(bytesBuffer, binary.LittleEndian, uint8(v.Uint()))
+
+	case reflect.Int32:
+		binary.Write(bytesBuffer, binary.LittleEndian, int32(v.Int()))
+
+	case reflect.Int64:
+		binary.Write(bytesBuffer, binary.LittleEndian, v.Int())
+
+	case reflect.Bool:
+		b := 0
+		if v.Bool() {
+			b = 1
+		}
+		binary.Write(bytesBuffer, binary.LittleEndian, uint8(b))
+
+	case reflect.Slice:
+		binary.Write(bytesBuffer, binary.LittleEndian, int32(v.Len()))
+		for j := 0; j < v.Len(); j++ {
+			data := v.Slice(j, j+1).Index(0)
+			sliceBytes := marshal(data)
+			binary.Write(bytesBuffer, binary.LittleEndian, sliceBytes)
+		}
+
+	case reflect.Struct:
+		for i := 0; i < v.NumField(); i++ {
+			vf := v.Field(i)
+			vfBytes := marshal(vf)
+			binary.Write(bytesBuffer, binary.LittleEndian, vfBytes)
+		}
+
+	default:
+		binary.Write(bytesBuffer, binary.LittleEndian, v.Bytes())
+	}
+
+	return bytesBuffer.Bytes()
+}
+
 func MsgMarshal(msgStruct interface{}) []byte {
 
 	bytesBuffer := bytes.NewBuffer([]byte{})
@@ -65,29 +112,8 @@ func MsgMarshal(msgStruct interface{}) []byte {
 	for i := 0; i < v.NumField(); i++ {
 		vf := v.Field(i)
 
-		switch vf.Kind() {
-		case reflect.String:
-			binary.Write(bytesBuffer, binary.LittleEndian, vf.String())
-			binary.Write(bytesBuffer, binary.LittleEndian, byte(0))
-
-		case reflect.Int32:
-			binary.Write(bytesBuffer, binary.LittleEndian, int32(vf.Int()))
-
-		case reflect.Int64:
-			binary.Write(bytesBuffer, binary.LittleEndian, vf.Int())
-
-		case reflect.Bool:
-			b := 0
-			if vf.Bool() {
-				b = 1
-			}
-			binary.Write(bytesBuffer, binary.LittleEndian, uint8(b))
-
-		case reflect.Slice:
-
-		default:
-			binary.Write(bytesBuffer, binary.LittleEndian, vf.Bytes())
-		}
+		vfBytes := marshal(vf)
+		binary.Write(bytesBuffer, binary.LittleEndian, vfBytes)
 	}
 
 	return bytesBuffer.Bytes()
@@ -147,9 +173,9 @@ func LoginServerPlatform(conn net.Conn, msgBody []byte) {
 		SyncPlayerBaseInfo(conn)
 
 		SyncLoginDataFinish(conn)
-
-		SyncUserGuidRecords(conn)
 	}
+	SyncUserGuidRecords(conn)
+
 }
 
 // 1008
@@ -183,6 +209,17 @@ func NameExists(conn net.Conn, msgBody []byte) {
 // 1413
 func SyncUserGuidRecords(conn net.Conn) {
 	fmt.Println("czx@@@ SyncUserGuidRecords:")
-	resp := &SyncUserGuidRecordsNtf{}
+
+	records := []GuildRecord{}
+	for i := 0; i < 2; i++ {
+		records = append(records, GuildRecord{
+			UserGuidTypes: uint8(i + 2),
+			TriggerCount:  int32(i + 3),
+		})
+	}
+	resp := &SyncUserGuidRecordsNtf{
+		Records: records,
+	}
+
 	ConnectSend(conn, Protocol_SyncUserGuidRecords_Ntf, resp)
 }
