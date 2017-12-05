@@ -1,6 +1,7 @@
 package network2
 
 import (
+	"Adventure/AdvServer/model"
 	"fmt"
 	"time"
 )
@@ -21,6 +22,10 @@ func init() {
 
 // 1
 func TestReq(client *TCPClient, msgBody []byte) {
+
+	playerData := model.NewPlayer("czx", 1)
+	SessionMgr.CreateSession(playerData, client)
+
 	resp := &SyncLoginDataFinishNtf{}
 	MsgParserSingleton.Write(client, Protocol_Test_Resp, resp)
 }
@@ -40,6 +45,12 @@ func GetSystemTime(client *TCPClient, msgBody []byte) {
 // 1002
 func CreatePlayer(client *TCPClient, msgBody []byte) {
 	fmt.Println("czx@@@ CreatePlayer:", string(msgBody))
+
+	req := &CreatePlayerReq{}
+	MsgParserSingleton.MsgProcessor.UnMarshal(msgBody, &req)
+
+	playerData := model.NewPlayer(req.PlayerName, req.HeroTemplateId)
+	SessionMgr.CreateSession(playerData, client)
 
 	resp := &CreatePlayerResp{
 		Result: 0, // Success
