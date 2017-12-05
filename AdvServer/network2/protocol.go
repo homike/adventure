@@ -1,4 +1,4 @@
-package network
+package network2
 
 const (
 	Protocol_Test_Req                = 1

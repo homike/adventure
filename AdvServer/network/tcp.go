@@ -26,7 +26,7 @@ func NewTCPListenter() *TCPClient {
 	return client
 }
 
-func (t *TCPClient) StartAccept() {
+func (t *TCPClient) Run() {
 	fmt.Println("等待客户端连接")
 
 	msgParse := NewMsgParser()
@@ -36,9 +36,8 @@ func (t *TCPClient) StartAccept() {
 			fmt.Println("接受客户端连接异常", err.Error())
 			continue
 		}
-		defer conn.Close()
 
-		func() {
+		go func() {
 			defer conn.Close()
 			bufReader := bufio.NewReader(conn)
 

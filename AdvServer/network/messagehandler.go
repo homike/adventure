@@ -16,6 +16,7 @@ var MapFunc map[uint16]ProcessFunc
 
 func init() {
 	MapFunc = map[uint16]ProcessFunc{
+		uint16(Protocol_Test_Req):                TestReq,
 		uint16(Protocol_GetSystemTime_Req):       GetSystemTime,
 		uint16(Protocol_CreatePlayer_Req):        CreatePlayer,
 		uint16(Protocol_LoginServerPlatform_Req): LoginServerPlatform,
@@ -117,6 +118,11 @@ func MsgMarshal(msgStruct interface{}) []byte {
 	}
 
 	return bytesBuffer.Bytes()
+}
+
+func TestReq(conn net.Conn, msgBody []byte) {
+	resp := &SyncLoginDataFinishNtf{}
+	ConnectSend(conn, Protocol_Test_Resp, resp)
 }
 
 // 3

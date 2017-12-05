@@ -36,7 +36,6 @@ func (m *MsgParser) Read(bufReader *bufio.Reader) (uint16, []byte, error) {
 		return 0, nil, err
 	}
 
-	//fmt.Println("headerSize", headerSize, "msgID:", msgID)
 	bodySize := headerSize - uint32(m.MsgLen)
 	bodyData := make([]byte, bodySize)
 	err = binary.Read(bufReader, binary.LittleEndian, &bodyData)

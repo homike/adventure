@@ -1,10 +1,10 @@
 package main
 
 import (
-	"Adventure/AdvServer/network"
+	network "Adventure/AdvServer/network2"
 )
 
 func main() {
-	listener := network.NewTCPListenter()
-	listener.StartAccept()
+	listener := network.NewTCPServer()
+	listener.Run()
 }
