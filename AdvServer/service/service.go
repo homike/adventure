@@ -1,17 +1,16 @@
 package service
 
 import "Adventure/AdvServer/db/mysql"
+import "Adventure/AdvServer/db/redis"
 
 var (
 	PlayerDao *mysql.PlayerDao
-	PlayerID  uint
 )
 
-func init() {
+func Init() error {
 	PlayerDao = mysql.NewUserDao()
-	PlayerID = 0
-}
 
-func IncrPlayerID() {
-	PlayerID++
+	redis.Init()
+
+	return nil
 }

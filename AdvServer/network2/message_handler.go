@@ -23,8 +23,12 @@ func init() {
 // 1
 func TestReq(client *TCPClient, msgBody []byte) {
 
-	playerData := model.NewPlayer("czx", 1)
-	SessionMgr.CreateSession(playerData, client)
+	player, err := model.NewPlayer("czx", 1)
+	if err != nil {
+		fmt.Println("NewPlayer Error", err)
+		return
+	}
+	SessionMgr.CreateSession(player, client)
 
 	resp := &SyncLoginDataFinishNtf{}
 	MsgParserSingleton.Write(client, Protocol_Test_Resp, resp)
@@ -49,12 +53,20 @@ func CreatePlayer(client *TCPClient, msgBody []byte) {
 	req := &CreatePlayerReq{}
 	MsgParserSingleton.MsgProcessor.UnMarshal(msgBody, &req)
 
-	playerData := model.NewPlayer(req.PlayerName, req.HeroTemplateId)
-	SessionMgr.CreateSession(playerData, client)
-
 	resp := &CreatePlayerResp{
 		Result: 0, // Success
 	}
+
+	player, err := model.NewPlayer(req.PlayerName, req.HeroTemplateId)
+	if err != nil {
+		fmt.Println("NewPlayer Error", err)
+		resp.Result = 1
+		MsgParserSingleton.Write(client, Protocol_CreatePlayer_Resp, resp)
+		return
+	}
+
+	SessionMgr.CreateSession(player, client)
+
 	MsgParserSingleton.Write(client, Protocol_CreatePlayer_Resp, resp)
 
 	SyncPlayerBaseInfo(client)
