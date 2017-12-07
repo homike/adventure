@@ -26,6 +26,7 @@ func Init() error {
 }
 
 type Config struct {
+	GameData     string        `goconf:"base:gamedata"`
 	LogPath      string        `goconf:"log:path"`
 	LogLevel     int           `goconf:"log:level"`
 	RedisIdle    int           `goconf:"redis:idle"`
