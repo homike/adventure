@@ -48,7 +48,7 @@ func LoadTables() {
 
 	pattern := config.GameData + "/*.csv"
 
-	log.Printf("Loading GameData From", pattern)
+	//log.Printf("Loading GameData From", pattern)
 	files, err := filepath.Glob(pattern)
 
 	if err != nil {
@@ -71,8 +71,7 @@ func LoadTables() {
 		file.Close()
 	}
 
-	log.Printf(fmt.Sprintf("\033[042;1m%v CSV(s) Loaded, take %v secs\033[0m\n",
-		len(tables), time.Now().Sub(timenow).Seconds()))
+	log.Printf(fmt.Sprintf("[ %v, CSV(s) Loaded, take %v secs] \n", len(tables), time.Now().Sub(timenow).Seconds()))
 }
 
 func parse(file *os.File) error {
@@ -106,7 +105,7 @@ func parse(file *os.File) error {
 			set(tblname, records[line][0], records[0][field], records[line][field])
 		}
 	}
-	log.Printf("Config file:%s loading completed", tblname)
+	//log.Printf("Config file:%s loading completed", tblname)
 
 	return nil
 }

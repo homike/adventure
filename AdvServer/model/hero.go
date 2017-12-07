@@ -1,6 +1,6 @@
 package model
 
-import "adventure/common/structs"
+import "Adventure/common/structs"
 
 type HeroTeams struct {
 	Heros                map[int32]*structs.Hero      // 英雄列表

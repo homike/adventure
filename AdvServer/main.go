@@ -3,7 +3,8 @@ package main
 import (
 	"Adventure/AdvServer/config"
 	"Adventure/AdvServer/log"
-	network "Adventure/AdvServer/network2"
+	"Adventure/AdvServer/msghandler"
+	"Adventure/AdvServer/network"
 	"Adventure/AdvServer/service"
 	"fmt"
 	"os"
@@ -48,5 +49,5 @@ func main() {
 
 	// Accept connection
 	listener := network.NewTCPServer()
-	listener.Run()
+	listener.Run(msghandler.Dispatch)
 }

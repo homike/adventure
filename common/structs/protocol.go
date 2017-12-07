@@ -1,4 +1,4 @@
-package network
+package structs
 
 const (
 	Protocol_Test_Req                = 1
@@ -29,8 +29,8 @@ type LoginServerResultNtf struct {
 }
 
 type CreatePlayerReq struct {
-	PlayerName    string
-	HeroTemplaeId int32
+	PlayerName     string
+	HeroTemplateId int32
 }
 
 type CreatePlayerResp struct {

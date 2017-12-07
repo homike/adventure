@@ -1,17 +1,18 @@
-package network2
+package sessions
 
 import (
 	"Adventure/AdvServer/model"
+	"Adventure/AdvServer/network"
 )
 
 type Session struct {
 	AccountID  uint
-	Connection *TCPClient
+	Connection *network.TCPClient
 	UserToken  string
 	PlayerData *model.Player
 }
 
-func NewSession(player *model.Player, conn *TCPClient) *Session {
+func NewSession(player *model.Player, conn *network.TCPClient) *Session {
 
 	sess := &Session{
 		AccountID:  player.AccountID,

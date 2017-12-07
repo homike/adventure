@@ -1,4 +1,4 @@
-package network2
+package network
 
 import (
 	"fmt"
@@ -31,9 +31,10 @@ func NewTCPServer() *TCPServer {
 }
 
 // Run :
-func (t *TCPServer) Run() {
+func (t *TCPServer) Run(handler MsgHandler) {
 	fmt.Println("Server Listen at", t.Addr, t.Port)
 
+	msgParser := NewMsgParser()
 	for {
 		conn, err := t.Listen.AcceptTCP()
 		if err != nil {
@@ -41,9 +42,9 @@ func (t *TCPServer) Run() {
 			continue
 		}
 
-		agent := NewTCPClient(conn)
+		agent := NewTCPClient(conn, msgParser)
 		go func() {
-			agent.Run()
+			agent.Run(handler)
 
 			// cleanup
 			conn.Close()
