@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	BZCompressTag = "bz"
+	BZCompressTag = "adv"
 )
 
 // zlib+base64,
