@@ -1,9 +1,9 @@
 package msghandler
 
 import (
-	"Adventure/AdvServer/model"
-	"Adventure/AdvServer/network"
-	"Adventure/AdvServer/sessions"
+	"adventure/advserver/model"
+	"adventure/advserver/network"
+	"adventure/advserver/sessions"
 	"Adventure/common/structs"
 	"fmt"
 )

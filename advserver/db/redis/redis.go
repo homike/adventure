@@ -6,7 +6,7 @@ import (
 
 	"github.com/garyburd/redigo/redis"
 
-	"Adventure/AdvServer/config"
+	"adventure/advserver/config"
 )
 
 var (

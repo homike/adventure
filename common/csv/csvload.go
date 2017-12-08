@@ -1,7 +1,7 @@
 package csv
 
 import (
-	"Adventure/AdvServer/config"
+	"adventure/advserver/config"
 	"encoding/csv"
 	"errors"
 	"fmt"

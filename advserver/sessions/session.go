@@ -1,8 +1,8 @@
 package sessions
 
 import (
-	"Adventure/AdvServer/model"
-	"Adventure/AdvServer/network"
+	"adventure/advserver/model"
+	"adventure/advserver/network"
 )
 
 type Session struct {

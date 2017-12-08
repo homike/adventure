@@ -1,7 +1,7 @@
 package gamedata
 
 import (
-	"Adventure/AdvServer/log"
+	"adventure/advserver/log"
 	"Adventure/common/clog"
 	"Adventure/common/csv"
 )

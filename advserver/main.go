@@ -1,11 +1,11 @@
 package main
 
 import (
-	"Adventure/AdvServer/config"
-	"Adventure/AdvServer/log"
-	"Adventure/AdvServer/msghandler"
-	"Adventure/AdvServer/network"
-	"Adventure/AdvServer/service"
+	"adventure/advserver/config"
+	"adventure/advserver/log"
+	"adventure/advserver/msghandler"
+	"adventure/advserver/network"
+	"adventure/advserver/service"
 	"fmt"
 	"os"
 	"os/signal"

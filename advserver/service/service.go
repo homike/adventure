@@ -1,9 +1,9 @@
 package service
 
 import (
-	"Adventure/AdvServer/db/mysql"
-	"Adventure/AdvServer/db/redis"
-	"Adventure/AdvServer/gamedata"
+	"adventure/advserver/db/mysql"
+	"adventure/advserver/db/redis"
+	"adventure/advserver/gamedata"
 )
 
 var (

@@ -1,9 +1,9 @@
 package model
 
 import (
-	"Adventure/AdvServer/db/mysql"
-	"Adventure/AdvServer/db/redis"
-	"Adventure/AdvServer/service"
+	"adventure/advserver/db/mysql"
+	"adventure/advserver/db/redis"
+	"adventure/advserver/service"
 	"fmt"
 	"time"
 )
