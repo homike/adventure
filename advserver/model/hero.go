@@ -1,6 +1,9 @@
 package model
 
-import "Adventure/common/structs"
+import (
+	"adventure/advserver/gamedata"
+	"adventure/common/structs"
+)
 
 type HeroTeams struct {
 	Heros                map[int32]*structs.Hero      // 英雄列表
@@ -42,6 +45,42 @@ func (h *HeroTeams) MaxHP() int32 {
 	return totalHP
 }
 
-func (h *HeroTeams) AddHero(hero *structs.Hero) error {
-	return nil
+func (h *HeroTeams) AddHero(name string, isPlayer bool, heroTemplateID int32) (*structs.Hero, error) {
+	configName, err := gamedata.AllTemplates.HeroTemplate.HeroName(heroTemplateID)
+	if err != nil {
+		return nil, err
+	}
+	configQualityType, err := gamedata.AllTemplates.HeroTemplate.QualityType(heroTemplateID)
+	if err != nil {
+		return nil, err
+	}
+	configBaseHP, err := gamedata.AllTemplates.HeroTemplate.BaseHP(heroTemplateID)
+	if err != nil {
+		return nil, err
+	}
+
+	isOutFight := false
+	heroName := configName
+	quality := structs.QualityType(configQualityType)
+	if isPlayer {
+		isOutFight = true
+		heroName = name
+		quality = structs.QualityType_Gold
+	}
+
+	hero := &structs.Hero{
+		HeroID:         h.MaxHeroId,
+		IsOutFight:     isOutFight,
+		IsPlayer:       isPlayer,
+		Level:          1,
+		HeroTemplateID: heroTemplateID,
+		Name:           heroName,
+		Quality:        quality,
+		AwakeCount:     1,
+		LevelHP:        int32(configBaseHP),
+		Index:          int32(len(h.Heros)),
+	}
+	h.Heros[hero.HeroID] = hero
+
+	return hero, nil
 }

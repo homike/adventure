@@ -6,6 +6,7 @@ import (
 	"adventure/advserver/msghandler"
 	"adventure/advserver/network"
 	"adventure/advserver/service"
+	"adventure/advserver/sessions"
 	"fmt"
 	"os"
 	"os/signal"
@@ -41,6 +42,13 @@ func main() {
 
 	// Init service
 	if err := service.Init(); err != nil {
+		fmt.Println("serviece init error")
+		return
+	}
+
+	// Init sessions
+	if err := sessions.Init(); err != nil {
+		fmt.Println("sesssion message init error")
 		return
 	}
 

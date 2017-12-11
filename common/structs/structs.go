@@ -2,13 +2,13 @@ package structs
 
 type QualityType int32 // 英雄品质类型
 const (
-	None       QualityType = 0
-	White      QualityType = 0
-	Green      QualityType = 1
-	Blue       QualityType = 2
-	Purple     QualityType = 3
-	Gold       QualityType = 4
-	SplashGold QualityType = 5
+	QualityType_None       QualityType = 0
+	QualityType_White      QualityType = 0 // 白色
+	QualityType_Green      QualityType = 1 // 绿色
+	QualityType_Blue       QualityType = 2 // 蓝色
+	QualityType_Purple     QualityType = 3 // 紫色
+	QualityType_Gold       QualityType = 4 // 金色
+	QualityType_SplashGold QualityType = 5 // 闪金色
 )
 
 type EmployType int32 // 雇佣类型
@@ -25,8 +25,8 @@ const (
 )
 
 type Hero struct {
-	HeroId         int32       // 英雄id
-	HeroTemplateId int32       // 英雄的模板id
+	HeroID         int32       // 英雄id
+	HeroTemplateID int32       // 英雄的模板id
 	Name           string      // 英雄的名字
 	Level          int32       // 当前等级
 	IsOutFight     bool        // 出战状态
@@ -37,13 +37,23 @@ type Hero struct {
 	AwakeCount     int32       // 觉醒次数
 	WeaponLevel    int32       // 武具等级
 	Index          int32       // 排序索引
-	LevelHP        int32       // 因为升级而改变的HP
+	LevelHP        int32       // 因为升级而改变的HP  // 此字段的意义，待考虑
 	ItemHP         int32       // 因为物品而改变的HP
 	HP             int32
-	// {
-	//     get
-	//     {
-	//         return LevelHP;
-	//     }
-	// }
+}
+
+const (
+	AdventureEventStatus_UnActive = iota
+	AdventureEventStatus_Active
+	AdventureEventStatus_Finish
+)
+
+type GameLevel struct {
+	GameLevelID     int32   // 关卡ID
+	CompleteEvent   []int32 // 已经完成的事件
+	EventProgress   int32   // 事件的进度
+	GameBoxProgress int32   // 宝箱的进度
+	BoxCount        int32   // 宝箱的数量
+	IsUnlock        bool    // 是否解锁
+	IsNew           bool    // 是否是新开启关卡
 }

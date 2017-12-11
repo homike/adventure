@@ -24,6 +24,7 @@ func Init() {
 		MaxIdle:     conf.RedisIdle,
 		IdleTimeout: conf.RedisTimeout,
 		Dial: func() (redis.Conn, error) {
+			fmt.Println("czx@@@ add", conf.RedisAddr, "Auth", conf.RedisAuth)
 			c, err := redis.Dial("tcp", conf.RedisAddr)
 			if err != nil {
 				return nil, err
@@ -32,7 +33,6 @@ func Init() {
 				return c, nil
 			}
 			if _, err := c.Do("AUTH", conf.RedisAuth); err != nil {
-				//logger.Error("c.Do('AUTH', %v) failed(%v)", conf.RedisAuth, err)
 				fmt.Printf("c.Do('AUTH', %v) failed(%v) \n", conf.RedisAuth, err)
 				c.Close()
 				return nil, err

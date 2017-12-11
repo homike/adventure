@@ -1,7 +1,7 @@
 package log
 
 import (
-	"Adventure/common/clog"
+	"adventure/common/clog"
 	"time"
 )
 

@@ -12,6 +12,7 @@ type MsgHandler func(msgID uint16, msgBody []byte, tc *TCPClient)
 
 type TCPClient struct {
 	sync.Mutex
+	AccountID uint
 	Parser    *MsgParser
 	conn      net.Conn
 	WriteChan chan []byte
@@ -20,6 +21,7 @@ type TCPClient struct {
 
 func NewTCPClient(conn net.Conn, parser *MsgParser) *TCPClient {
 	client := &TCPClient{
+		AccountID: 0,
 		conn:      conn,
 		WriteChan: make(chan []byte, 128),
 		ReadChan:  make(chan []byte, 128),
@@ -63,10 +65,6 @@ func (tc *TCPClient) Run(handler MsgHandler) {
 		fmt.Println("msgID", msgID)
 
 		go handler(msgID, msgBody, tc)
-		// processFunc, ok := MapFunc[msgID]
-		// if ok {
-		// 	go processFunc(tc, msgBody)
-		// }
 	}
 }
 

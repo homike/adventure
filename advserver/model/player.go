@@ -4,6 +4,7 @@ import (
 	"adventure/advserver/db/mysql"
 	"adventure/advserver/db/redis"
 	"adventure/advserver/service"
+	"adventure/common/structs"
 	"fmt"
 	"time"
 )
@@ -20,9 +21,11 @@ type Player struct {
 	BarrageSet        string
 	VipLevel          int
 	OnlineTime        int
-	HeroTeam          string
-	PlayerGameLevel   string
-	Bag               string
+	HeroTeam          *HeroTeams             // 玩家英雄
+	Res               *Resource              // 玩家资源
+	PlayerGameLevel   *PlayerGameLevel       // 关卡数据
+	Bag               *Bag                   // 背包
+	UserGuidRecords   []*structs.GuildRecord // 新手引导记录
 	MiningMap         string
 	ExtendData        string
 }
@@ -45,6 +48,26 @@ func NewPlayer(name string, heroTemplateID int32) (*Player, error) {
 	player := InitPlayer()
 	player.AccountID = playID
 	player.Name = name
+	// 初始化玩家英雄
+	player.HeroTeam = NewHeroTeams()
+	player.HeroTeam.AddHero(player.Name, true, heroTemplateID)
+
+	// 初始化玩家资源
+	player.Res = NewResource()
+
+	// 关卡数据初始化
+	player.PlayerGameLevel = NewPlayerGameLevel()
+	gameLevel := structs.GameLevel{
+		GameLevelID: 1,
+		IsUnlock:    true,
+	}
+	player.PlayerGameLevel.AddGameLevel(&gameLevel)
+
+	// 背包数据初始化
+	player.Bag = NewBag()
+
+	// 新手引导状态初始化
+	player.UserGuidRecords = make([]*structs.GuildRecord, 0, 10)
 
 	dbData := &mysql.PlayerDB{
 		AccountID: player.AccountID,
@@ -57,4 +80,17 @@ func NewPlayer(name string, heroTemplateID int32) (*Player, error) {
 	}
 
 	return player, err
+}
+
+func (p *Player) UpdateGuidRecords(guidType uint8) {
+	for k, v := range p.UserGuidRecords {
+		if v.UserGuidTypes == guidType {
+			p.UserGuidRecords[k].TriggerCount++
+			return
+		}
+	}
+	p.UserGuidRecords = append(p.UserGuidRecords, &structs.GuildRecord{
+		UserGuidTypes: guidType,
+		TriggerCount:  1,
+	})
 }
