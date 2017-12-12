@@ -21,6 +21,7 @@ type HeroTeams struct {
 
 func NewHeroTeams() *HeroTeams {
 	teams := &HeroTeams{
+		MaxHeroId:    1,
 		Heros:        make(map[int32]*structs.Hero),
 		EmployRecord: make(map[structs.EmployType]int32),
 	}
@@ -81,6 +82,15 @@ func (h *HeroTeams) AddHero(name string, isPlayer bool, heroTemplateID int32) (*
 		Index:          int32(len(h.Heros)),
 	}
 	h.Heros[hero.HeroID] = hero
+	h.MaxHeroId++
 
 	return hero, nil
+}
+
+func (h *HeroTeams) GetHerosArray() []structs.Hero {
+	heros := make([]structs.Hero, 0, len(h.Heros))
+	for _, v := range h.Heros {
+		heros = append(heros, *v)
+	}
+	return heros
 }

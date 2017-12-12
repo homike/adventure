@@ -64,7 +64,7 @@ func (dao *PlayerDao) CreatePlayer(player *PlayerDB) error {
 	sql := fmt.Sprintf(CreateUserSQL, player.AccountID, player.Name, player.PlatformAccountID,
 		player.PlatformTypes, player.GameZoneID, player.BarrageSet, player.VipLevel, player.OnlineTime,
 		player.HeroTeam, player.PlayerGameLevel, player.Bag, player.MiningMap, player.ExtendData)
-	fmt.Println("sql :", sql)
+	//fmt.Println("sql :", sql)
 	_, err := dao.db.Exec(sql)
 	if err != nil {
 		return err

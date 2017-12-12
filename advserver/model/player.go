@@ -21,11 +21,13 @@ type Player struct {
 	BarrageSet        string
 	VipLevel          int
 	OnlineTime        int
-	HeroTeam          *HeroTeams             // 玩家英雄
-	Res               *Resource              // 玩家资源
-	PlayerGameLevel   *PlayerGameLevel       // 关卡数据
-	Bag               *Bag                   // 背包
-	UserGuidRecords   []*structs.GuildRecord // 新手引导记录
+	HeroTeam          *HeroTeams                // 玩家英雄
+	Res               *Resource                 // 玩家资源
+	PlayerGameLevel   *PlayerGameLevel          // 关卡数据
+	Bag               *Bag                      // 背包
+	UserGuidRecords   []*structs.GuildRecord    // 新手引导记录
+	MenuStates        []*structs.MenuStatusItem // 菜单状态
+	AddGameBoxCount   int32                     // 增加的宝箱上限数量
 	MiningMap         string
 	ExtendData        string
 }

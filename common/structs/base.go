@@ -17,6 +17,17 @@ type UsedGameItem struct {
 }
 
 const (
+	MenuStatus_Close = iota // 关闭
+	MenuStatus_New          // 刚解锁
+	MenuStatus_Open         // 已开放
+)
+
+type MenuStatusItem struct {
+	MenuID     int32 `json:"mid"`     // 菜单ID
+	MenuStatus uint8 `json:"mstatus"` // 菜单状态
+}
+
+const (
 	GuidTypes_None = iota // 无
 	/// <summary>
 	/// 剧情
@@ -114,4 +125,10 @@ const (
 	/// 其他
 	/// </summary>
 	GuidTypes_Other = 99
+)
+
+const (
+	SyncHeroType_Add    = iota // 添加
+	SyncHeroType_Update        // 更新
+	SyncHeroType_First         // 首次更新
 )

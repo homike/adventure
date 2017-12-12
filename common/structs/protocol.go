@@ -6,7 +6,7 @@ const (
 	Protocol_GetSystemTime_Req       = 3
 	Protocol_GetSystemTime_Resp      = 4
 	Protocol_LoginServerResult_Ntf   = 1001
-	Protocol_CreatePlayer_Req        = 1002
+	Protocol_CreatePlayer_Req        = 1002 // 创建角色
 	Protocol_CreatePlayer_Resp       = 1003
 	Protocol_SyncLoginDataFinish_Ntf = 1006
 	Protocol_LoginServerPlatform_Req = 1007
@@ -40,8 +40,12 @@ const (
 	Protocol_UnEmployManyHeros_Resq = 1122
 
 	// 角色相关
+	Protocol_SyncStrength_Ntf           = 1404 // 同步饱足度
+	Protocol_SyncWorkHeroTop_Ntf        = 1405 // 同步出站英雄上限
+	Protocol_SyncUnlockMenus_Ntf        = 1412 // 同步已解锁菜单列表
 	Protocol_SyncUserGuidRecords_Ntf    = 1413 // 同步新手引导数据
 	Protocol_UpdateUserGuidRecord_Req   = 1414 // 更新玩家新手引导数据
+	Protocol_SyncGameBoxTopNum_Ntf      = 1415 // 更新增加的宝箱上限数量
 	Protocol_SetPlayerBarrageConfig_Req = 2801 // 弹幕设置
 )
 
@@ -104,4 +108,25 @@ type UpdateUserGuidRecordReq struct {
 
 type SyncUserGuidRecordsNtf struct {
 	Records []GuildRecord
+}
+
+type SyncStrengthNtf struct {
+	Strength int32
+}
+
+type SyncHeroWorkTopNtf struct {
+	MaxWorker int32
+}
+
+type SyncUnlockMenusNtf struct {
+	MenuStates []*MenuStatusItem
+}
+
+type SyncGameBoxTopNumNtf struct {
+	AddNum int32
+}
+
+type SyncHeroNtf struct {
+	SyncHeroType uint8
+	Heros        []Hero
 }

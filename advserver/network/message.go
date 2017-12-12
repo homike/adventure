@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"log"
 	"reflect"
-	"strconv"
 )
 
 //var MsgParserSingleton *MsgParser
@@ -27,7 +26,7 @@ type MsgParser struct {
 
 func NewMsgParser() *MsgParser {
 	return &MsgParser{
-		MsgProcessor: newProcessor(),
+		MsgProcessor: NewProcessor(),
 		MsgLen:       6,
 		Endian:       binary.LittleEndian,
 	}
@@ -75,24 +74,24 @@ func (m *MsgParser) Write(msgID uint16, msgStruct interface{}) []byte {
 type Processor struct {
 }
 
-func newProcessor() *Processor {
+func NewProcessor() *Processor {
 	return &Processor{}
 }
 
 func (p *Processor) UnMarshal(msgBody []byte, msgStruct interface{}) {
 	readIndex := 0
 	v := reflect.ValueOf(msgStruct).Elem()
-	vType := v.Type()
+	//vType := v.Type()
 	for i := 0; i < v.NumField(); i++ {
 		vf := v.Field(i)
-		tf := vType.Field(i)
+		//tf := vType.Field(i)
 
-		fmt.Println(tf.Name, vf.Kind())
+		//fmt.Println(tf.Name, vf.Kind())
 		switch vf.Kind() {
 		case reflect.String:
 			for i := readIndex; i < len(msgBody); i++ {
 				if msgBody[i] == byte(0) {
-					fmt.Println(readIndex, "string :", msgBody[readIndex:i])
+					//fmt.Println(readIndex, "string :", string(msgBody[readIndex:i]))
 					canSetValue := reflect.ValueOf(string(msgBody[readIndex:i]))
 					vf.Set(canSetValue)
 					readIndex = i + 1
@@ -101,10 +100,10 @@ func (p *Processor) UnMarshal(msgBody []byte, msgStruct interface{}) {
 			}
 
 		case reflect.Int32:
-			fmt.Println(readIndex, "int :", msgBody[readIndex:readIndex+4])
-			intValue, err := strconv.Atoi(string(msgBody[readIndex : readIndex+4]))
-			if err != nil {
-			}
+			//fmt.Println(readIndex, "int :", msgBody[readIndex:readIndex+4])
+			var intValue int32
+			bytesBuffer := bytes.NewBuffer(msgBody[readIndex : readIndex+4])
+			binary.Read(bytesBuffer, binary.LittleEndian, &intValue)
 			canSetValue := reflect.ValueOf(int32(intValue))
 			vf.Set(canSetValue)
 			readIndex = readIndex + 4
@@ -133,7 +132,10 @@ func marshal(v reflect.Value) []byte {
 
 	switch v.Kind() {
 	case reflect.String:
-		binary.Write(bytesBuffer, binary.LittleEndian, v.String())
+		err := binary.Write(bytesBuffer, binary.LittleEndian, []byte(v.String()))
+		if err != nil {
+			fmt.Println("czx@@@ write string error :", err)
+		}
 		binary.Write(bytesBuffer, binary.LittleEndian, byte(0))
 
 	case reflect.Uint8:

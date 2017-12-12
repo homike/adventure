@@ -3,7 +3,6 @@ package msghandler
 import (
 	"adventure/advserver/sessions"
 	"adventure/common/structs"
-	"fmt"
 )
 
 // 1006
@@ -14,11 +13,11 @@ func SyncLoginDataFinish(sess *sessions.Session) {
 
 // 1007
 func LoginServerPlatform(sess *sessions.Session, msgBody []byte) {
-	fmt.Println("czx@@@ LoginServerPlatform:", msgBody)
+	//fmt.Println("czx@@@ LoginServerPlatform:", msgBody)
 
 	req := structs.LoginServerPlatformReq{}
 	sess.UnMarshal(msgBody, &req)
-	fmt.Printf("takon: %v, version: %v, channnelid: %v", req.Takon, req.Version, req.ChannelID)
+	//fmt.Printf("takon: %v, version: %v, channnelid: %v", req.Takon, req.Version, req.ChannelID)
 
 	isExistsPlayer := false
 	resp := &structs.LoginServerResultNtf{
@@ -34,5 +33,4 @@ func LoginServerPlatform(sess *sessions.Session, msgBody []byte) {
 		SyncLoginDataFinish(sess)
 	}
 	SyncUserGuidRecords(sess)
-
 }

@@ -2,7 +2,6 @@ package network
 
 import (
 	"bufio"
-	"fmt"
 	"log"
 	"net"
 	"sync"
@@ -62,7 +61,7 @@ func (tc *TCPClient) Run(handler MsgHandler) {
 			log.Println("gate message read error")
 			return
 		}
-		fmt.Println("msgID", msgID)
+		//fmt.Println("msgID", msgID)
 
 		go handler(msgID, msgBody, tc)
 	}
