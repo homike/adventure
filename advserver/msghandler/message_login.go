@@ -5,10 +5,14 @@ import (
 	"adventure/common/structs"
 )
 
-// 1006
-func SyncLoginDataFinish(sess *sessions.Session) {
-	resp := &structs.SyncLoginDataFinishNtf{}
-	sess.Send(structs.Protocol_SyncLoginDataFinish_Ntf, resp)
+func InitMessageLogin() {
+	handlers := map[uint16]ProcessFunc{
+		uint16(structs.Protocol_LoginServerPlatform_Req): LoginServerPlatform,
+	}
+
+	for k, v := range handlers {
+		MapFunc[k] = v
+	}
 }
 
 // 1007
@@ -28,9 +32,15 @@ func LoginServerPlatform(sess *sessions.Session, msgBody []byte) {
 	GetSystemTime(sess, nil)
 
 	if isExistsPlayer {
-		SyncPlayerBaseInfo(sess)
+		sess.SyncPlayerBaseInfo()
 
 		SyncLoginDataFinish(sess)
 	}
-	SyncUserGuidRecords(sess)
+	sess.SyncUserGuidRecords()
+}
+
+// 1006
+func SyncLoginDataFinish(sess *sessions.Session) {
+	resp := &structs.SyncLoginDataFinishNtf{}
+	sess.Send(structs.Protocol_SyncLoginDataFinish_Ntf, resp)
 }

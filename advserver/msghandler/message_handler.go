@@ -37,11 +37,14 @@ func init() {
 		uint16(structs.Protocol_Test_Req):                   TestReq,
 		uint16(structs.Protocol_GetSystemTime_Req):          GetSystemTime,
 		uint16(structs.Protocol_CreatePlayer_Req):           CreatePlayer,
-		uint16(structs.Protocol_LoginServerPlatform_Req):    LoginServerPlatform,
 		uint16(structs.Protocol_NameExists_Req):             NameExists,
 		uint16(structs.Protocol_SetPlayerBarrageConfig_Req): SetPlayerBarrageConfig,
 		uint16(structs.Protocol_UpdateUserGuidRecord_Req):   UpdateUserGuidRecord,
 	}
+
+	InitMessageLogin()
+
+	InitMessageHero()
 }
 
 // 1

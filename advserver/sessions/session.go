@@ -13,7 +13,6 @@ type Session struct {
 }
 
 func NewSession(conn *network.TCPClient) *Session {
-
 	sess := &Session{
 		Connection: conn,
 	}

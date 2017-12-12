@@ -11,19 +11,6 @@ const (
 	QualityType_SplashGold QualityType = 5 // 闪金色
 )
 
-type EmployType int32 // 雇佣类型
-const (
-	Money        EmployType = 0 // 用钱
-	HunLuan      EmployType = 1 // 混乱之门
-	HuiHuang     EmployType = 2 // 辉煌之门
-	LvDong       EmployType = 3 // 律动之门
-	Diamond      EmployType = 4 // 万象之门
-	ManyDiamond  EmployType = 5 // 传奇之门(10连抽）
-	ManyDiamond2 EmployType = 6 // 传奇之门(10连抽特殊，保证必须出一个紫色英雄）
-	Exchange     EmployType = 7 // 碎片兑换
-	Reward       EmployType = 8 // 系统奖励
-)
-
 type Hero struct {
 	HeroID         int32       // 英雄id
 	HeroTemplateID int32       // 英雄的模板id

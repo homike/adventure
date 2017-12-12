@@ -45,6 +45,11 @@ type Templates struct {
 	}
 }
 
+const (
+	EmployReturnExp    = 50000 // 英雄.解雇返回经验需要的总经验值
+	EmployReturnExpPer = 70    // 英雄.解雇返回经验比例
+)
+
 func Init() {
 	logger = log.GetLogger()
 

@@ -3,6 +3,7 @@ package model
 import (
 	"adventure/advserver/gamedata"
 	"adventure/common/structs"
+	"errors"
 )
 
 type HeroTeams struct {
@@ -25,12 +26,12 @@ func NewHeroTeams() *HeroTeams {
 		Heros:        make(map[int32]*structs.Hero),
 		EmployRecord: make(map[structs.EmployType]int32),
 	}
-	teams.EmployRecord[structs.Money] = 0
-	teams.EmployRecord[structs.HunLuan] = 0
-	teams.EmployRecord[structs.HuiHuang] = 0
-	teams.EmployRecord[structs.LvDong] = 0
-	teams.EmployRecord[structs.Diamond] = 0
-	teams.EmployRecord[structs.ManyDiamond] = 0
+	teams.EmployRecord[structs.EmployType_Money] = 0
+	teams.EmployRecord[structs.EmployType_HunLuan] = 0
+	teams.EmployRecord[structs.EmployType_HuiHuang] = 0
+	teams.EmployRecord[structs.EmployType_LvDong] = 0
+	teams.EmployRecord[structs.EmployType_Diamond] = 0
+	teams.EmployRecord[structs.EmployType_ManyDiamond] = 0
 
 	return teams
 }
@@ -87,10 +88,35 @@ func (h *HeroTeams) AddHero(name string, isPlayer bool, heroTemplateID int32) (*
 	return hero, nil
 }
 
+func (h *HeroTeams) RemoveHero(hero *structs.Hero) error {
+	_, ok := h.Heros[hero.HeroID]
+	if !ok {
+		return nil
+	}
+	delete(h.Heros, hero.HeroID)
+	return nil
+}
+
 func (h *HeroTeams) GetHerosArray() []structs.Hero {
 	heros := make([]structs.Hero, 0, len(h.Heros))
 	for _, v := range h.Heros {
 		heros = append(heros, *v)
 	}
 	return heros
+}
+
+func (h *HeroTeams) HasHero(heroID int32) bool {
+	_, ok := h.Heros[heroID]
+	if !ok {
+		return false
+	}
+	return true
+}
+
+func (h *HeroTeams) GetHero(heroID int32) (*structs.Hero, error) {
+	v, ok := h.Heros[heroID]
+	if !ok {
+		return v, errors.New("has not this hero")
+	}
+	return v, nil
 }

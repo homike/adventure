@@ -34,7 +34,7 @@ func main() {
 	}
 	conf := config.GetConfig()
 
-	// init log
+	// Init log
 	if err := log.Init(conf.LogPath, conf.LogLevel); err != nil {
 		logger.Error("InitLogger failed (%v)", err)
 		os.Exit(-1)

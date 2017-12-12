@@ -46,7 +46,9 @@ const (
 	Protocol_SyncUserGuidRecords_Ntf    = 1413 // 同步新手引导数据
 	Protocol_UpdateUserGuidRecord_Req   = 1414 // 更新玩家新手引导数据
 	Protocol_SyncGameBoxTopNum_Ntf      = 1415 // 更新增加的宝箱上限数量
+	Protocol_RewardResult_Ntf           = 1700 // 奖励物品接口
 	Protocol_SetPlayerBarrageConfig_Req = 2801 // 弹幕设置
+
 )
 
 type GetSystemTimeReq struct {
@@ -129,4 +131,33 @@ type SyncGameBoxTopNumNtf struct {
 type SyncHeroNtf struct {
 	SyncHeroType uint8
 	Heros        []Hero
+}
+
+type EmployReq struct {
+	EmployType uint8
+}
+
+const (
+	EmployRet_Success = iota
+	EmployRet_Failed
+	EmployRet_NotEnough
+)
+
+type EmployResp struct {
+	Ret     uint8
+	HeroIDs []int32
+}
+
+type UnEmployReq struct {
+	HeroID int32
+}
+type UnEmployResp struct {
+	Ret    uint8
+	HeroID int32
+}
+
+type RewardResultNtf struct {
+	IsRes   bool
+	Rewards []Reward
+	Context string
 }
