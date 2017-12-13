@@ -15,29 +15,46 @@ const (
 	Protocol_NameExists_Resp         = 1010
 
 	// 英雄相关的消息
-	Protocol_Employ_Req             = 1100 // 雇佣英雄
-	Protocol_Employ_Resp            = 1101
-	Protocol_UnEmploy_Req           = 1102 // 解雇英雄
-	Protocol_UnEmploy_Resp          = 1103
-	Protocol_ResetHeroIndex_Req     = 1104 // 调整英雄出站顺序
-	Protocol_SyncHero_Ntf           = 1105 // 同步英雄信息
-	Protocol_Work_Req               = 1106 // 英雄出战
-	Protocol_SomeWork_Req           = 1107 // 一些英雄出战
-	Protocol_Rest_Req               = 1108 // 英雄休息
-	Protocol_SomeRest_Req           = 1109 // 一些英雄出战
-	Protocol_Work_Resp              = 1110
-	Protocol_SomeWork_Resp          = 1111
+	Protocol_Employ_Req         = 1100 // 雇佣英雄
+	Protocol_Employ_Resp        = 1101
+	Protocol_UnEmploy_Req       = 1102 // 解雇英雄
+	Protocol_UnEmploy_Resp      = 1103
+	Protocol_ResetHeroIndex_Req = 1104 // 调整英雄出站顺序
+	Protocol_SyncHero_Ntf       = 1105 // 同步英雄信息
+	Protocol_Work_Req           = 1106 // 英雄出战
+	Protocol_SomeWork_Req       = 1107 // 一些英雄出战
+	Protocol_Rest_Req           = 1108 // 英雄休息
+	Protocol_SomeRest_Req       = 1109 // 一些英雄出战
+	Protocol_Work_Resp          = 1110
+	//Protocol_SomeWork_Resp          = 1111
 	Protocol_Rest_Resp              = 1112
 	Protocol_SomeRest_Resp          = 1113
-	Protocol_Awake_Rep              = 1114 // 英雄觉醒
+	Protocol_Awake_Req              = 1114 // 英雄觉醒
 	Protocol_Awake_Resp             = 1115
-	Protocol_UpgradeWeapon_Rep      = 1116 // 武具升级
+	Protocol_UpgradeWeapon_Req      = 1116 // 武具升级
 	Protocol_UpgradeWeapon_Resp     = 1117
 	Protocol_SyncEmploy_Req         = 1118 // 同步招募信息
 	Protocol_SyncEmploy_Resq        = 1119
 	Protocol_HeroHpAdd_Ntf          = 1120 // 英雄HP的变化
 	Protocol_UnEmployManyHeros_Req  = 1121 // 解雇多名英雄
-	Protocol_UnEmployManyHeros_Resq = 1122
+	Protocol_UnEmployManyHeros_Resp = 1122
+
+	// 背包相关
+	Protocol_UseItem_Req           = 1300 // 使用物品
+	Protocol_UseItem_Resp          = 1301
+	Protocol_SyncItem_Ntf          = 1302 // 同步物品
+	Protocol_SyncBag_Ntf           = 1303 // 同步背包
+	Protocol_SyncAllResouce_Ntf    = 1304 // 同步所有的资源
+	Protocol_SyncResouce_Ntf       = 1305 // 同步资源
+	Protocol_AddItem_Req           = 1306 // 加道具
+	Protocol_AddResource_Req       = 1307 // 加资源
+	Protocol_AddItem_Resp          = 1308
+	Protocol_AddResource_Resp      = 1309
+	Protocol_BagNotEnough_Ntf      = 1340
+	Protocol_UnlockBag_Req         = 1341 // 开启背包格子
+	Protocol_UnlockBag_Resp        = 1342
+	Protocol_GetUsedGameItems_Req  = 1343 // 取得已使用过的物品列表
+	Protocol_GetUsedGameItems_Resp = 1344
 
 	// 角色相关
 	Protocol_SyncStrength_Ntf           = 1404 // 同步饱足度
@@ -130,7 +147,7 @@ type SyncGameBoxTopNumNtf struct {
 
 type SyncHeroNtf struct {
 	SyncHeroType uint8
-	Heros        []Hero
+	Heros        []*Hero
 }
 
 type EmployReq struct {
@@ -160,4 +177,99 @@ type RewardResultNtf struct {
 	IsRes   bool
 	Rewards []Reward
 	Context string
+}
+
+type ResetHeroIndexReq struct {
+	HeroIDs []int32
+}
+
+type WorkReq struct {
+	HeroID int32
+}
+
+type WorkResp struct {
+	Ret    uint8
+	HeroID int32
+}
+
+type SomeWorkReq struct {
+	HeroIDs []int32
+}
+
+type ResetResp struct {
+	Ret    uint8
+	HeroID int32
+}
+
+type ResetReq struct {
+	HeroID int32
+}
+
+type SomeResetReq struct {
+	HeroIDs []int32
+}
+
+type AwakeReq struct {
+	HeroID int32
+}
+
+type AwakeResp struct {
+	Ret    uint8
+	HeroID int32
+	AddHP  int32
+}
+
+type UpgradeWeaponReq struct {
+	HeroID int32
+	Ingot  int32
+}
+
+type UpgradeWeaponResp struct {
+	Ret    uint8
+	HeroID int32
+	AddHP  int32
+}
+
+type SyncAllResouceNtf struct {
+	Money         int32
+	Ingot         int32
+	Fragment      int32
+	Statue        int32
+	Strength      int32
+	Detonator     int32
+	MiningToolkit int32
+	Ors           []IDNUM
+	Foods         []IDNUM
+	Badges        []IDNUM
+	UnlockResIds  []int32
+}
+
+type SyncResourceNtf struct {
+	ResID  int32
+	ResNum int32
+}
+
+type SyncBagNtf struct {
+	MaxCount    int32
+	UnlockLevel int32
+	Items       []*GameItem
+}
+
+type GetUsedGameItemsResp struct {
+	ItemIDs   []int32
+	UserTimes []int64
+}
+
+type UseItemReq struct {
+	ItemID int32
+}
+
+type UseItemResp struct {
+	Ret uint8
+}
+
+type UnlockBagResp struct {
+	Ret         uint8
+	MaxCount    int32
+	UnLockLevel int32
 }

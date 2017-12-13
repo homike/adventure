@@ -35,8 +35,6 @@ func CreatePlayer(sess *sessions.Session, msgBody []byte) {
 
 	SyncLoginDataFinish(sess)
 
-	sess.SyncPlayerBaseInfo()
-
 	sess.OnEnterGame()
 }
 

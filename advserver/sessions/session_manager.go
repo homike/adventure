@@ -1,20 +1,24 @@
 package sessions
 
 import (
+	"adventure/advserver/log"
 	"adventure/advserver/model"
 	"adventure/advserver/network"
+	"adventure/common/clog"
 	"errors"
 	"fmt"
 	"sync"
 )
 
 var SessionMgr *SessionManager
+var logger *clog.Logger
 
 func Init() error {
 	SessionMgr = &SessionManager{
 		Sessions: make(map[uint]*Session),
 	}
 
+	logger = log.GetLogger()
 	return nil
 }
 

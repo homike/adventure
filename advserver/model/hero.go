@@ -4,10 +4,11 @@ import (
 	"adventure/advserver/gamedata"
 	"adventure/common/structs"
 	"errors"
+	"sort"
 )
 
 type HeroTeams struct {
-	Heros                map[int32]*structs.Hero      // 英雄列表
+	Heros                []*structs.Hero              // 英雄列表
 	MaxWorker            int32                        // 出战人数上限
 	EmployRecord         map[structs.EmployType]int32 // 招募英雄记录表
 	EmployTotalCount     int32                        // 招募英雄的总数量
@@ -23,7 +24,7 @@ type HeroTeams struct {
 func NewHeroTeams() *HeroTeams {
 	teams := &HeroTeams{
 		MaxHeroId:    1,
-		Heros:        make(map[int32]*structs.Hero),
+		Heros:        make([]*structs.Hero, 0),
 		EmployRecord: make(map[structs.EmployType]int32),
 	}
 	teams.EmployRecord[structs.EmployType_Money] = 0
@@ -82,19 +83,21 @@ func (h *HeroTeams) AddHero(name string, isPlayer bool, heroTemplateID int32) (*
 		LevelHP:        int32(configBaseHP),
 		Index:          int32(len(h.Heros)),
 	}
-	h.Heros[hero.HeroID] = hero
+	h.Heros = append(h.Heros, hero)
 	h.MaxHeroId++
 
 	return hero, nil
 }
 
 func (h *HeroTeams) RemoveHero(hero *structs.Hero) error {
-	_, ok := h.Heros[hero.HeroID]
-	if !ok {
-		return nil
+	for k, v := range h.Heros {
+		if v.HeroID == hero.HeroID {
+			h.Heros = append(h.Heros[0:k], h.Heros[k+1:]...)
+			return nil
+		}
 	}
-	delete(h.Heros, hero.HeroID)
-	return nil
+
+	return errors.New("RemoveHero error")
 }
 
 func (h *HeroTeams) GetHerosArray() []structs.Hero {
@@ -105,18 +108,57 @@ func (h *HeroTeams) GetHerosArray() []structs.Hero {
 	return heros
 }
 
-func (h *HeroTeams) HasHero(heroID int32) bool {
-	_, ok := h.Heros[heroID]
-	if !ok {
-		return false
+func (h *HeroTeams) GetHero(heroID int32) (*structs.Hero, error) {
+	for _, v := range h.Heros {
+		if v.HeroID == heroID {
+			return v, nil
+		}
 	}
-	return true
+	return nil, errors.New("has not this hero")
 }
 
-func (h *HeroTeams) GetHero(heroID int32) (*structs.Hero, error) {
-	v, ok := h.Heros[heroID]
-	if !ok {
-		return v, errors.New("has not this hero")
+type HeroByIndex []*structs.Hero
+
+func (a HeroByIndex) Len() int           { return len(a) }
+func (a HeroByIndex) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a HeroByIndex) Less(i, j int) bool { return a[i].Index < a[j].Index }
+
+func (h *HeroTeams) SortHeros() error {
+	sort.Sort(HeroByIndex(h.Heros))
+	return nil
+}
+
+func (h *HeroTeams) ReCalculateHeroLevelHp(hero *structs.Hero) error {
+	baseHP, _ := gamedata.AllTemplates.HeroTemplate.BaseHP(hero.HeroTemplateID)
+	coefficient, _ := gamedata.AllTemplates.HeroTemplate.Coefficient(hero.HeroTemplateID)
+
+	weaponParam := float32(1)
+	if hero.WeaponLevel > 0 {
+		param := int(0)
+		err := errors.New("ReCalculateHeroLevelHp Error")
+		if hero.IsPlayer {
+			param, err = gamedata.AllTemplates.UpgradeArtifactCost.WeaponParam(hero.WeaponLevel)
+			if err != nil {
+				logger.Error("UpgradeArtifactCost.WeaponParam(%v) error (%v) ", hero.WeaponLevel, err)
+			}
+		} else {
+			param, err = gamedata.AllTemplates.UpgradeWeaponCost.WeaponParam(hero.WeaponLevel)
+		}
+		weaponParam = float32(param / 100.0)
 	}
-	return v, nil
+
+	jieXianCount := float32(1) //暂时使用，代替突破界限系数
+	awakeParam, err := gamedata.AllTemplates.AwakeCost.Param(hero.AwakeCount)
+	if err == nil {
+		jieXianCount = float32(awakeParam)
+	}
+
+	//计算英雄战力
+	param1 := float32(baseHP) + float32(hero.Level)*coefficient
+	param2 := param1*jieXianCount + float32(hero.ItemHP)
+	hp := int32(param2 * weaponParam)
+	hero.LevelHP = hp
+
+	return nil
+	//PlayerEvents.OnHPChange(player)
 }

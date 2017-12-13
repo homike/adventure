@@ -104,3 +104,41 @@ const (
 	AdventureRet_Success = iota
 	AdventureRet_Failed
 )
+
+const (
+	ItemType_Fix    = iota // 属性固定
+	ItemType_Random        // 属性随机
+)
+
+const (
+	ResourceType_Money             = 1   // 金币
+	ResourceType_Ingot             = 2   // 钻石
+	ResourceType_Fragment          = 3   // 碎片
+	ResourceType_Strength          = 4   // 饱食度(体力)
+	ResourceType_Statue            = 5   // 巨魔雕像ID
+	ResourceType_Detonator         = 6   // 雷管
+	ResourceType_MiningToolkit     = 7   // 挖矿工具包
+	ResourceType_MiningPickTop     = 8   // 矿镐耐久度上限(属性类的)
+	ResourceType_Coupon            = 9   // 礼券
+	ResourceType_Exp               = 15  // 经验值
+	ResourceType_TradeTask         = 16  // 商会任务
+	ResourceType_GameBoxTop        = 17  // 宝箱数量上限
+	ResourceType_MiningPickup      = 18  // 矿镐耐久度
+	ResourceType_MiningPickLevel   = 19  // 矿镐等级
+	ResourceType_FriendGetGiftNum  = 20  // 好友收礼上限
+	ResourceType_FriendSendGiftNum = 21  // 好友送礼上限
+	ResourceType_BagLimit          = 22  // 背包上限
+	ResourceType_OriMin            = 100 // 矿产资源ID最小值
+	ResourceType_OriMax            = 150 // 矿产资源ID最大值
+	ResourceType_FoodMin           = 200 // 食物资源id最小值
+	ResourceType_FoodMax           = 250 // 食物资源id最大值
+	ResourceType_BadgesMin         = 300 // 徽章资源最小值
+	ResourceType_BadgesMax         = 350 // 徽章资源最大值
+	ResourceType_HunLuanCrest      = 301 // 混乱之门徽章id
+	ResourceType_HuiHuangCrest     = 302 // 辉煌之门徽章id
+	ResourceType_LvDongCrest       = 303 // 律动之门徽章id
+)
+
+const (
+	ResouceChangeType_Employ_Money = iota // 招募_金币招募
+)

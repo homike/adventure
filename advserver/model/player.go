@@ -3,11 +3,19 @@ package model
 import (
 	"adventure/advserver/db/mysql"
 	"adventure/advserver/db/redis"
+	"adventure/advserver/log"
 	"adventure/advserver/service"
+	"adventure/common/clog"
 	"adventure/common/structs"
 	"fmt"
 	"time"
 )
+
+var logger *clog.Logger
+
+func Init() {
+	logger = log.GetLogger()
+}
 
 type Player struct {
 	AccountID         uint
