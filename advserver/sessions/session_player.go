@@ -7,9 +7,9 @@ import (
 )
 
 func (sess *Session) OnEnterGame() {
-	sess.SyncHeroNtf(structs.SyncHeroType_First, sess.PlayerData.HeroTeam.Heros) // 同步英雄信息
 
 	/****************同步基础数据********************/
+	sess.SyncPlayerBaseInfo()
 	sess.SyncStrength()        // 同步饱食度
 	sess.SyncUserGuidRecords() // 同步新手引导进度
 	//CZXDO: 同步客户端已食用过的食物列表
@@ -18,8 +18,8 @@ func (sess *Session) OnEnterGame() {
 	sess.SyncGameBoxTopNumNtf() //同步客户端附加的宝箱上限数量
 
 	/****************同步英雄数据********************/
-	sess.SyncPlayerBaseInfo()
-	sess.SyncHeroWorkTop() // 同步最大出战英雄数
+	sess.SyncHeroWorkTop()                                                       // 同步最大出战英雄数
+	sess.SyncHeroNtf(structs.SyncHeroType_First, sess.PlayerData.HeroTeam.Heros) // 同步英雄信息
 
 	/****************同步背包数据********************/
 	sess.SyncAllResources()   // 同步所有资源

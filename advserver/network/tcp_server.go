@@ -41,7 +41,7 @@ func (t *TCPServer) Run(handler MsgHandler) {
 			fmt.Println("client connect error", err.Error())
 			continue
 		}
-
+		fmt.Println("new client : ", conn.RemoteAddr().String())
 		agent := NewTCPClient(conn, msgParser)
 		go func() {
 			agent.Run(handler)

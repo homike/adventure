@@ -30,7 +30,7 @@ func Dispatch(msgID uint16, msgBody []byte, tc *network.TCPClient) {
 	}
 }
 
-func init() {
+func Init() error {
 	logger = log.GetLogger()
 
 	MapFunc = map[uint16]ProcessFunc{
@@ -45,6 +45,8 @@ func init() {
 	InitMessageLogin()
 
 	InitMessageHero()
+
+	return nil
 }
 
 // 1

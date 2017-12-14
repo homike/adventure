@@ -24,6 +24,7 @@ type HeroTeams struct {
 func NewHeroTeams() *HeroTeams {
 	teams := &HeroTeams{
 		MaxHeroId:    1,
+		MaxWorker:    3,
 		Heros:        make([]*structs.Hero, 0),
 		EmployRecord: make(map[structs.EmployType]int32),
 	}

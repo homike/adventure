@@ -15,7 +15,7 @@ type Bag struct {
 
 func NewBag() *Bag {
 	bag := &Bag{
-		MaxItemID:     1,
+		MaxItemID:     0,
 		MaxCount:      16,
 		Items:         make([]*structs.GameItem, 0, 10),
 		UsedGameItems: make([]*structs.UsedGameItem, 0, 10),

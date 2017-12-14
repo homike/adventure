@@ -52,6 +52,12 @@ func main() {
 		return
 	}
 
+	// Init msghandler
+	if err := msghandler.Init(); err != nil {
+		fmt.Println("msghandler init error")
+		return
+	}
+
 	// Listen to system signal
 	go SignalProc()
 

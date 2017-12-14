@@ -169,6 +169,14 @@ func marshal(v reflect.Value) []byte {
 			binary.Write(bytesBuffer, binary.LittleEndian, vfBytes)
 		}
 
+	case reflect.Ptr:
+		v = v.Elem()
+		for i := 0; i < v.NumField(); i++ {
+			vf := v.Field(i)
+			vfBytes := marshal(vf)
+			binary.Write(bytesBuffer, binary.LittleEndian, vfBytes)
+		}
+
 	default:
 		binary.Write(bytesBuffer, binary.LittleEndian, v.Bytes())
 	}
