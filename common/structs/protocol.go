@@ -39,6 +39,10 @@ const (
 	Protocol_UnEmployManyHeros_Req  = 1121 // 解雇多名英雄
 	Protocol_UnEmployManyHeros_Resp = 1122
 
+	// 冒险相关
+	Protocol_SyncGameLevel_Ntf        = 1201 // 同步关卡基础信息
+	Protocol_SyncCurrentGameLevel_Ntf = 1202 // 同步当前关卡信息
+
 	// 背包相关
 	Protocol_UseItem_Req           = 1300 // 使用物品
 	Protocol_UseItem_Resp          = 1301
@@ -272,4 +276,15 @@ type UnlockBagResp struct {
 	Ret         uint8
 	MaxCount    int32
 	UnLockLevel int32
+}
+
+type SyncGameLevelNtf struct {
+	GameLevels      []*GameLevel
+	CurLevelID      int32
+	LastRefreshTime int64
+	SpeedCount      int32 // 加速冒险的次数
+}
+
+type SyncCurrentGameLevelNtf struct {
+	GameLevel *GameLevel
 }

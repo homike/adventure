@@ -3,6 +3,7 @@ package model
 import (
 	"adventure/advserver/db/mysql"
 	"adventure/advserver/db/redis"
+	"adventure/advserver/gamedata"
 	"adventure/advserver/log"
 	"adventure/advserver/service"
 	"adventure/common/clog"
@@ -66,10 +67,16 @@ func NewPlayer(name string, heroTemplateID int32) (*Player, error) {
 	player.Res = NewResource()
 
 	// 关卡数据初始化
+	events, err := gamedata.GetGameLevelEvents(1)
+	if err != nil {
+		fmt.Println("GetGameLevelEvents(1) error")
+		return nil, err
+	}
 	player.PlayerGameLevel = NewPlayerGameLevel()
 	gameLevel := structs.GameLevel{
-		GameLevelID: 1,
-		IsUnlock:    true,
+		GameLevelID:   1,
+		IsUnlock:      true,
+		CompleteEvent: make([]int32, len(events)),
 	}
 	player.PlayerGameLevel.AddGameLevel(&gameLevel)
 

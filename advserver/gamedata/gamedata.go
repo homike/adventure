@@ -6,6 +6,9 @@ import (
 	"adventure/common/csv"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"strconv"
+	"strings"
 )
 
 var logger *clog.Logger
@@ -169,4 +172,27 @@ func GetUnlockBagCost(unlockLv int32) ([]int32, []int32, error) {
 	}
 
 	return resIDs, resNums, nil
+}
+
+func GetGameLevelEvents(gameLv int32) ([]int32, error) {
+	events := []int32{}
+	strEvents, err := AllTemplates.GameLevelTemplate.EvnetIDs(gameLv)
+	if err != nil {
+		fmt.Println("GetGameLevelEvents() ", err)
+		return events, err
+	}
+
+	arrEvents := strings.Split(strEvents, ",")
+	if len(arrEvents) <= 0 {
+		fmt.Println("GetGameLevelEvents() ", err, " strEvents : ", strEvents)
+		return events, err
+	}
+
+	events = make([]int32, len(arrEvents))
+	for _, v := range arrEvents {
+		n, _ := strconv.Atoi(v)
+		events = append(events, int32(n))
+	}
+
+	return events, nil
 }

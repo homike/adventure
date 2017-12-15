@@ -145,16 +145,19 @@ func marshal(v reflect.Value) []byte {
 		binary.Write(bytesBuffer, binary.LittleEndian, int32(v.Int()))
 
 	case reflect.Int64:
-		binary.Write(bytesBuffer, binary.LittleEndian, v.Int())
+		fmt.Println("Int64 ", v.Int())
+		binary.Write(bytesBuffer, binary.LittleEndian, v.Int()) //
 
 	case reflect.Bool:
 		b := 0
 		if v.Bool() {
 			b = 1
 		}
+		fmt.Println("bool ", b)
 		binary.Write(bytesBuffer, binary.LittleEndian, uint8(b))
 
 	case reflect.Slice:
+		fmt.Println("czx@@@ Slice len ", int32(v.Len()))
 		binary.Write(bytesBuffer, binary.LittleEndian, int32(v.Len()))
 		for j := 0; j < v.Len(); j++ {
 			data := v.Slice(j, j+1).Index(0)

@@ -17,7 +17,15 @@ type Resource struct {
 }
 
 func NewResource() *Resource {
-	return &Resource{}
+	return &Resource{
+		Strength:      100,
+		Ingot:         100,
+		Money:         100,
+		Fragments:     100,
+		Statue:        100,
+		Detonator:     100,
+		MiningToolkit: 100,
+	}
 }
 
 func (r *Resource) OresChange(id, num int32) {

@@ -9,12 +9,12 @@ import (
 
 // 1002
 func CreatePlayer(sess *sessions.Session, msgBody []byte) {
-	fmt.Println("CreatePlayer data:", msgBody)
+	//fmt.Println("CreatePlayer data:", msgBody)
 
 	req := structs.CreatePlayerReq{}
 	sess.UnMarshal(msgBody, &req)
 
-	fmt.Println("CreatePlayer name: ", req.PlayerName, "heroTemplateID: ", req.HeroTemplateId)
+	//fmt.Println("CreatePlayer name: ", req.PlayerName, "heroTemplateID: ", req.HeroTemplateId)
 	resp := &structs.CreatePlayerResp{
 		Result: 0, // Success
 	}

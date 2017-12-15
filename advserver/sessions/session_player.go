@@ -25,9 +25,12 @@ func (sess *Session) OnEnterGame() {
 	sess.SyncAllResources()   // 同步所有资源
 	sess.SyncBag()            // 同步背包数据
 	sess.SyncPlayerUsedItem() // 同步客户端已使用过的物品列表
+
+	/****************同步冒险关卡********************/
+	sess.SyncGameLevelNtf()
+	sess.SyncCurrentGameLevelNtf()
 }
 
-// 1008
 func (sess *Session) SyncPlayerBaseInfo() {
 	fmt.Println("czx@@@ SyncPlayerBaseInfo")
 
