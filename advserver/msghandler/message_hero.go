@@ -261,7 +261,7 @@ func AwakeReq(sess *sessions.Session, msgBody []byte) {
 		}
 	}
 
-	oldHp := hero.HP
+	oldHp := hero.HP()
 	// 重新计算该英雄等级战力
 	sess.PlayerData.HeroTeam.ReCalculateHeroLevelHp(hero)
 	// 同步该英雄信息
@@ -269,7 +269,7 @@ func AwakeReq(sess *sessions.Session, msgBody []byte) {
 
 	resp.Ret = structs.AdventureRet_Success
 	resp.HeroID = req.HeroID
-	resp.AddHP = hero.HP - oldHp
+	resp.AddHP = hero.HP() - oldHp
 	sess.Send(structs.Protocol_Awake_Resp, resp)
 }
 
@@ -310,7 +310,7 @@ func UpgradeWeaponReq(sess *sessions.Session, msgBody []byte) {
 
 	// CZXDO: 消耗资源
 	hero.WeaponLevel++
-	oldHP := hero.HP
+	oldHP := hero.HP()
 
 	// 重新计算该英雄等级战力
 	sess.PlayerData.HeroTeam.ReCalculateHeroLevelHp(hero)
@@ -319,7 +319,7 @@ func UpgradeWeaponReq(sess *sessions.Session, msgBody []byte) {
 
 	resp.Ret = structs.AdventureRet_Success
 	resp.HeroID = req.HeroID
-	resp.AddHP = hero.HP - oldHP
+	resp.AddHP = hero.HP() - oldHP
 	sess.Send(structs.Protocol_UpgradeWeapon_Resp, resp)
 
 	// CZXDO: 全服通告

@@ -182,13 +182,13 @@ func GetGameLevelEvents(gameLv int32) ([]int32, error) {
 		return events, err
 	}
 
-	arrEvents := strings.Split(strEvents, ",")
+	arrEvents := strings.Split(strEvents, ";")
 	if len(arrEvents) <= 0 {
 		fmt.Println("GetGameLevelEvents() ", err, " strEvents : ", strEvents)
 		return events, err
 	}
 
-	events = make([]int32, len(arrEvents))
+	events = make([]int32, 0, len(arrEvents))
 	for _, v := range arrEvents {
 		n, _ := strconv.Atoi(v)
 		events = append(events, int32(n))

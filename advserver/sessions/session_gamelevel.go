@@ -2,7 +2,6 @@ package sessions
 
 import (
 	"adventure/common/structs"
-	"fmt"
 )
 
 func (sess *Session) SyncGameLevelNtf() {
@@ -13,9 +12,11 @@ func (sess *Session) SyncGameLevelNtf() {
 		LastRefreshTime: sess.PlayerData.PlayerGameLevel.LastRefreshTime,
 		SpeedCount:      sess.PlayerData.PlayerGameLevel.TodaySpeedAdventure,
 	}
-	fmt.Println(" GameLevels len ", len(sess.PlayerData.PlayerGameLevel.GameLevels))
-	fmt.Println(sess.PlayerData.PlayerGameLevel.GameLevels[0].IsUnlock, " event len", len(sess.PlayerData.PlayerGameLevel.GameLevels[0].CompleteEvent))
-	fmt.Println("gameLeveel time : ", sess.PlayerData.PlayerGameLevel.LastRefreshTime, " CurLevelID", resp.CurLevelID)
+
+	//resp.GameLevels[0].CompleteEvent = []uint8{0, 0}
+	// fmt.Println("GameLevels len ", len(sess.PlayerData.PlayerGameLevel.GameLevels), " event len", len(sess.PlayerData.PlayerGameLevel.GameLevels[0].CompleteEvent))
+	// fmt.Println(sess.PlayerData.PlayerGameLevel.GameLevels[0].GameLevelID, sess.PlayerData.PlayerGameLevel.GameLevels[0].IsUnlock, sess.PlayerData.PlayerGameLevel.GameLevels[0].CompleteEvent)
+	// fmt.Println("gameLeveel time : ", sess.PlayerData.PlayerGameLevel.LastRefreshTime, " CurLevelID", resp.CurLevelID)
 
 	sess.Send(structs.Protocol_SyncGameLevel_Ntf, resp)
 }

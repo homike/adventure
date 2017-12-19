@@ -14,8 +14,10 @@ import (
 
 var logger *clog.Logger
 
-func Init() {
+func Init() error {
 	logger = log.GetLogger()
+
+	return nil
 }
 
 type Player struct {
@@ -55,14 +57,15 @@ func NewPlayer(name string, heroTemplateID int32) (*Player, error) {
 		fmt.Println("incr player id error :", err)
 		return nil, err
 	}
+	fmt.Println("create player id : ", playID)
 
 	player := InitPlayer()
 	player.AccountID = playID
 	player.Name = name
 	// 初始化玩家英雄
 	player.HeroTeam = NewHeroTeams()
-	player.HeroTeam.AddHero(player.Name, true, heroTemplateID)
-
+	hero, _ := player.HeroTeam.AddHero(player.Name, true, heroTemplateID)
+	player.HeroTeam.ReCalculateHeroLevelHp(hero)
 	// 初始化玩家资源
 	player.Res = NewResource()
 
@@ -72,11 +75,13 @@ func NewPlayer(name string, heroTemplateID int32) (*Player, error) {
 		fmt.Println("GetGameLevelEvents(1) error")
 		return nil, err
 	}
+	//fmt.Println("czx@@@ events : ", events)
+
 	player.PlayerGameLevel = NewPlayerGameLevel()
 	gameLevel := structs.GameLevel{
 		GameLevelID:   1,
 		IsUnlock:      true,
-		CompleteEvent: make([]int32, len(events)),
+		CompleteEvent: make([]uint8, len(events)),
 	}
 	player.PlayerGameLevel.AddGameLevel(&gameLevel)
 

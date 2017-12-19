@@ -4,6 +4,7 @@ import (
 	"adventure/advserver/gamedata"
 	"adventure/common/structs"
 	"errors"
+	"fmt"
 	"sort"
 )
 
@@ -43,7 +44,7 @@ func (h *HeroTeams) MaxHP() int32 {
 	totalHP := int32(0)
 	for _, v := range h.Heros {
 		if v.IsOutFight {
-			totalHP += v.HP
+			totalHP += v.HP()
 		}
 	}
 	return totalHP
@@ -159,6 +160,7 @@ func (h *HeroTeams) ReCalculateHeroLevelHp(hero *structs.Hero) error {
 	param2 := param1*jieXianCount + float32(hero.ItemHP)
 	hp := int32(param2 * weaponParam)
 	hero.LevelHP = hp
+	fmt.Println("czx@@@ levelHP ", hp)
 
 	return nil
 	//PlayerEvents.OnHPChange(player)

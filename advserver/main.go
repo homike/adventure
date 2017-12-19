@@ -3,6 +3,7 @@ package main
 import (
 	"adventure/advserver/config"
 	"adventure/advserver/log"
+	"adventure/advserver/model"
 	"adventure/advserver/msghandler"
 	"adventure/advserver/network"
 	"adventure/advserver/service"
@@ -43,6 +44,12 @@ func main() {
 	// Init service
 	if err := service.Init(); err != nil {
 		fmt.Println("serviece init error")
+		return
+	}
+
+	// Init model
+	if err := model.Init(); err != nil {
+		fmt.Println("model init error")
 		return
 	}
 
