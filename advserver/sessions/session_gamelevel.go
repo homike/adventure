@@ -22,11 +22,22 @@ func (sess *Session) SyncGameLevelNtf() {
 }
 
 func (sess *Session) SyncCurrentGameLevelNtf() {
-	gameLevel, err := sess.PlayerData.PlayerGameLevel.GetCurGameLevel()
+	gameLevel, err := sess.PlayerData.PlayerGameLevel.GetCurGameLevelData()
 	if err != nil {
 		return
 	}
 
+	resp := &structs.SyncCurrentGameLevelNtf{
+		GameLevel: gameLevel,
+	}
+	sess.Send(structs.Protocol_SyncCurrentGameLevel_Ntf, resp)
+}
+
+func (sess *Session) SyncCurrentGameLevelNtf2() {
+	gameLevel, err := sess.PlayerData.PlayerGameLevel.GetCurGameLevelData()
+	if err != nil {
+		return
+	}
 	resp := &structs.SyncCurrentGameLevelNtf{
 		GameLevel: gameLevel,
 	}

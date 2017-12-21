@@ -78,11 +78,7 @@ func UnEmployReq(sess *sessions.Session, msgBody []byte) {
 		sess.Send(structs.Protocol_UnEmploy_Resp, resp)
 	}
 
-	honorDebris, err := gamedata.AllTemplates.HeroTemplate.HonorDebris(req.HeroID)
-	if err != nil {
-		logger.Error("player(%v) hero (%v) get gamedata error: %v", sess.AccountID, req.HeroID, err)
-		sess.Send(structs.Protocol_UnEmploy_Resp, resp)
-	}
+	honorDebris := gamedata.AllTemplates.HeroTemplates[req.HeroID].HonorDebris
 
 	///////////////////////////////////////////Logic Process///////////////////////////////////////
 	rewards := []structs.Reward{}
@@ -222,12 +218,7 @@ func AwakeReq(sess *sessions.Session, msgBody []byte) {
 		return
 	}
 
-	MaxAwakeCnt, err := gamedata.AllTemplates.HeroTemplate.AwakeCount(req.HeroID)
-	if err != nil {
-		logger.Error("hero(%v) gamedata error(%v)", req.HeroID, err)
-		sess.Send(structs.Protocol_Awake_Resp, resp)
-		return
-	}
+	MaxAwakeCnt := gamedata.AllTemplates.HeroTemplates[req.HeroID].AwakeCount
 
 	if hero.AwakeCount >= int32(MaxAwakeCnt) {
 		logger.Error("hero(%v) awake max", req.HeroID)

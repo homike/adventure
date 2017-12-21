@@ -33,9 +33,9 @@ func CreatePlayer(sess *sessions.Session, msgBody []byte) {
 
 	sess.Send(structs.Protocol_CreatePlayer_Resp, resp)
 
-	SyncLoginDataFinish(sess)
-
 	sess.OnEnterGame()
+
+	SyncLoginDataFinish(sess)
 }
 
 // 1009

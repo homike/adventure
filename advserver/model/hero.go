@@ -4,7 +4,6 @@ import (
 	"adventure/advserver/gamedata"
 	"adventure/common/structs"
 	"errors"
-	"fmt"
 	"sort"
 )
 
@@ -51,18 +50,11 @@ func (h *HeroTeams) MaxHP() int32 {
 }
 
 func (h *HeroTeams) AddHero(name string, isPlayer bool, heroTemplateID int32) (*structs.Hero, error) {
-	configName, err := gamedata.AllTemplates.HeroTemplate.HeroName(heroTemplateID)
-	if err != nil {
-		return nil, err
+	heroT, ok := gamedata.AllTemplates.HeroTemplates[heroTemplateID]
+	if !ok {
+		return nil, errors.New("HeroTemplates Error")
 	}
-	configQualityType, err := gamedata.AllTemplates.HeroTemplate.QualityType(heroTemplateID)
-	if err != nil {
-		return nil, err
-	}
-	configBaseHP, err := gamedata.AllTemplates.HeroTemplate.BaseHP(heroTemplateID)
-	if err != nil {
-		return nil, err
-	}
+	configName, configQualityType, configBaseHP := heroT.HeroName, heroT.QualityType, heroT.BaseHP
 
 	isOutFight := false
 	heroName := configName
@@ -131,28 +123,36 @@ func (h *HeroTeams) SortHeros() error {
 }
 
 func (h *HeroTeams) ReCalculateHeroLevelHp(hero *structs.Hero) error {
-	baseHP, _ := gamedata.AllTemplates.HeroTemplate.BaseHP(hero.HeroTemplateID)
-	coefficient, _ := gamedata.AllTemplates.HeroTemplate.Coefficient(hero.HeroTemplateID)
+	heroT, ok := gamedata.AllTemplates.HeroTemplates[hero.HeroTemplateID]
+	if !ok {
+		return errors.New("HeroTemplates Error")
+	}
+	baseHP, coefficient := heroT.BaseHP, heroT.Coefficient
+
+	artifactCostT, ok := gamedata.AllTemplates.UpgradeArtifactCosts[hero.WeaponLevel]
+	if !ok {
+		return errors.New("UpgradeArtifactCosts Error")
+	}
+	weaponCostT, ok := gamedata.AllTemplates.UpgradeWeaponCosts[hero.WeaponLevel]
+	if !ok {
+		return errors.New("UpgradeWeaponCosts Error")
+	}
 
 	weaponParam := float32(1)
 	if hero.WeaponLevel > 0 {
 		param := int(0)
-		err := errors.New("ReCalculateHeroLevelHp Error")
 		if hero.IsPlayer {
-			param, err = gamedata.AllTemplates.UpgradeArtifactCost.WeaponParam(hero.WeaponLevel)
-			if err != nil {
-				logger.Error("UpgradeArtifactCost.WeaponParam(%v) error (%v) ", hero.WeaponLevel, err)
-			}
+			param = artifactCostT.WeaponParam
 		} else {
-			param, err = gamedata.AllTemplates.UpgradeWeaponCost.WeaponParam(hero.WeaponLevel)
+			param = weaponCostT.WeaponParam
 		}
 		weaponParam = float32(param / 100.0)
 	}
 
 	jieXianCount := float32(1) //暂时使用，代替突破界限系数
-	awakeParam, err := gamedata.AllTemplates.AwakeCost.Param(hero.AwakeCount)
-	if err == nil {
-		jieXianCount = float32(awakeParam)
+	awakeCostT, ok := gamedata.AllTemplates.AwakeCosts[hero.AwakeCount]
+	if ok {
+		jieXianCount = float32(awakeCostT.Param)
 	}
 
 	//计算英雄战力
@@ -160,7 +160,6 @@ func (h *HeroTeams) ReCalculateHeroLevelHp(hero *structs.Hero) error {
 	param2 := param1*jieXianCount + float32(hero.ItemHP)
 	hp := int32(param2 * weaponParam)
 	hero.LevelHP = hp
-	fmt.Println("czx@@@ levelHP ", hp)
 
 	return nil
 	//PlayerEvents.OnHPChange(player)

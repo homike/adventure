@@ -38,12 +38,7 @@ func UseItemReq(sess *sessions.Session, msgBody []byte) {
 		return
 	}
 
-	isOnceEveryDay, err := gamedata.AllTemplates.ItemTemplate.IsOnceEveryday(userItem.TemplateID)
-	if err != nil {
-		logger.Error("IsOnceEveryday(%v) Error(%v)", req.ItemID, err)
-		sess.Send(structs.Protocol_UseItem_Resp, resp)
-		return
-	}
+	isOnceEveryDay := gamedata.AllTemplates.ItemTemplates[userItem.TemplateID].IsOnceEveryday
 
 	userUsedItem := &structs.UsedGameItem{}
 	if isOnceEveryDay {
@@ -95,25 +90,15 @@ func UnlockBagReq(sess *sessions.Session, msgBody []byte) {
 	}
 
 	/////////////////////////////////////////////Data Check////////////////////////////////////////
-	unclockCnt, err := gamedata.AllTemplates.UnLockBagCost.UnLockCount()
-	if err != nil {
-		logger.Error("get UnLockCount Error(%v)", err)
-		sess.Send(structs.Protocol_UnlockBag_Resp, resp)
-		return
-	}
+	unclockCnt := int32(len(gamedata.AllTemplates.UnLockBagCosts))
 
 	if sess.PlayerData.Bag.UnlockLevel >= unclockCnt {
-		logger.Error("unlock already max %v", err)
+		logger.Error("unlock already max")
 		sess.Send(structs.Protocol_UnlockBag_Resp, resp)
 		return
 	}
 
-	bagCnt, err := gamedata.AllTemplates.UnLockBagCost.BagCount(sess.PlayerData.Bag.UnlockLevel + 1)
-	if err != nil {
-		logger.Error("BagCount %v", err)
-		sess.Send(structs.Protocol_UnlockBag_Resp, resp)
-		return
-	}
+	bagCnt := gamedata.AllTemplates.UnLockBagCosts[sess.PlayerData.Bag.UnlockLevel+1].BagCount
 
 	costResIDs, costResNums, err := gamedata.GetUnlockBagCost(sess.PlayerData.Bag.UnlockLevel + 1)
 	if err != nil || len(costResIDs) != len(costResNums) {

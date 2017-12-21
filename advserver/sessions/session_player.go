@@ -99,10 +99,8 @@ func (sess *Session) SyncUserGuidRecords() {
 
 func (sess *Session) DoSomeRewards(itemTemplateID int32, num int32) error {
 	//CZXDO: 动态掉落
-	rewardIDs, err := gamedata.AllTemplates.ItemTemplate.RewardIDs(itemTemplateID)
-	if err != nil {
-		return err
-	}
+
+	rewardIDs := gamedata.AllTemplates.ItemTemplates[itemTemplateID].RewardIDs
 	_ = rewardIDs
 	return nil
 }

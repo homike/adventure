@@ -213,6 +213,29 @@ func GetAllRowKeys(tblname string) ([]string, int) {
 	return rowKeys, GAMEDATA_OK
 }
 
+func GetAllRowIntKeys(tblname string) ([]int, int) {
+	lock.RLock()
+	defer lock.RUnlock()
+
+	rowKeys := []int{}
+
+	tbl, ok := tables[tblname]
+	if !ok {
+		log.Printf(fmt.Sprint("table ", tblname, " not exists!"))
+		return rowKeys, GAMEDATA_NOT_EXISTS
+	}
+
+	for key, _ := range tbl.Records {
+		intKey, err := strconv.Atoi(key)
+		if err != nil {
+			return rowKeys, GAMEDATA_NOT_EXISTS
+		}
+		rowKeys = append(rowKeys, intKey)
+	}
+
+	return rowKeys, GAMEDATA_OK
+}
+
 func GetAllRowValues(tblname string, fieldname string) ([]string, int) {
 	lock.RLock()
 	defer lock.RUnlock()

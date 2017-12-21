@@ -40,8 +40,20 @@ const (
 	Protocol_UnEmployManyHeros_Resp = 1122
 
 	// 冒险相关
-	Protocol_SyncGameLevel_Ntf        = 1201 // 同步关卡基础信息
-	Protocol_SyncCurrentGameLevel_Ntf = 1202 // 同步当前关卡信息
+	Protocol_SelectGameLevel_Req       = 1200 // 切换关卡
+	Protocol_SyncGameLevel_Ntf         = 1201 // 同步关卡基础信息
+	Protocol_SyncCurrentGameLevel_Ntf  = 1202 // 同步当前关卡信息
+	Protocol_AdventureEvent_Req        = 1203 // 冒险事件
+	Protocol_AdventureEvent_Resp       = 1204
+	Protocol_OpenGameBox_Req           = 1205
+	Protocol_OpenGameBox_Resp          = 1206
+	Protocol_OpenGameLevel_Req         = 1207 // 解锁关卡
+	Protocol_SyncCurrentGameLevel2_Ntf = 1208 // 同步当前关卡数据
+	Protocol_GetFightCoolingTime_Req   = 1209 // 取得战败冷却时间
+	Protocol_GetFightCoolingTime_Resp  = 1210
+	Protocol_SpeedAdventure_Req        = 1211
+	Protocol_SpeedAdventure_Resp       = 1212
+	Protocol_SpeedAdventureReward_Ntf  = 1213
 
 	// 背包相关
 	Protocol_UseItem_Req           = 1300 // 使用物品
@@ -287,4 +299,30 @@ type SyncGameLevelNtf struct {
 
 type SyncCurrentGameLevelNtf struct {
 	GameLevel *GameLevel
+}
+
+type SyncCurrentGameLevelNtf2 struct {
+	GameLevel *GameLevel
+}
+
+type GetFightCoolingTimeReq struct {
+	BattleID int32
+}
+
+type GetFightCoolingTimeResp struct {
+	LeftTime int32
+}
+
+type SelectGameLevelReq struct {
+	LevelID int32
+}
+
+type OpenGameBoxReq struct {
+	Count int32
+}
+
+type OpenGameBoxResp struct {
+	Ret     uint8
+	Count   int32
+	Rewards []Reward
 }

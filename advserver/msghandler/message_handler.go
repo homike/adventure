@@ -46,6 +46,7 @@ func Init() error {
 
 	InitMessageHero()
 
+	InitMessageAdventure()
 	return nil
 }
 

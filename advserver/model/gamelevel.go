@@ -29,11 +29,26 @@ func (pgl *PlayerGameLevel) AddGameLevel(g *structs.GameLevel) error {
 	return nil
 }
 
-func (pgl *PlayerGameLevel) GetCurGameLevel() (*structs.GameLevel, error) {
+func (pgl *PlayerGameLevel) GetCurGameLevelData() (*structs.GameLevel, error) {
+	return pgl.GetGameLevelData(pgl.CurrentGameLevelID)
+}
+
+func (pgl *PlayerGameLevel) GetGameLevelData(levelID int32) (*structs.GameLevel, error) {
 	for _, v := range pgl.GameLevels {
-		if v.GameLevelID == pgl.CurrentGameLevelID {
+		if v.GameLevelID == levelID {
 			return v, nil
 		}
 	}
-	return nil, errors.New("GetCurGameLevel() Error")
+	return nil, errors.New("GetGameLevelData() Error")
+}
+
+func (pgl *PlayerGameLevel) SelectGameLevel(levelID int32) error {
+	gameLevel, err := pgl.GetGameLevelData(levelID)
+	if err != nil {
+		return err
+	}
+	gameLevel.IsNew = false
+	pgl.CurrentGameLevelID = levelID
+	pgl.LastRefreshTime = time.Now().Unix()
+	return nil
 }

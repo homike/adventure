@@ -39,13 +39,14 @@ type Player struct {
 	UserGuidRecords   []*structs.GuildRecord    // 新手引导记录
 	MenuStates        []*structs.MenuStatusItem // 菜单状态
 	AddGameBoxCount   int32                     // 增加的宝箱上限数量
+	ExtendData        *ExtendData
 	MiningMap         string
-	ExtendData        string
 }
 
 func InitPlayer() *Player {
 	player := &Player{}
 	player.AccountID = 0
+	player.ExtendData = NewExtendData()
 
 	return player
 }
@@ -75,7 +76,6 @@ func NewPlayer(name string, heroTemplateID int32) (*Player, error) {
 		fmt.Println("GetGameLevelEvents(1) error")
 		return nil, err
 	}
-	//fmt.Println("czx@@@ events : ", events)
 
 	player.PlayerGameLevel = NewPlayerGameLevel()
 	gameLevel := structs.GameLevel{
