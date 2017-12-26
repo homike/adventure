@@ -31,7 +31,7 @@ func (e *ExtendData) GetGamelevelLeftTime(battleID int32) int32 {
 			}
 			delayTime := battleFiledsT.LostWarDelayTime
 
-			leftTime := int32(delayTime - lostTime)
+			leftTime := delayTime - int32(lostTime)
 			if leftTime < 0 {
 				leftTime = 0
 			}

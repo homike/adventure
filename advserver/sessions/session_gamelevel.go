@@ -43,3 +43,7 @@ func (sess *Session) SyncCurrentGameLevelNtf2() {
 	}
 	sess.Send(structs.Protocol_SyncCurrentGameLevel_Ntf, resp)
 }
+
+// func (sess *Session) gameLevelEventForNone(eventID int32, playerGameLevel *structs.GameLevel, eventTemplate *structs.GameLevelEventTemplate) {
+
+// }

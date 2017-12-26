@@ -58,21 +58,26 @@ func loadStructData(tableName string, index int, sVal reflect.Value, sType refle
 
 		switch tsf.Type.Kind() {
 		case reflect.Int, reflect.Int32:
-			rowName := tsf.Tag.Get("val")
-			strValue, ret := GetString(tableName, strconv.Itoa(index), rowName)
-			if ret != GAMEDATA_OK {
-				fmt.Printf("reflect.Int GetString(%v, %v, %v) Error \n", tableName, rowName, index)
-				return
-			}
 			intValue := 0
-			err := errors.New("parse int error")
-			if strValue != "" {
-				intValue, err = strconv.Atoi(strValue)
-				if err != nil {
-					fmt.Printf("reflect.Int strconv.Atoi(%v) Error %v \n", strValue, err)
+			rowName := tsf.Tag.Get("val")
+			if rowName == "ID" {
+				intValue = index
+			} else {
+				strValue, ret := GetString(tableName, strconv.Itoa(index), rowName)
+				if ret != GAMEDATA_OK {
+					fmt.Printf("reflect.Int GetString(%v, %v, %v) Error \n", tableName, rowName, index)
 					return
 				}
+				err := errors.New("parse int error")
+				if strValue != "" {
+					intValue, err = strconv.Atoi(strValue)
+					if err != nil {
+						fmt.Printf("reflect.Int strconv.Atoi(%v) Error %v \n", strValue, err)
+						return
+					}
+				}
 			}
+
 			sef.SetInt(int64(intValue))
 
 		case reflect.String:

@@ -111,6 +111,34 @@ func (h *HeroTeams) GetHero(heroID int32) (*structs.Hero, error) {
 	return nil, errors.New("has not this hero")
 }
 
+func (h *HeroTeams) GetMainHero() (*structs.Hero, error) {
+	for _, v := range h.Heros {
+		if v.IsPlayer {
+			return v, nil
+		}
+	}
+	return nil, errors.New("has not main hero")
+}
+
+func (h *HeroTeams) GetFightHeros() []*structs.Hero {
+	heros := []*structs.Hero{}
+	for _, v := range h.Heros {
+		if v.IsOutFight {
+			heros = append(heros, v)
+		}
+	}
+	return heros
+}
+
+func (h *HeroTeams) GetPlayerHero() *structs.Hero {
+	for _, v := range h.Heros {
+		if v.IsPlayer {
+			return v
+		}
+	}
+	return nil
+}
+
 type HeroByIndex []*structs.Hero
 
 func (a HeroByIndex) Len() int           { return len(a) }

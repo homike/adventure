@@ -49,3 +49,25 @@ type GameLevel struct {
 	IsUnlock        bool    // 是否解锁
 	IsNew           bool    // 是否是新开启关卡
 }
+
+type ArtifactStatusType uint8
+
+const (
+	_      ArtifactStatusType = iota
+	Lock                      // 未解锁
+	UnLock                    // 已解锁
+	Use                       // 使用中
+	New                       // 新解锁（客户端展示用）
+)
+
+type ArtifactStatus struct { // 神器的状态
+	ArtifactID int32              // 神器的ID
+	Status     ArtifactStatusType // 神器的状态
+}
+
+type ArtifactSealStatus struct { // 神器的封印状态
+	SeaID    int32 // 封印ID
+	IsUnlock bool  // 是否已解锁
+	Level    int32 // 封印等级
+	Count    int32 // 当前的进度
+}

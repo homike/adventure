@@ -1,7 +1,6 @@
 package sessions
 
 import (
-	"adventure/advserver/gamedata"
 	"adventure/common/structs"
 	"fmt"
 )
@@ -20,6 +19,7 @@ func (sess *Session) OnEnterGame() {
 	/****************同步英雄数据********************/
 	sess.SyncHeroWorkTop()                                                       // 同步最大出战英雄数
 	sess.SyncHeroNtf(structs.SyncHeroType_First, sess.PlayerData.HeroTeam.Heros) // 同步英雄信息
+	sess.SyncArtifactStatus(structs.First)
 
 	/****************同步背包数据********************/
 	sess.SyncAllResources()   // 同步所有资源
@@ -97,20 +97,43 @@ func (sess *Session) SyncUserGuidRecords() {
 	sess.Send(structs.Protocol_SyncUserGuidRecords_Ntf, resp)
 }
 
-func (sess *Session) DoSomeRewards(itemTemplateID int32, num int32) error {
-	//CZXDO: 动态掉落
+func (sess *Session) HeroHPAdd(addType uint8, heroID, addHP int32) {
 
-	rewardIDs := gamedata.AllTemplates.ItemTemplates[itemTemplateID].RewardIDs
-	_ = rewardIDs
-	return nil
-}
-
-func (sess *Session) RewardResults(isRes bool, rewards []structs.Reward, context string) {
-	ntf := &structs.RewardResultNtf{
-		IsRes:   isRes,
-		Rewards: rewards,
-		Context: context,
+	resp := &structs.HeroHPAddNtf{
+		Type:   addType,
+		HeroID: heroID,
+		AddHP:  addHP,
 	}
 
-	sess.Send(structs.Protocol_RewardResult_Ntf, ntf)
+	sess.Send(structs.Protocol_HeroHpAdd_Ntf, resp)
+}
+
+func (sess *Session) AddMainHeroHP(num int32, addType uint8) {
+	hero, err := sess.PlayerData.HeroTeam.GetMainHero()
+	if err != nil {
+		logger.Error("AddMainHeroHP GetMainHero() Error %v", err)
+		return
+	}
+
+	oldHP := hero.HP()
+
+	hero.ItemHP += num
+	err = sess.PlayerData.HeroTeam.ReCalculateHeroLevelHp(hero)
+	if err != nil {
+		logger.Error("AddMainHeroHP ReCalculateHeroLevelHp() Error %v", err)
+		return
+	}
+	// 通知英雄变化
+	sess.SyncHeroNtf(structs.SyncHeroType_Update, []*structs.Hero{hero})
+	// 通知战力变化
+	sess.HeroHPAdd(addType, hero.HeroID, (hero.HP() - oldHP))
+}
+
+func (sess *Session) SyncArtifactStatus(stype structs.SyncType) {
+	resp := &structs.SyncArtifactStatusNtf{
+		SType:  stype,
+		Status: sess.PlayerData.Artifact.Status,
+	}
+
+	sess.Send(structs.Protocol_SyncArtifactStatus_Ntf, resp)
 }

@@ -3,19 +3,19 @@ package util
 import "math/rand"
 
 type RandomWeight struct {
-	IDs     []int
-	Weights []int
+	IDs     []int32
+	Weights []int32
 
-	Total int
-	Range []int
+	Total int32
+	Range []int32
 }
 
-func NewRandom(IDs, Weights []int) *RandomWeight {
+func NewRandom(IDs, Weights []int32) *RandomWeight {
 	r := &RandomWeight{
 		IDs:     IDs,
 		Weights: Weights,
 		Total:   0,
-		Range:   []int{},
+		Range:   []int32{},
 	}
 
 	r.Total = 0
@@ -27,7 +27,7 @@ func NewRandom(IDs, Weights []int) *RandomWeight {
 	return r
 }
 
-func (r *RandomWeight) GetRandomNum() int {
+func (r *RandomWeight) GetRandomNum() int32 {
 	randIndex := RandNum(0, r.Total)
 	for i := 0; i < len(r.Range); i++ {
 		if r.Range[i] > randIndex {
@@ -37,9 +37,9 @@ func (r *RandomWeight) GetRandomNum() int {
 	return r.IDs[0]
 }
 
-func RandNum(base int, n int) int {
+func RandNum(base int32, n int32) int32 {
 	if n <= 0 {
 		return base
 	}
-	return base + rand.Intn(n)
+	return base + int32(rand.Intn(int(n)))
 }

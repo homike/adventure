@@ -1,6 +1,10 @@
 package model
 
-import "adventure/common/structs"
+import (
+	"adventure/advserver/gamedata"
+	"adventure/common/structs"
+	"errors"
+)
 
 type Resource struct {
 	Strength      int32           // 体力
@@ -53,6 +57,27 @@ func (r *Resource) OresChange(id, num int32) {
 	r.UnlockResIDs = append(r.UnlockResIDs, id)
 }
 
+func (r *Resource) HasEnoughOres(id, num int32) bool {
+	for _, v := range r.Ores {
+		if v.ID == id {
+			if v.Num > num {
+				return true
+			}
+			break
+		}
+	}
+	return false
+}
+
+func (r *Resource) GetOresCount(id int32) int32 {
+	for _, v := range r.Ores {
+		if v.ID == id {
+			return v.Num
+		}
+	}
+	return 0
+}
+
 func (r *Resource) FoodChange(id, num int32) {
 	for k, v := range r.Foods {
 		if v.ID == id {
@@ -85,4 +110,20 @@ func (r *Resource) BadgesChange(id, num int32) {
 		ID:  id,
 		Num: num,
 	})
+}
+
+func (r *Resource) StrengthChange(num int32) error {
+	if num == 0 {
+		return errors.New("StrengthChange error, num == 0")
+	}
+
+	r.Strength += num
+	if r.Strength < 0 {
+		r.Strength = 0
+	}
+	if r.Strength > gamedata.MaxStrength {
+		r.Strength = gamedata.MaxStrength
+	}
+
+	return nil
 }

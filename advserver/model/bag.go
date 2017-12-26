@@ -24,6 +24,51 @@ func NewBag() *Bag {
 	return bag
 }
 
+func (b *Bag) AddItem(id, num int32) (*structs.GameItem, bool) {
+	for _, v := range b.Items {
+		if v.ID == id {
+			v.Num += num
+			return v, false
+		}
+	}
+
+	b.MaxItemID++
+	item := &structs.GameItem{
+		ID:         b.MaxItemID,
+		TemplateID: id,
+		Num:        num,
+	}
+	b.Items = append(b.Items, item)
+
+	return item, true
+}
+
+func (b *Bag) MinusItem(id, num int32) error {
+	for _, v := range b.Items {
+		if v.ID == id {
+			if v.Num < num {
+				return errors.New("item not enough")
+			}
+			v.Num -= num
+			return nil
+		}
+	}
+
+	return errors.New("item not exist")
+}
+
+func (b *Bag) HasEnoughItem(id, num int32) bool {
+	for _, v := range b.Items {
+		if v.ID == id {
+			if v.Num > num {
+				return true
+			}
+			break
+		}
+	}
+	return false
+}
+
 func (b *Bag) GetItem(id int32) (*structs.GameItem, error) {
 	for _, v := range b.Items {
 		if v.ID == id {

@@ -169,3 +169,12 @@ func (sess *Session) StrengthChange(cnt int32, changeType int32) {
 	}
 	sess.Send(structs.Protocol_SyncStrength_Ntf, ntf)
 }
+
+func (sess *Session) SyncItems(syncType uint8, items []*structs.GameItem) {
+	ntf := &structs.SyncItemNtf{
+		Type:  syncType,
+		Items: items,
+	}
+
+	sess.Send(structs.Protocol_SyncItem_Ntf, ntf)
+}

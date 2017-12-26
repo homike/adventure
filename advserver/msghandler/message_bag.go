@@ -58,7 +58,7 @@ func UseItemReq(sess *sessions.Session, msgBody []byte) {
 		}
 	}
 
-	err = sess.DoSomeRewards(userItem.TemplateID, userItem.Num)
+	err = sess.DoSomeReward(userItem.TemplateID, userItem.Num)
 	if err != nil {
 		logger.Error("item(%v) DoSomeRewards Error(%v)", req.ItemID, err)
 		sess.Send(structs.Protocol_UseItem_Resp, resp)
@@ -100,12 +100,13 @@ func UnlockBagReq(sess *sessions.Session, msgBody []byte) {
 
 	bagCnt := gamedata.AllTemplates.UnLockBagCosts[sess.PlayerData.Bag.UnlockLevel+1].BagCount
 
-	costResIDs, costResNums, err := gamedata.GetUnlockBagCost(sess.PlayerData.Bag.UnlockLevel + 1)
-	if err != nil || len(costResIDs) != len(costResNums) {
-		logger.Error("GetUnlockBagCost %v", err)
+	unlockCostT, ok := gamedata.AllTemplates.UnLockBagCosts[sess.PlayerData.Bag.UnlockLevel+1]
+	if !ok {
+		logger.Error("UnLockBagCosts[%v] failed", sess.PlayerData.Bag.UnlockLevel+1)
 		sess.Send(structs.Protocol_UnlockBag_Resp, resp)
 		return
 	}
+	costResIDs, costResNums := unlockCostT.CostResIDs, unlockCostT.CostResNums
 
 	///////////////////////////////////////////Logic Process///////////////////////////////////////
 	// 扣除资源

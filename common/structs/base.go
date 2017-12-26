@@ -142,3 +142,54 @@ const (
 const (
 	ResouceChangeType_Employ_Money = iota // 招募_金币招募
 )
+
+type FightResult struct {
+	//ID        int32         // 战报日志
+	//Time      int64         // 日期
+	LeftTeam     *FightTeam   // 左边队伍
+	RightTeam    *FightTeam   // 左边队伍
+	Rounds       []FightRound // 回合数据
+	IsLeftWin    bool         // 是否是左边胜利
+	BackgroundID string       //
+	ForegroundID string       // 前景ID
+}
+
+type FightTeam struct {
+	XianGong  int32   // 先攻
+	FangYu    int32   // 防御
+	ShanBi    int32   // 闪避
+	WangZhe   int32   // 王者
+	DefaultHP int32   // 获取初始HP
+	Models    []int32 // 英雄模板id
+	SpellIDs  []int32 // 技能ID列表
+	// Skills []Spell
+	Name string // 名字
+}
+
+type FightRound struct {
+	SkillID int32 // 技能ID
+	LeftHP  int32
+	RightHP int32
+}
+
+type FightType int8
+
+const (
+	FightType_GMTest         FightType = -1
+	FightType_EventFight               = 0 // 关卡战斗事件
+	FightType_ArenaPK                  = 1 // 竞技场
+	FightType_MiningMonster            = 2 // 挖矿地图怪物战
+	FightType_MiningBoss               = 3 // 挖矿地图boss战
+	FightType_TestFight                = 4 // 模拟战斗
+	FightType_OrderTestFight           = 5 // 排行榜中的挑战
+	FightType_FSPK                     = 6 // 封神之阶
+)
+
+type SyncType uint8
+
+const (
+	First SyncType = iota
+	Add
+	Remove
+	Update
+)

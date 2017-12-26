@@ -8,6 +8,7 @@ import (
 	"adventure/advserver/service"
 	"adventure/common/clog"
 	"adventure/common/structs"
+	"errors"
 	"fmt"
 	"time"
 )
@@ -38,6 +39,7 @@ type Player struct {
 	Bag               *Bag                      // 背包
 	UserGuidRecords   []*structs.GuildRecord    // 新手引导记录
 	MenuStates        []*structs.MenuStatusItem // 菜单状态
+	Artifact          *Artifact                 // 神器
 	AddGameBoxCount   int32                     // 增加的宝箱上限数量
 	ExtendData        *ExtendData
 	MiningMap         string
@@ -71,8 +73,8 @@ func NewPlayer(name string, heroTemplateID int32) (*Player, error) {
 	player.Res = NewResource()
 
 	// 关卡数据初始化
-	events, err := gamedata.GetGameLevelEvents(1)
-	if err != nil {
+	levelT, ok := gamedata.AllTemplates.GameLevelTemplates[1]
+	if !ok {
 		fmt.Println("GetGameLevelEvents(1) error")
 		return nil, err
 	}
@@ -81,7 +83,7 @@ func NewPlayer(name string, heroTemplateID int32) (*Player, error) {
 	gameLevel := structs.GameLevel{
 		GameLevelID:   1,
 		IsUnlock:      true,
-		CompleteEvent: make([]uint8, len(events)),
+		CompleteEvent: make([]uint8, len(levelT.EvnetIDs)),
 	}
 	player.PlayerGameLevel.AddGameLevel(&gameLevel)
 
@@ -90,6 +92,9 @@ func NewPlayer(name string, heroTemplateID int32) (*Player, error) {
 
 	// 新手引导状态初始化
 	player.UserGuidRecords = make([]*structs.GuildRecord, 0, 10)
+
+	// 神器初始化
+	player.Artifact = NewArtifact()
 
 	dbData := &mysql.PlayerDB{
 		AccountID: player.AccountID,
@@ -115,4 +120,217 @@ func (p *Player) UpdateGuidRecords(guidType uint8) {
 		UserGuidTypes: guidType,
 		TriggerCount:  1,
 	})
+}
+
+func (p *Player) GetFightTeamByHeroTeam() *structs.FightTeam {
+	team := &structs.FightTeam{}
+	heroTemplateIDs := []int32{}
+	spellIDs := []int32{}
+
+	fightHeros := p.HeroTeam.GetFightHeros()
+
+	doCombinationSpellIDs := make(map[int32]struct{}) // 已经处理过的合作技
+	for _, hero := range fightHeros {
+		heroTemplate, ok := gamedata.AllTemplates.HeroTemplates[hero.HeroTemplateID]
+		if !ok {
+			continue
+		}
+
+		heroTemplateIDs = append(heroTemplateIDs, hero.HeroTemplateID)
+		spell := &structs.SpellTemplate{}
+		if hero.IsPlayer {
+			useArtifact := p.Artifact.GetArtifactStatusUse()
+			if useArtifact != nil {
+				artfcatT, ok := gamedata.AllTemplates.ArtifactTemplates[useArtifact.ArtifactID]
+				if ok {
+					spellT, _ := gamedata.AllTemplates.SpellTemplates[artfcatT.SpellID]
+					spell = &spellT
+				}
+			}
+		} else {
+			if len(heroTemplate.SkillID) > 0 {
+				spellT, _ := gamedata.AllTemplates.SpellTemplates[heroTemplate.SkillID[0]]
+				spell = &spellT
+			}
+		}
+
+		// 技能
+		if spell != nil {
+			team.ShanBi += spell.DodgeProp
+			team.XianGong += spell.FirstProp
+			team.FangYu += spell.DefenceProp
+			team.WangZhe += spell.KingProp
+
+			if spell.AttackType != structs.AttackEffectType_None {
+				spellIDs = append(spellIDs, spell.ID)
+			}
+		}
+
+		// 武器进阶
+		if hero.WeaponAdvanceLevel == 1 {
+			team.ShanBi += heroTemplate.WeaponAdvance_ShanBi
+			team.XianGong += heroTemplate.WeaponAdvance_XianGong
+			team.FangYu += heroTemplate.WeaponAdvance_FangYu
+			team.WangZhe += heroTemplate.WeaponAdvance_WangZhe
+		}
+
+		// 合作技
+		if heroTemplate.CombinationSpllID > 0 {
+			_, ok := doCombinationSpellIDs[heroTemplate.CombinationSpllID]
+			if ok {
+				continue
+			}
+
+			success := true
+			cspell := gamedata.AllTemplates.CombinationSpells[heroTemplate.CombinationSpllID]
+			for i := 0; i < len(cspell.HeroList); i++ {
+				checkHero := cspell.HeroList[i]
+				checkNum := cspell.HeroNumList[i]
+
+				heroCnt := int32(0)
+				for _, chero := range fightHeros {
+					if chero.HeroTemplateID == checkHero {
+						heroCnt++
+					}
+				}
+				if heroCnt < checkNum {
+					success = false
+					break
+				}
+			}
+
+			if success {
+				spellT, _ := gamedata.AllTemplates.SpellTemplates[cspell.SpellId]
+				spell = &spellT
+				if spell != nil {
+					team.ShanBi += spell.DodgeProp
+					team.XianGong += spell.FirstProp
+					team.FangYu += spell.DefenceProp
+					team.WangZhe += spell.KingProp
+					if spell.AttackType != structs.AttackEffectType_None {
+						spellIDs = append(spellIDs, spell.ID)
+					}
+				}
+			}
+
+			doCombinationSpellIDs[heroTemplate.CombinationSpllID] = struct{}{}
+		}
+	}
+
+	team.Models = heroTemplateIDs
+	team.SpellIDs = spellIDs
+
+	team.DefaultHP = p.HeroTeam.MaxHP()
+	playerHero := p.HeroTeam.GetPlayerHero()
+	if playerHero != nil {
+		team.Name = playerHero.Name
+	}
+
+	return team
+}
+
+func (p *Player) GetFightTeamByHeroTemplaetIds(heroTemplateIDs []int32) *structs.FightTeam {
+	team := &structs.FightTeam{}
+	fightHeroTemplateIDs := []int32{}
+	spellIDs := []int32{}
+
+	fightHeros := p.HeroTeam.GetFightHeros()
+
+	doCombinationSpellIDs := make(map[int32]struct{}) // 已经处理过的合作技
+	for _, hero := range fightHeros {
+		heroTemplate, ok := gamedata.AllTemplates.HeroTemplates[hero.HeroTemplateID]
+		if !ok {
+			continue
+		}
+		fightHeroTemplateIDs = append(heroTemplateIDs, hero.HeroTemplateID)
+
+		spell := &structs.SpellTemplate{}
+		for _, spellID := range heroTemplate.SkillID {
+			spellT, ok := gamedata.AllTemplates.SpellTemplates[spellID]
+			if ok {
+				spell = &spellT
+
+				team.ShanBi += spell.DodgeProp
+				team.XianGong += spell.FirstProp
+				team.FangYu += spell.DefenceProp
+				team.WangZhe += spell.KingProp
+
+				if spell.AttackType != structs.AttackEffectType_None {
+					spellIDs = append(spellIDs, spell.ID)
+				}
+			}
+		}
+
+		// 合作技
+		if heroTemplate.CombinationSpllID > 0 {
+			_, ok := doCombinationSpellIDs[heroTemplate.CombinationSpllID]
+			if ok {
+				continue
+			}
+
+			success := true
+			cspell := gamedata.AllTemplates.CombinationSpells[heroTemplate.CombinationSpllID]
+			for i := 0; i < len(cspell.HeroList); i++ {
+				checkHero := cspell.HeroList[i]
+				checkNum := cspell.HeroNumList[i]
+
+				heroCnt := int32(0)
+				for _, chero := range fightHeros {
+					if chero.HeroTemplateID == checkHero {
+						heroCnt++
+					}
+				}
+				if heroCnt < checkNum {
+					success = false
+					break
+				}
+			}
+
+			if success {
+				spellT, _ := gamedata.AllTemplates.SpellTemplates[cspell.SpellId]
+				spell = &spellT
+				if spell != nil {
+					team.ShanBi += spell.DodgeProp
+					team.XianGong += spell.FirstProp
+					team.FangYu += spell.DefenceProp
+					team.WangZhe += spell.KingProp
+					if spell.AttackType != structs.AttackEffectType_None {
+						spellIDs = append(spellIDs, spell.ID)
+					}
+				}
+			}
+
+			doCombinationSpellIDs[heroTemplate.CombinationSpllID] = struct{}{}
+		}
+	}
+
+	team.Models = fightHeroTemplateIDs
+	team.SpellIDs = spellIDs
+
+	return team
+}
+
+// 人机战斗模拟
+func (p *Player) DoFightTest(battleFieldID int32) (*structs.FightResult, error) {
+	battleFieldT, ok := gamedata.AllTemplates.Battlefields[battleFieldID]
+	if !ok {
+		return nil, errors.New("battleFieldID cannot find battle field")
+	}
+
+	playerTeam := p.GetFightTeamByHeroTeam()
+
+	btTeam := p.GetFightTeamByHeroTemplaetIds(battleFieldT.NpcIDs)
+	btTeam.DefaultHP = battleFieldT.HP
+	btTeam.ShanBi = battleFieldT.ShanBi
+	btTeam.XianGong = battleFieldT.XianGong
+	btTeam.FangYu = battleFieldT.FangYu
+	btTeam.WangZhe = battleFieldT.WangZhe
+	btTeam.Name = battleFieldT.Name
+
+	sim := NewFightSim(playerTeam, btTeam)
+	fightRet := sim.Fight()
+	fightRet.BackgroundID = battleFieldT.BackgroundID
+	fightRet.ForegroundID = battleFieldT.ForegroundID
+
+	return fightRet, nil
 }

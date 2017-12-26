@@ -72,6 +72,22 @@ const (
 	Protocol_GetUsedGameItems_Req  = 1343 // 取得已使用过的物品列表
 	Protocol_GetUsedGameItems_Resp = 1344
 
+	// 战斗相关
+	Protocol_FightResult_Ntf      = 1600 // 战斗结果
+	Protocol_FightRequest_Req     = 1601 // 人机对战请求
+	Protocol_FightWithPlayer_Req  = 1602 // 玩家对战请求
+	Protocol_FightWithPlayer_Resp = 1603
+
+	// 神器相关
+	//Protocol_UnlockArtifactSeal_Req     = 1900 // 解锁神器封印
+	//Protocol_UnlockArtifactSeal_Resp    = 1901
+	Protocol_EquipArtifact_Req          = 1902 // 装备神器
+	Protocol_EquipArtifact_Resp         = 1903
+	Protocol_UpgradeArtifact_Req        = 1904 // 升级神器
+	Protocol_UpgradeArtifact_Resp       = 1905
+	Protocol_SyncArtifactStatus_Ntf     = 1906 // 同步神器状态
+	Protocol_SyncArtifactSealStatus_Ntf = 1907 // 同步神器封印状态
+
 	// 角色相关
 	Protocol_SyncStrength_Ntf           = 1404 // 同步饱足度
 	Protocol_SyncWorkHeroTop_Ntf        = 1405 // 同步出站英雄上限
@@ -324,5 +340,83 @@ type OpenGameBoxReq struct {
 type OpenGameBoxResp struct {
 	Ret     uint8
 	Count   int32
-	Rewards []Reward
+	Rewards []*Reward
+}
+
+const (
+	AddHP_Type_Item        = iota // 物品添加
+	AddHP_Type_Event              // 事件添加
+	AddHP_Type_Achievement        // 成就添加
+	AddHP_Type_Food               // 吃食物
+	AddHP_Type_WinBattle          // 打副本胜利
+)
+
+type HeroHPAddNtf struct {
+	Type   uint8
+	HeroID int32
+	AddHP  int32
+}
+
+const (
+	SyncItem_Type_First = iota
+	SyncItem_Type_Add
+	SyncItem_Type_Remove
+	SyncItem_Type_Update
+)
+
+type SyncItemNtf struct {
+	Type  uint8
+	Items []*GameItem
+}
+
+type AdventureEventReq struct {
+	EventID int32
+}
+
+type AdventureEventResp struct {
+	Ret         uint8
+	GameLevelID int32
+	EventID     int32
+}
+
+// 神器
+type SyncArtifactStatusNtf struct {
+	SType  SyncType
+	Status []*ArtifactStatus
+}
+
+type SyncArtifactSealStatusNtf struct {
+	SType  SyncType
+	Status []*ArtifactSealStatus
+}
+
+type UnlockArtifactSealReq struct { // 解锁一个神器封印
+	sealID uint8
+}
+
+type UnlockArtifactSealResp struct {
+	Ret uint8
+}
+
+type EquipArtifactReq struct { // 装备神器
+	ArtifactID int32
+}
+
+type EquipArtifactResp struct {
+	Ret        uint8
+	ArtifactID int32
+}
+
+type UpgradeArtifactReq struct { // 神器升级
+	Ingot int32
+}
+type UpgradeArtifactResp struct {
+	Ret   uint8
+	AddHP int32
+}
+
+// 战斗
+type FightResultNtf struct {
+	FType  FightType
+	Result *FightResult
 }
