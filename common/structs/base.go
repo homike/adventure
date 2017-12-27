@@ -162,8 +162,7 @@ type FightTeam struct {
 	DefaultHP int32   // 获取初始HP
 	Models    []int32 // 英雄模板id
 	SpellIDs  []int32 // 技能ID列表
-	// Skills []Spell
-	Name string // 名字
+	Name      string  // 名字
 }
 
 type FightRound struct {
@@ -192,4 +191,22 @@ const (
 	Add
 	Remove
 	Update
+)
+
+type OfflineReward struct {
+	OfflineTimeSec int32   // 离线时间 单位：秒
+	HasStrength    bool    // 是否还有饱足度
+	Money          int32   // 获得的游戏币
+	Exp            int32   // 获得的经验
+	OfflineHP      int32   // 离线前的HP
+	OnlineHP       int32   // 上线时的HP
+	UpLevelHero    []int32 // 产生升级的英雄
+}
+
+type ActiveType uint8
+
+const (
+	ActiveType_Full ActiveType = iota // 正常收益
+	ActiveType_Half                   // 减半收益
+	ActiveType_None                   // 无收益
 )

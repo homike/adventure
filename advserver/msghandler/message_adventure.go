@@ -28,6 +28,8 @@ func SelectGameLevelReq(sess *sessions.Session, msgBody []byte) {
 	req := &structs.SelectGameLevelReq{}
 	sess.UnMarshal(msgBody, req)
 
+	sess.RefreshPlayerInfo(nil)
+
 	gameLevel, err := sess.PlayerData.PlayerGameLevel.GetGameLevelData(req.LevelID)
 	if err != nil {
 		logger.Error("GetGameLevelData(%v) error %v", req.LevelID, err)
@@ -99,7 +101,6 @@ func OpenGameBoxReq(sess *sessions.Session, msgBody []byte) {
 					clientRewards = append(clientRewards, reward)
 				}
 			}
-
 		}
 	}
 
@@ -140,6 +141,8 @@ func AdventureEventReq(sess *sessions.Session, msgBody []byte) {
 	}
 
 	/////////////////////////////////////////////Data Check////////////////////////////////////////
+	sess.RefreshPlayerInfo(nil)
+
 	gameLevelT, ok := gamedata.AllTemplates.GameLevelTemplates[sess.PlayerData.PlayerGameLevel.CurrentGameLevelID]
 	if !ok {
 		logger.Error("AdventureEventReq AdventureEventReq(%v)", sess.PlayerData.PlayerGameLevel.CurrentGameLevelID)
@@ -179,7 +182,7 @@ func AdventureEventReq(sess *sessions.Session, msgBody []byte) {
 		return
 	}
 	eventStatus := gameLevel.CompleteEvent[req.EventID]
-	if eventTemplateID == structs.AdventureEventStatus_UnActive || eventStatus == structs.AdventureEventStatus_Finish {
+	if eventStatus == structs.AdventureEventStatus_UnActive || eventStatus == structs.AdventureEventStatus_Finish {
 		logger.Error("AdventureEventReq (%v) event not active or finish", req.EventID)
 		sess.Send(structs.Protocol_AdventureEvent_Resp, resp)
 		return
@@ -228,7 +231,7 @@ func AdventureEventReq(sess *sessions.Session, msgBody []byte) {
 		sess.PlayerData.Res.OresChange(eventT.ResId, eventT.Num)
 
 	case structs.GameLevelType_Fight:
-		ret, err := sess.PlayerData.DoFightTest(eventT.Num)
+		ret, err := sess.DoFightTest(eventT.Num)
 		if err != nil {
 			logger.Error("DoFightTest (%v) dofight failed %v", eventT.Num, err)
 			sess.Send(structs.Protocol_AdventureEvent_Resp, resp)
@@ -260,8 +263,4 @@ func AdventureEventReq(sess *sessions.Session, msgBody []byte) {
 	//CZXDO: 成就检测
 
 	sess.Send(structs.Protocol_AdventureEvent_Resp, resp)
-}
-
-func doFight() int32 {
-	return 0
 }

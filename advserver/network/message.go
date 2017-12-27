@@ -141,11 +141,20 @@ func marshal(v reflect.Value) []byte {
 	case reflect.Uint8:
 		binary.Write(bytesBuffer, binary.LittleEndian, uint8(v.Uint()))
 
+	case reflect.Int8:
+		binary.Write(bytesBuffer, binary.LittleEndian, int8(v.Int()))
+
 	case reflect.Int32:
 		binary.Write(bytesBuffer, binary.LittleEndian, int32(v.Int()))
 
+	case reflect.Uint32:
+		binary.Write(bytesBuffer, binary.LittleEndian, uint32(v.Uint()))
+
 	case reflect.Int64:
-		binary.Write(bytesBuffer, binary.LittleEndian, v.Int()) //
+		binary.Write(bytesBuffer, binary.LittleEndian, v.Int())
+
+	case reflect.Uint64:
+		binary.Write(bytesBuffer, binary.LittleEndian, v.Uint())
 
 	case reflect.Bool:
 		b := 0

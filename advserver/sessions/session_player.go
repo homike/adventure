@@ -1,8 +1,13 @@
 package sessions
 
 import (
+	"adventure/advserver/gamedata"
+	"adventure/advserver/model"
 	"adventure/common/structs"
+	"errors"
 	"fmt"
+	"math"
+	"time"
 )
 
 func (sess *Session) OnEnterGame() {
@@ -136,4 +141,219 @@ func (sess *Session) SyncArtifactStatus(stype structs.SyncType) {
 	}
 
 	sess.Send(structs.Protocol_SyncArtifactStatus_Ntf, resp)
+}
+
+func (sess *Session) AddHero(heros []*structs.Hero, bNotify bool) {
+	for _, hero := range heros {
+		//CZXDO: 添加英雄，成就检测
+		if bNotify && (hero.Quality == structs.QualityType_Gold || hero.Quality == structs.QualityType_SplashGold) {
+
+		}
+	}
+}
+
+// 更新玩家经验
+func (sess *Session) CalculateGetExp(exp int32) []int32 {
+	p := sess.PlayerData
+	if exp < 1 {
+		return nil
+	}
+
+	updateLevelHeroID := []int32{}
+
+	fightHeros := p.HeroTeam.GetFightHeros()
+	if len(fightHeros) <= 0 {
+		return nil
+	}
+
+	avgExp := exp / int32(len(fightHeros))
+	if avgExp < 1 {
+		avgExp = 1
+	}
+
+	for _, hero := range fightHeros {
+		hero.Exp += avgExp
+		if hero.Exp > math.MaxInt32 {
+			hero.Exp = math.MaxInt32
+		}
+
+		if int(hero.Level) <= len(gamedata.AllTemplates.HeroLevelTemplates) {
+			nextLevelExp, err := gamedata.GetHeroLevelExp(hero.Level, hero.AwakeCount)
+			if err != nil {
+				logger.Error("GetHeroLevelExp(%v, %v) error", hero.Level, hero.AwakeCount)
+				continue
+			}
+			heroHasUpdate := false
+			for hero.Exp >= nextLevelExp {
+				if int(hero.Level) <= len(gamedata.AllTemplates.HeroLevelTemplates) {
+					hero.Level++
+					nextLevelExp, _ = gamedata.GetHeroLevelExp(hero.Level-1, hero.AwakeCount-1)
+					p.HeroTeam.ReCalculateHeroLevelHp(hero)
+					heroHasUpdate = true
+
+					//CZXDO: 检测主角等级成就
+				} else {
+					break
+				}
+			}
+
+			// 通知客户端，英雄升级
+			if heroHasUpdate {
+				updateLevelHeroID = append(updateLevelHeroID, hero.HeroID)
+				sess.SyncHeroNtf(structs.SyncHeroType_Update, []*structs.Hero{hero})
+			}
+		}
+	}
+
+	return updateLevelHeroID
+}
+
+func (sess *Session) RefreshPlayerInfo(reward *structs.OfflineReward) {
+	p := sess.PlayerData
+	//CZXDO: 刷新挖矿地图
+
+	// 刷新关卡地图
+	gameLevelT, ok := gamedata.AllTemplates.GameLevelTemplates[p.PlayerGameLevel.CurrentGameLevelID]
+	if !ok {
+		return
+	}
+
+	lrefreshTime := time.Unix(p.PlayerGameLevel.LastRefreshTime, 0)
+	sec := int32(time.Now().Sub(lrefreshTime).Seconds())
+	if sec < 1 {
+		return
+	}
+
+	if reward != nil {
+		reward.OfflineTimeSec = sec
+	}
+
+	p.PlayerGameLevel.LastRefreshTime = time.Now().Unix()
+
+	if p.HeroTeam.MaxHP() < gameLevelT.MinHP {
+		return
+	}
+
+	fullSec := int32(0)
+	halfSec := int32(0)
+
+	if p.Res.Strength > sec {
+		fullSec = sec
+		p.Res.Strength -= fullSec
+	} else {
+		fullSec = p.Res.Strength
+		halfSec = sec - p.Res.Strength
+		p.Res.Strength = 0
+	}
+	if reward != nil {
+		reward.HasStrength = p.Res.Strength > 0
+	}
+
+	// 事件的进度处理
+	curGameLevel, err := p.PlayerGameLevel.GetCurGameLevelData()
+	if err != nil {
+		return
+	}
+	unActiveCnt := p.PlayerGameLevel.GetUnActiveEventCount()
+	if unActiveCnt == 0 {
+		curGameLevel.EventProgress = 0
+	} else {
+		curGameLevel.EventProgress += sec
+		changeStatus := false
+		for k, v := range curGameLevel.CompleteEvent {
+			if v == structs.AdventureEventStatus_UnActive {
+				eventT, ok := gamedata.AllTemplates.GameLevelEventTemplates[gameLevelT.EvnetIDs[k]]
+				if !ok {
+					continue
+				}
+				if curGameLevel.EventProgress > eventT.ActiveEventSec {
+					curGameLevel.EventProgress -= eventT.ActiveEventSec
+					curGameLevel.CompleteEvent[k] = structs.AdventureEventStatus_Active
+				}
+			}
+		}
+		if changeStatus && p.PlayerGameLevel.GetUnActiveEventCount() == 0 {
+			curGameLevel.EventProgress = 0
+		}
+	}
+
+	// 刷新宝箱进度
+	if len(gameLevelT.GameBoxIDs) > 0 {
+		//CZXDO: 宝箱最大数量
+		if curGameLevel.BoxCount < 99 {
+			curGameLevel.GameBoxProgress += sec
+			for curGameLevel.GameBoxProgress > gameLevelT.ActiveGameBoxSec {
+				curGameLevel.GameBoxProgress -= gameLevelT.ActiveGameBoxSec
+				curGameLevel.BoxCount++
+				if curGameLevel.BoxCount >= 99 {
+					curGameLevel.GameBoxProgress = 0
+					break
+				}
+			}
+		}
+	} else {
+		curGameLevel.BoxCount = 0
+	}
+
+	// 刷新金钱
+	money := int32(0)
+	if fullSec > 0 {
+		money += gameLevelT.MoneyPer * fullSec
+	}
+	if halfSec > 0 {
+		money += gameLevelT.MoneyPer * halfSec / 2
+	}
+	p.Res.Money += money
+
+	// 刷新英雄经验等级
+	exp := int32(0)
+	if fullSec > 0 {
+		exp += gameLevelT.ExpPer * fullSec
+	}
+	if halfSec > 0 {
+		exp += gameLevelT.ExpPer * halfSec / 2
+	}
+
+	if reward != nil {
+		reward.Exp = exp
+		reward.OfflineHP = p.HeroTeam.MaxHP()
+		updateLevelHeroId := sess.CalculateGetExp(exp)
+		reward.OnlineHP = p.HeroTeam.MaxHP()
+		reward.UpLevelHero = updateLevelHeroId
+	} else {
+		sess.CalculateGetExp(exp)
+	}
+}
+
+// 人机战斗模拟
+func (sess *Session) DoFightTest(battleFieldID int32) (*structs.FightResult, error) {
+	fmt.Println("battleFieldID ", battleFieldID)
+
+	p := sess.PlayerData
+
+	battleFieldT, ok := gamedata.AllTemplates.Battlefields[battleFieldID]
+	if !ok {
+		return nil, errors.New("battleFieldID cannot find battle field")
+	}
+
+	playerTeam := p.GetFightTeamByHeroTeam()
+
+	fmt.Println("playerTeam ", playerTeam.DefaultHP, ",spellIDs ", playerTeam.SpellIDs)
+
+	btTeam := p.GetFightTeamByHeroTemplateIDs(battleFieldT.NpcIDs)
+	btTeam.DefaultHP = battleFieldT.HP
+	btTeam.ShanBi = battleFieldT.ShanBi
+	btTeam.XianGong = battleFieldT.XianGong
+	btTeam.FangYu = battleFieldT.FangYu
+	btTeam.WangZhe = battleFieldT.WangZhe
+	btTeam.Name = battleFieldT.Name
+
+	fmt.Println("btTeam ", btTeam.DefaultHP, ", spellIDs ", btTeam.SpellIDs)
+
+	sim := model.NewFightSim(playerTeam, btTeam)
+	fightRet := sim.Fight()
+	fightRet.BackgroundID = battleFieldT.BackgroundID
+	fightRet.ForegroundID = battleFieldT.ForegroundID
+
+	return fightRet, nil
 }

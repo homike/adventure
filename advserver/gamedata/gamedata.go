@@ -77,15 +77,15 @@ func GetHeroLevelExp(heroLv int32, awakeCnt int32) (int32, error) {
 		return 0, err
 	}
 	switch awakeCnt {
-	case 0:
-		return template.EXP1, nil
 	case 1:
-		return template.EXP2, nil
+		return template.EXP1, nil
 	case 2:
-		return template.EXP3, nil
+		return template.EXP2, nil
 	case 3:
-		return template.EXP4, nil
+		return template.EXP3, nil
 	case 4:
+		return template.EXP4, nil
+	case 5:
 		return template.EXP5, nil
 	}
 	return int32(exp), nil

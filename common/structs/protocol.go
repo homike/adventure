@@ -47,7 +47,7 @@ const (
 	Protocol_AdventureEvent_Resp       = 1204
 	Protocol_OpenGameBox_Req           = 1205
 	Protocol_OpenGameBox_Resp          = 1206
-	Protocol_OpenGameLevel_Req         = 1207 // 解锁关卡
+	Protocol_OpenGameLevel_Ntf         = 1207 // 解锁关卡通知
 	Protocol_SyncCurrentGameLevel2_Ntf = 1208 // 同步当前关卡数据
 	Protocol_GetFightCoolingTime_Req   = 1209 // 取得战败冷却时间
 	Protocol_GetFightCoolingTime_Resp  = 1210
@@ -100,6 +100,7 @@ const (
 
 )
 
+///////////////////////////////////////////// 系统 ////////////////////////////////////////
 type GetSystemTimeReq struct {
 }
 
@@ -165,6 +166,7 @@ type SyncStrengthNtf struct {
 	Strength int32
 }
 
+///////////////////////////////////////////// 英雄 ////////////////////////////////////////
 type SyncHeroWorkTopNtf struct {
 	MaxWorker int32
 }
@@ -180,6 +182,20 @@ type SyncGameBoxTopNumNtf struct {
 type SyncHeroNtf struct {
 	SyncHeroType uint8
 	Heros        []*Hero
+}
+
+const (
+	AddHP_Type_Item        = iota // 物品添加
+	AddHP_Type_Event              // 事件添加
+	AddHP_Type_Achievement        // 成就添加
+	AddHP_Type_Food               // 吃食物
+	AddHP_Type_WinBattle          // 打副本胜利
+)
+
+type HeroHPAddNtf struct {
+	Type   uint8
+	HeroID int32
+	AddHP  int32
 }
 
 type EmployReq struct {
@@ -262,6 +278,7 @@ type UpgradeWeaponResp struct {
 	AddHP  int32
 }
 
+///////////////////////////////////////////// 背包 ////////////////////////////////////////
 type SyncAllResouceNtf struct {
 	Money         int32
 	Ingot         int32
@@ -287,6 +304,18 @@ type SyncBagNtf struct {
 	Items       []*GameItem
 }
 
+const (
+	SyncItem_Type_First = iota
+	SyncItem_Type_Add
+	SyncItem_Type_Remove
+	SyncItem_Type_Update
+)
+
+type SyncItemNtf struct {
+	Type  uint8
+	Items []*GameItem
+}
+
 type GetUsedGameItemsResp struct {
 	ItemIDs   []int32
 	UserTimes []int64
@@ -305,6 +334,8 @@ type UnlockBagResp struct {
 	MaxCount    int32
 	UnLockLevel int32
 }
+
+///////////////////////////////////////////// 冒险 ////////////////////////////////////////
 
 type SyncGameLevelNtf struct {
 	GameLevels      []*GameLevel
@@ -343,31 +374,7 @@ type OpenGameBoxResp struct {
 	Rewards []*Reward
 }
 
-const (
-	AddHP_Type_Item        = iota // 物品添加
-	AddHP_Type_Event              // 事件添加
-	AddHP_Type_Achievement        // 成就添加
-	AddHP_Type_Food               // 吃食物
-	AddHP_Type_WinBattle          // 打副本胜利
-)
-
-type HeroHPAddNtf struct {
-	Type   uint8
-	HeroID int32
-	AddHP  int32
-}
-
-const (
-	SyncItem_Type_First = iota
-	SyncItem_Type_Add
-	SyncItem_Type_Remove
-	SyncItem_Type_Update
-)
-
-type SyncItemNtf struct {
-	Type  uint8
-	Items []*GameItem
-}
+///////////////////////////////////////////// 冒险 ////////////////////////////////////////
 
 type AdventureEventReq struct {
 	EventID int32
@@ -379,7 +386,11 @@ type AdventureEventResp struct {
 	EventID     int32
 }
 
-// 神器
+type OpenGameLevelNtf struct {
+	GameLevel *GameLevel
+}
+
+///////////////////////////////////////////// 神器 ////////////////////////////////////////
 type SyncArtifactStatusNtf struct {
 	SType  SyncType
 	Status []*ArtifactStatus
@@ -415,7 +426,7 @@ type UpgradeArtifactResp struct {
 	AddHP int32
 }
 
-// 战斗
+///////////////////////////////////////////// 战斗 ////////////////////////////////////////
 type FightResultNtf struct {
 	FType  FightType
 	Result *FightResult

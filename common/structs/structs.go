@@ -34,20 +34,23 @@ func (h *Hero) HP() int32 {
 	return h.LevelHP
 }
 
+// 冒险事件状态类型
+type AdventureEventStatus uint8
+
 const (
-	AdventureEventStatus_UnActive = iota
+	AdventureEventStatus_UnActive AdventureEventStatus = iota
 	AdventureEventStatus_Active
 	AdventureEventStatus_Finish
 )
 
 type GameLevel struct {
-	GameLevelID     int32   // 关卡ID
-	CompleteEvent   []uint8 // 已经完成的事件
-	EventProgress   int32   // 事件的进度
-	GameBoxProgress int32   // 宝箱的进度
-	BoxCount        int32   // 宝箱的数量
-	IsUnlock        bool    // 是否解锁
-	IsNew           bool    // 是否是新开启关卡
+	GameLevelID     int32                  // 关卡ID
+	CompleteEvent   []AdventureEventStatus // 已经完成的事件
+	EventProgress   int32                  // 事件的进度
+	GameBoxProgress int32                  // 宝箱的进度
+	BoxCount        int32                  // 宝箱的数量
+	IsUnlock        bool                   // 是否解锁
+	IsNew           bool                   // 是否是新开启关卡
 }
 
 type ArtifactStatusType uint8

@@ -1,6 +1,7 @@
 package model
 
 import (
+	"adventure/advserver/gamedata"
 	"adventure/common/structs"
 	"errors"
 	"time"
@@ -51,4 +52,51 @@ func (pgl *PlayerGameLevel) SelectGameLevel(levelID int32) error {
 	pgl.CurrentGameLevelID = levelID
 	pgl.LastRefreshTime = time.Now().Unix()
 	return nil
+}
+
+func (pgl *PlayerGameLevel) GetUnActiveEventCount() int32 {
+	gamelevel, err := pgl.GetCurGameLevelData()
+	if err != nil {
+		return 0
+	}
+	unActiveCnt := int32(0)
+	for _, v := range gamelevel.CompleteEvent {
+		if v == structs.AdventureEventStatus_UnActive {
+			unActiveCnt++
+		}
+	}
+	return unActiveCnt
+}
+
+// 解锁关卡
+func (pgl *PlayerGameLevel) UnLockGameLevel(levelID int32) (*structs.GameLevel, error) {
+
+	gamelevel, err := pgl.GetGameLevelData(levelID)
+	if err != nil || gamelevel.IsUnlock {
+		return gamelevel, errors.New("gamelevel is unlock")
+	}
+
+	if gamelevel == nil {
+		gamelevelT, ok := gamedata.AllTemplates.GameLevelTemplates[levelID]
+		if !ok {
+			logger.Error("cannot find %v GameLevelTemplate", levelID)
+			return gamelevel, errors.New("cannot find  GameLevelTemplate")
+		}
+		gamelevel = &structs.GameLevel{
+			GameLevelID:     levelID,
+			CompleteEvent:   make([]structs.AdventureEventStatus, len(gamelevelT.EvnetIDs)),
+			IsUnlock:        true,
+			BoxCount:        0,
+			EventProgress:   0,
+			GameBoxProgress: 0,
+			IsNew:           true,
+		}
+		pgl.GameLevels = append(pgl.GameLevels, gamelevel)
+	}
+
+	if !gamelevel.IsUnlock {
+		gamelevel.IsUnlock = true
+		gamelevel.IsNew = true
+	}
+	return gamelevel, nil
 }

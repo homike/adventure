@@ -9,11 +9,17 @@ import (
 type FightSim struct {
 	Left          *structs.FightTeam
 	Right         *structs.FightTeam
+	useSkillCount map[int32]int32
 	MaxRoundCount int32
 }
 
 func NewFightSim(left, right *structs.FightTeam) *FightSim {
-	sim := &FightSim{left, right, 99}
+	sim := &FightSim{
+		Left:          left,
+		Right:         right,
+		useSkillCount: make(map[int32]int32),
+		MaxRoundCount: 99,
+	}
 	return sim
 }
 
@@ -36,106 +42,59 @@ func (f *FightSim) Fight() *structs.FightResult {
 	leftMissRate := float32(f.Left.ShanBi) / float32(f.Left.ShanBi+100)     // 闪避率
 	leftResistRate := 1 - float32(f.Left.FangYu)/float32(f.Left.FangYu+100) // 免伤率
 	leftDeepRate := float32(f.Left.WangZhe)*0.01 + 1                        // 易伤率
-	leftSkills := getSkills(f.Left.SpellIDs)
 
 	// 右边
 	rightHP := f.Right.DefaultHP                                               // 血量
 	rightMissRate := float32(f.Right.ShanBi) / float32(f.Right.ShanBi+100)     // 闪避率
 	rightResistRate := 1 - float32(f.Right.FangYu)/float32(f.Right.FangYu+100) // 免伤率
 	rightDeepRate := float32(f.Right.WangZhe)*0.01 + 1                         // 易伤率
-	rightSkills := getSkills(f.Right.SpellIDs)
 
-	userSkillCount := make(map[int32]int32)
 	rounds := []structs.FightRound{}
 	roundIndex := int32(0)
 	for leftHP > 0 && rightHP > 0 && roundIndex < f.MaxRoundCount {
-		canUseSkills := []*structs.SpellTemplate{}
+		skill := f.getSkillUse(isLeftRound, roundIndex, leftHP, rightHP)
 
-		curSkills := rightSkills
-		if isLeftRound {
-			curSkills = leftSkills
-		}
-		if len(curSkills) > 0 {
-			for i := 0; i < len(curSkills); i++ {
-				s2 := curSkills[i]
-
-				// skill index
-				randIndex := 10000
-				if isLeftRound {
-					randIndex = 200
-				}
-				skillIndex := int32(i + randIndex)
-				bContain := false
-				for _, v := range userSkillCount {
-					if v == skillIndex {
-						bContain = true
-					}
-				}
-				if !bContain {
-					userSkillCount[skillIndex] = 0
-				}
-				if skillCanUse(isLeftRound, roundIndex, f.Left.DefaultHP, f.Right.DefaultHP, leftHP, rightHP, userSkillCount[skillIndex], s2) {
-					canUseSkills = append(canUseSkills, s2)
-				}
-			}
-		}
-
-		skill := new(structs.SpellTemplate)
-		randomValue := int32(util.RandNum(0, 100))
-		curValue := int32(0)
-		for _, s3 := range canUseSkills {
-			curValue += s3.Rate
-			if randomValue < curValue {
-				skill = s3
-				userSkillCount[s3.ID]++
-			}
-		}
-
-		ignoreDefence := false
-		isMiss := false
-		damage := int32(0)
-		recover := int32(0)
-		randValue := float32(0)
-
-		missRate := leftMissRate
-		if isLeftRound {
-			missRate = rightMissRate
-		}
-		if skill == nil {
-
-			ignoreDefence = false
-
-			damage = f.Right.DefaultHP
-			randValue = float32(util.RandNum(gamedata.FightFloatValueMin, gamedata.FightFloatValueMax))
+		ignoreDefence, isMiss := false, false
+		damage, recover := int32(0), int32(0)
+		{
+			missRate := leftMissRate
 			if isLeftRound {
-				damage = f.Left.DefaultHP
-			}
-			damage = int32(float32(damage) * 0.01 * float32(randValue))
-
-			recover = 0
-
-			if float32(util.RandNum(0, 100))/100 < missRate {
-				isMiss = true
+				missRate = rightMissRate
 			}
 
-		} else {
-			if !skill.IgnoreDodge && float32(util.RandNum(0, 100)) < missRate {
-				isMiss = true
-			}
+			if skill == nil {
+				ignoreDefence = false
+				if float32(util.RandNum(0, 100))/100 < missRate {
+					isMiss = true
+				}
+				// damage
+				damage = f.Right.DefaultHP
+				randValue := float32(util.RandNum(gamedata.FightFloatValueMin, gamedata.FightFloatValueMax))
+				if isLeftRound {
+					damage = f.Left.DefaultHP
+				}
+				damage = int32(float32(damage) * 0.01 * float32(randValue))
+				// recover
+				recover = 0
 
-			ignoreDefence = skill.IgnoreDefence
+			} else {
+				if !skill.IgnoreDodge && float32(util.RandNum(0, 100)) < missRate {
+					isMiss = true
+				}
+				ignoreDefence = skill.IgnoreDefence
 
-			randValue = float32(util.RandNum(gamedata.FightSkillFloatValueMin, gamedata.FightSkillFloatValueMax))
-			if skill.AttackType == structs.Hurt {
-				damage = computeValue(roundIndex, f.Left.DefaultHP, f.Right.DefaultHP, leftHP, rightHP, 0, isLeftRound, true, skill, randValue)
-			} else if skill.AttackType == structs.Recover {
-				damage = 0
-				recover = computeValue(roundIndex, f.Left.DefaultHP, f.Right.DefaultHP, leftHP, rightHP, 0, isLeftRound, false, skill, randValue)
+				randValue := float32(util.RandNum(gamedata.FightSkillFloatValueMin, gamedata.FightSkillFloatValueMax))
+				if skill.AttackType == structs.Hurt {
+					damage = computeValue(roundIndex, f.Left.DefaultHP, f.Right.DefaultHP, leftHP, rightHP, 0, isLeftRound, true, skill, randValue)
+				} else if skill.AttackType == structs.Recover {
+					damage = 0
+					recover = computeValue(roundIndex, f.Left.DefaultHP, f.Right.DefaultHP, leftHP, rightHP, 0, isLeftRound, false, skill, randValue)
 
-			} else if skill.AttackType == structs.HurtAndRecover {
-				damage = computeValue(roundIndex, f.Left.DefaultHP, f.Right.DefaultHP, leftHP, rightHP, 0, isLeftRound, true, skill, randValue)
-				if skill.CalculateRecoverType != structs.ThisTimeAttack {
-					recover = computeValue(roundIndex, f.Left.DefaultHP, f.Right.DefaultHP, leftHP, rightHP, damage, isLeftRound, false, skill, randValue)
+				} else if skill.AttackType == structs.HurtAndRecover {
+					damage = computeValue(roundIndex, f.Left.DefaultHP, f.Right.DefaultHP, leftHP, rightHP, 0, isLeftRound, true, skill, randValue)
+					if skill.CalculateRecoverType != structs.ThisTimeAttack {
+						recover = computeValue(roundIndex, f.Left.DefaultHP, f.Right.DefaultHP, leftHP, rightHP, damage, isLeftRound, false, skill, randValue)
+					}
 				}
 			}
 		}
@@ -174,7 +133,7 @@ func (f *FightSim) Fight() *structs.FightResult {
 		}
 
 		// 添加回合数据
-		rounds = append(rounds, structs.FightRound{skillID, leftHP, rightHP})
+		rounds = append(rounds, structs.FightRound{SkillID: skillID, LeftHP: leftHP, RightHP: rightHP})
 		// 切换队伍
 		isLeftRound = !isLeftRound
 		// 添加回合数
@@ -189,6 +148,51 @@ func (f *FightSim) Fight() *structs.FightResult {
 	}
 
 	return fightRet
+}
+
+func (f *FightSim) getSkillUse(isLeftRound bool, roundIndex, leftHP, rightHP int32) *structs.SpellTemplate {
+	canUseSkills := []*structs.SpellTemplate{}
+	leftSkills := getSkills(f.Left.SpellIDs)
+	rightSkills := getSkills(f.Right.SpellIDs)
+
+	curSkills := rightSkills
+	if isLeftRound {
+		curSkills = leftSkills
+	}
+	if len(curSkills) > 0 {
+		for i := 0; i < len(curSkills); i++ {
+			s2 := curSkills[i]
+
+			// skill index
+			randIndex := 10000
+			if isLeftRound {
+				randIndex = 200
+			}
+			skillIndex := int32(i + randIndex)
+			bContain := false
+			for _, v := range f.useSkillCount {
+				if v == skillIndex {
+					bContain = true
+				}
+			}
+			if !bContain {
+				f.useSkillCount[skillIndex] = 0
+			}
+			if skillCanUse(isLeftRound, roundIndex, f.Left.DefaultHP, f.Right.DefaultHP, leftHP, rightHP, f.useSkillCount[skillIndex], s2) {
+				canUseSkills = append(canUseSkills, s2)
+			}
+		}
+	}
+
+	randomValue := int32(util.RandNum(0, 100))
+	curValue := int32(0)
+	for _, s3 := range canUseSkills {
+		curValue += s3.Rate
+		if randomValue < curValue {
+			return s3
+		}
+	}
+	return nil
 }
 
 func skillCanUse(isLeftRound bool, round, leftDefaultHP, rightDefaultHP, leftHP, rightHP, userCount int32, skill *structs.SpellTemplate) bool {

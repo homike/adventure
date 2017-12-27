@@ -57,11 +57,33 @@ func loadStructData(tableName string, index int, sVal reflect.Value, sType refle
 		tsf := sType.Field(j)
 
 		switch tsf.Type.Kind() {
-		case reflect.Int, reflect.Int32:
-			intValue := 0
+		case reflect.Uint8, reflect.Uint64:
+			intValue := uint64(0)
 			rowName := tsf.Tag.Get("val")
 			if rowName == "ID" {
-				intValue = index
+				intValue = uint64(index)
+			} else {
+				strValue, ret := GetString(tableName, strconv.Itoa(index), rowName)
+				if ret != GAMEDATA_OK {
+					fmt.Printf("reflect.UInt GetString(%v, %v, %v) Error \n", tableName, rowName, index)
+					return
+				}
+				err := errors.New("parse int error")
+				if strValue != "" {
+					intValue, err = strconv.ParseUint(strValue, 10, 64)
+					if err != nil {
+						fmt.Printf("reflect.UInt strconv.Atoi(%v) Error %v \n", strValue, err)
+						return
+					}
+				}
+			}
+			sef.SetUint(intValue)
+
+		case reflect.Int8, reflect.Int, reflect.Int32, reflect.Int64:
+			intValue := int64(0)
+			rowName := tsf.Tag.Get("val")
+			if rowName == "ID" {
+				intValue = int64(index)
 			} else {
 				strValue, ret := GetString(tableName, strconv.Itoa(index), rowName)
 				if ret != GAMEDATA_OK {
@@ -70,15 +92,14 @@ func loadStructData(tableName string, index int, sVal reflect.Value, sType refle
 				}
 				err := errors.New("parse int error")
 				if strValue != "" {
-					intValue, err = strconv.Atoi(strValue)
+					intValue, err = strconv.ParseInt(strValue, 10, 64)
 					if err != nil {
 						fmt.Printf("reflect.Int strconv.Atoi(%v) Error %v \n", strValue, err)
 						return
 					}
 				}
 			}
-
-			sef.SetInt(int64(intValue))
+			sef.SetInt(intValue)
 
 		case reflect.String:
 			rowName := tsf.Tag.Get("val")

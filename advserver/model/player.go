@@ -8,7 +8,6 @@ import (
 	"adventure/advserver/service"
 	"adventure/common/clog"
 	"adventure/common/structs"
-	"errors"
 	"fmt"
 	"time"
 )
@@ -83,7 +82,7 @@ func NewPlayer(name string, heroTemplateID int32) (*Player, error) {
 	gameLevel := structs.GameLevel{
 		GameLevelID:   1,
 		IsUnlock:      true,
-		CompleteEvent: make([]uint8, len(levelT.EvnetIDs)),
+		CompleteEvent: make([]structs.AdventureEventStatus, len(levelT.EvnetIDs)),
 	}
 	player.PlayerGameLevel.AddGameLevel(&gameLevel)
 
@@ -229,24 +228,23 @@ func (p *Player) GetFightTeamByHeroTeam() *structs.FightTeam {
 	return team
 }
 
-func (p *Player) GetFightTeamByHeroTemplaetIds(heroTemplateIDs []int32) *structs.FightTeam {
+func (p *Player) GetFightTeamByHeroTemplateIDs(heroTemplateIDs []int32) *structs.FightTeam {
 	team := &structs.FightTeam{}
 	fightHeroTemplateIDs := []int32{}
 	spellIDs := []int32{}
 
-	fightHeros := p.HeroTeam.GetFightHeros()
-
 	doCombinationSpellIDs := make(map[int32]struct{}) // 已经处理过的合作技
-	for _, hero := range fightHeros {
-		heroTemplate, ok := gamedata.AllTemplates.HeroTemplates[hero.HeroTemplateID]
+	for _, heroTemplateID := range heroTemplateIDs {
+		heroTemplate, ok := gamedata.AllTemplates.HeroTemplates[heroTemplateID]
 		if !ok {
 			continue
 		}
-		fightHeroTemplateIDs = append(heroTemplateIDs, hero.HeroTemplateID)
+		fightHeroTemplateIDs = append(fightHeroTemplateIDs, heroTemplateID)
 
 		spell := &structs.SpellTemplate{}
 		for _, spellID := range heroTemplate.SkillID {
 			spellT, ok := gamedata.AllTemplates.SpellTemplates[spellID]
+			fmt.Println("npc spellID: ", spellID, "spell ", spellT)
 			if ok {
 				spell = &spellT
 
@@ -275,8 +273,8 @@ func (p *Player) GetFightTeamByHeroTemplaetIds(heroTemplateIDs []int32) *structs
 				checkNum := cspell.HeroNumList[i]
 
 				heroCnt := int32(0)
-				for _, chero := range fightHeros {
-					if chero.HeroTemplateID == checkHero {
+				for _, cheroID := range heroTemplateIDs {
+					if cheroID == checkHero {
 						heroCnt++
 					}
 				}
@@ -308,29 +306,4 @@ func (p *Player) GetFightTeamByHeroTemplaetIds(heroTemplateIDs []int32) *structs
 	team.SpellIDs = spellIDs
 
 	return team
-}
-
-// 人机战斗模拟
-func (p *Player) DoFightTest(battleFieldID int32) (*structs.FightResult, error) {
-	battleFieldT, ok := gamedata.AllTemplates.Battlefields[battleFieldID]
-	if !ok {
-		return nil, errors.New("battleFieldID cannot find battle field")
-	}
-
-	playerTeam := p.GetFightTeamByHeroTeam()
-
-	btTeam := p.GetFightTeamByHeroTemplaetIds(battleFieldT.NpcIDs)
-	btTeam.DefaultHP = battleFieldT.HP
-	btTeam.ShanBi = battleFieldT.ShanBi
-	btTeam.XianGong = battleFieldT.XianGong
-	btTeam.FangYu = battleFieldT.FangYu
-	btTeam.WangZhe = battleFieldT.WangZhe
-	btTeam.Name = battleFieldT.Name
-
-	sim := NewFightSim(playerTeam, btTeam)
-	fightRet := sim.Fight()
-	fightRet.BackgroundID = battleFieldT.BackgroundID
-	fightRet.ForegroundID = battleFieldT.ForegroundID
-
-	return fightRet, nil
 }
