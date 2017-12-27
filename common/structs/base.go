@@ -16,9 +16,17 @@ type UsedGameItem struct {
 	LastUseTime int64 `json:"lastdate"` // 最近一次的使用时间
 }
 
+type MenuStatus uint8
+
+const (
+	MenuStatus_Close MenuStatus = iota // 关闭
+	MenuStatus_New                     // 刚解锁
+	MenuStatus_Open                    // 已开放
+)
+
 type MenuStatusItem struct {
-	MenuID     int32 `json:"mid"`     // 菜单ID
-	MenuStatus uint8 `json:"mstatus"` // 菜单状态
+	MenuID     int32      `json:"mid"`     // 菜单ID
+	MenuStatus MenuStatus `json:"mstatus"` // 菜单状态
 }
 
 type Reward struct {
@@ -45,12 +53,6 @@ const (
 	RewardType_AddSendGiftDayNum   = 14 // 增加好友中每日送礼次数
 	RewardType_TradeTaskReset      = 15 // 商会任务重置
 	RewardType_AddGameBoxNumTop    = 16 // 增加宝箱上限
-)
-
-const (
-	MenuStatus_Close = iota // 关闭
-	MenuStatus_New          // 刚解锁
-	MenuStatus_Open         // 已开放
 )
 
 const (

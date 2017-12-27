@@ -51,7 +51,10 @@ func (sess *Session) DoReward(reward *structs.RewardTemplate, count int32) (*str
 
 	case structs.RewardType_Hero: // 英雄奖励
 		rID = reward.Param1
-		sess.PlayerData.HeroTeam.AddHero("", false, rID)
+		hero, err := sess.PlayerData.HeroTeam.AddHero("", false, rID)
+		if err == nil {
+			sess.AddHero([]*structs.Hero{hero}, true)
+		}
 
 	case structs.RewardType_UnlockMenu: // 解锁菜单
 	case structs.RewardType_AddHeroWorkTop: // 增加英雄出战数上限

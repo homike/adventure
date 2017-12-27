@@ -147,7 +147,7 @@ func (sess *Session) AddHero(heros []*structs.Hero, bNotify bool) {
 	for _, hero := range heros {
 		//CZXDO: 添加英雄，成就检测
 		if bNotify && (hero.Quality == structs.QualityType_Gold || hero.Quality == structs.QualityType_SplashGold) {
-
+			//CZXDO: 获得英雄公告
 		}
 	}
 }
@@ -356,4 +356,22 @@ func (sess *Session) DoFightTest(battleFieldID int32) (*structs.FightResult, err
 	fightRet.ForegroundID = battleFieldT.ForegroundID
 
 	return fightRet, nil
+}
+
+func (sess *Session) UnLockMenu(menuID int32) {
+	menu := new(structs.MenuStatusItem)
+	for _, v := range sess.PlayerData.MenuStates {
+		if v.MenuID == menuID {
+			menu = v
+		}
+	}
+
+	if menu.MenuID == 0 {
+		sess.PlayerData.MenuStates = append(sess.PlayerData.MenuStates, &structs.MenuStatusItem{
+			MenuID:     menuID,
+			MenuStatus: structs.MenuStatus_New,
+		})
+		//CZXDO: 成就检测
+	}
+	menu.MenuStatus = structs.MenuStatus_New
 }

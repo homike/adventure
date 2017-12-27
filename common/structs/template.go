@@ -250,3 +250,72 @@ type CombinationSpell struct {
 	HeroNumList []int32 `val:"英雄数量列表"`
 	SpellId     int32   `val:"关联的技能id"`
 }
+
+type AchievementType uint8
+
+const (
+	AchvType_Once           AchievementType = iota // 只能完成一次的成就
+	AchvType_Artifact                              // 神器用的成就
+	AchvType_DayCircle                             // 每日循环的成就
+	AchvType_ManyDayCircle1                        // 多日成就
+)
+
+type AchvActiveType uint8
+
+const (
+	AchvActType_CreatePlayer           AchvActiveType = iota // 默认创建角色时激活
+	AchvActType_OpenByOtherAchievement                       // 通过其他成就激活, 链式成就
+	AchvActType_OpenMenu                                     // 开启菜单激活
+	AchvActType_OpenGameLevel                                // 开启关卡激活
+)
+
+type AchvCondType uint8
+
+const (
+	AchvCondType_Collect           AchvCondType = iota // 收集资源
+	AchvCondType_KillStatue                     = 1    // 杀巨魔雕像
+	AchvCondType_KillLevelStatue                = 2    // 杀某等级巨魔雕像
+	AchvCondType_KillBoss                       = 3    // 杀boss
+	AchvCondType_ChallengePlayer                = 4    // 挑战玩家
+	AchvCondType_WinArenaPlayer                 = 5    // 战胜玩家
+	AchvCondType_CollectHero                    = 6    // 收集英雄
+	AchvCondType_CollectPoint                   = 7    // 收集点
+	AchvCondType_MasterHeroLevel                = 8    // 主角英雄等级
+	AchvCondType_RecruitHeros                   = 9    // 招募英雄
+	AchvCondType_RecruitHeroIngot               = 10   // 元宝招募英雄
+	AchvCondType_InvitationFriends              = 11   // 邀请好友
+	AchvCondType_OpenGameLevel                  = 12   // 开启关卡
+	AchvCondType_FatalismWeapon                 = 13   // 宿命武器
+	AchvCondType_OpenMenu                       = 14   // 开启菜单
+	AchvCondType_PassGameLevel                  = 15   // 通过游戏关卡
+	AchvCondType_PassRiftLevel                  = 16   // 通过某个秘境
+
+)
+
+type AchvStatus uint8
+
+const (
+	AchvStatus_UnActive AchvStatus = iota // 未激活
+	AchvStatus_Active                     // 激活
+	AchvStatus_Finish                     // 完成
+	AchvStatus_Receive                    // 已领取
+)
+
+type AchievementTemplate struct {
+	ID              int32           `val:"ID"`
+	Name            string          `val:"名称"`
+	AchievementType AchievementType `val:"成就类型"`
+	//ActiveType      AchvActiveType  `val:"激活类型"`
+	//ActiveParam1    int32           `val:"激活参数1"`
+	Describe       string       `val:"描述"`
+	ConditionType  AchvCondType `val:"条件类型"`
+	ConditionID    int32        `val:"目标id"`
+	ConditionCount int32        `val:"条件阈值"`
+	RewardIDs      []int32      `val:"奖励id列表"`
+	NextID         int32        `val:"后置成就id"`
+	//PreID     int32   `val:"前置成就id"`
+	Status AchvStatus `val:"状态"`
+	IconID string     `val:"图标id"`
+	//OrderId          int32      `val:"排序id"`
+	ActiveTemplateId int32 `val:"关联的活动模板id"`
+}

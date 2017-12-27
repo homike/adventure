@@ -29,6 +29,7 @@ type Templates struct {
 	ArtifactTemplates       map[int32]structs.ArtifactTemplate       `table:"Artifact"`
 	ResourceTemplates       map[int32]structs.ResourceTemplate       `table:"Resouce"`
 	CombinationSpells       map[int32]structs.CombinationSpell       `table:"CombinationSpell"`
+	AchievementTemplates    map[int32]structs.AchievementTemplate    `table:"achievementAward"`
 }
 
 const (
@@ -61,6 +62,7 @@ func Init() {
 		ArtifactTemplates:       make(map[int32]structs.ArtifactTemplate),
 		ResourceTemplates:       make(map[int32]structs.ResourceTemplate),
 		CombinationSpells:       make(map[int32]structs.CombinationSpell),
+		AchievementTemplates:    make(map[int32]structs.AchievementTemplate),
 	}
 	csv.LoadTemplates2(AllTemplates)
 
