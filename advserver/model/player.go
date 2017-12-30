@@ -39,6 +39,7 @@ type Player struct {
 	UserGuidRecords   []*structs.GuildRecord    // 新手引导记录
 	MenuStates        []*structs.MenuStatusItem // 菜单状态
 	Artifact          *Artifact                 // 神器
+	Achievement       *PlayerAchievenment       // 成就
 	AddGameBoxCount   int32                     // 增加的宝箱上限数量
 	ExtendData        *ExtendData
 	MiningMap         string
@@ -94,6 +95,9 @@ func NewPlayer(name string, heroTemplateID int32) (*Player, error) {
 
 	// 神器初始化
 	player.Artifact = NewArtifact()
+
+	// 成就初始化
+	player.Achievement = NewPlayerAchievenment()
 
 	dbData := &mysql.PlayerDB{
 		AccountID: player.AccountID,

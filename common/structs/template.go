@@ -313,9 +313,9 @@ type AchievementTemplate struct {
 	ConditionCount int32        `val:"条件阈值"`
 	RewardIDs      []int32      `val:"奖励id列表"`
 	NextID         int32        `val:"后置成就id"`
-	//PreID     int32   `val:"前置成就id"`
-	Status AchvStatus `val:"状态"`
-	IconID string     `val:"图标id"`
+	PreID          int32        `val:"前置成就id"`
+	Status         AchvStatus   `val:"状态"`
+	IconID         string       `val:"图标id"`
 	//OrderId          int32      `val:"排序id"`
 	ActiveTemplateId int32 `val:"关联的活动模板id"`
 }

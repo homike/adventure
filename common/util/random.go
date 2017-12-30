@@ -19,6 +19,7 @@ func NewRandom(IDs, Weights []int32) *RandomWeight {
 	}
 
 	r.Total = 0
+	r.Range = make([]int32, len(r.IDs))
 	for i := 0; i < len(r.IDs); i++ {
 		r.Total += r.Weights[i]
 		r.Range[i] = r.Total

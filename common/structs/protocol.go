@@ -98,6 +98,12 @@ const (
 	Protocol_RewardResult_Ntf           = 1700 // 奖励物品接口
 	Protocol_SetPlayerBarrageConfig_Req = 2801 // 弹幕设置
 
+	// 成就相关
+	Protocol_GetAchievements_Req      = 2201 // 取得成就记录数据
+	Protocol_GetAchievements_Resp     = 2202
+	Protocol_RecieveAchievements_Req  = 2203 // 领取成就奖励
+	Protocol_RecieveAchievements_Resp = 2204
+	Protocol_UpdateAchievement_Ntf    = 2205 // 更新成就状态
 )
 
 ///////////////////////////////////////////// 系统 ////////////////////////////////////////
@@ -431,3 +437,19 @@ type FightResultNtf struct {
 	FType  FightType
 	Result *FightResult
 }
+
+///////////////////////////////////////// 成就相关 ////////////////////////////////////////
+type GetAchievementsReq struct { // 取得成就记录数据
+}
+
+type GetAchievementsResp struct {
+	Achievements          []*Achievement
+	NextRefreshTimeDaily  int64 // 下一次刷新每日成就的时间
+	NextRefreshTimeWeekly int64 // 下一次刷新每周成就的时间
+}
+
+type RecieveAchievementsReq struct{} // 领取成就奖励
+
+type RecieveAchievementsResp struct{}
+
+type UpdateAchievementNtf struct{} // 更新成就状态

@@ -212,3 +212,11 @@ const (
 	ActiveType_Half                   // 减半收益
 	ActiveType_None                   // 无收益
 )
+
+type Achievement struct {
+	TemplateID int32 // 成就模板ID
+	// ConditionType
+	// ConditionId
+	TotalCount int32      // 累计数
+	Status     AchvStatus // 状态
+}
