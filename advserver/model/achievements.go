@@ -1,6 +1,7 @@
 package model
 
 import (
+	"adventure/advserver/gamedata"
 	"adventure/common/structs"
 )
 
@@ -24,4 +25,23 @@ func (pa *PlayerAchievenment) GetAchieveMentsArray() []*structs.Achievement {
 		arrAchv = append(arrAchv, v)
 	}
 	return arrAchv
+}
+
+func (pa *PlayerAchievenment) GetAchievements(condType structs.AchvCondType, condID int32) ([]*structs.Achievement,
+	[]*structs.AchievementTemplate) {
+	arrAchv := []*structs.Achievement{}
+	arrAchvT := []*structs.AchievementTemplate{}
+	for _, v := range pa.Achievements {
+		achvT, ok := gamedata.AllTemplates.AchievementTemplates[v.TemplateID]
+		if !ok {
+			logger.Error("AchievementTemplates(%v) failed", v.TemplateID)
+			continue
+		}
+		if achvT.ConditionType == condType && achvT.ConditionID == condID && v.Status == structs.AchvStatus_Active {
+			arrAchv = append(arrAchv, v)
+			arrAchvT = append(arrAchvT, &achvT)
+
+		}
+	}
+	return arrAchv, arrAchvT
 }

@@ -86,5 +86,15 @@ func (sess *Session) RefreshCircleAchievements() {
 }
 
 func (sess *Session) CheckCollect(condType structs.AchvCondType, condID, addCount int32) {
+	arrAchv, arrAchvT := sess.PlayerData.Achievement.GetAchievements(condType, condID)
+	if len(arrAchv) <= 0 || len(arrAchv) != len(arrAchvT) {
+		return
+	}
 
+	for i := 0; i < len(arrAchv); i++ {
+		if arrAchv[i].TotalCount > arrAchvT[i].ConditionCount {
+			arrAchv[i].Status = structs.AchvStatus_Finish
+			if arrAchvT[i].
+		}
+	}
 }
