@@ -452,4 +452,6 @@ type RecieveAchievementsReq struct{} // 领取成就奖励
 
 type RecieveAchievementsResp struct{}
 
-type UpdateAchievementNtf struct{} // 更新成就状态
+type UpdateAchievementNtf struct { // 更新成就状态
+	Achievements []*Achievement
+}

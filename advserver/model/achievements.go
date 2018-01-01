@@ -27,7 +27,7 @@ func (pa *PlayerAchievenment) GetAchieveMentsArray() []*structs.Achievement {
 	return arrAchv
 }
 
-func (pa *PlayerAchievenment) GetAchievements(condType structs.AchvCondType, condID int32) ([]*structs.Achievement,
+func (pa *PlayerAchievenment) GetAchievements(condType structs.AchvCondType, condID, condCount int32) ([]*structs.Achievement,
 	[]*structs.AchievementTemplate) {
 	arrAchv := []*structs.Achievement{}
 	arrAchvT := []*structs.AchievementTemplate{}
@@ -37,7 +37,8 @@ func (pa *PlayerAchievenment) GetAchievements(condType structs.AchvCondType, con
 			logger.Error("AchievementTemplates(%v) failed", v.TemplateID)
 			continue
 		}
-		if achvT.ConditionType == condType && achvT.ConditionID == condID && v.Status == structs.AchvStatus_Active {
+		if achvT.ConditionType == condType && achvT.ConditionID == condID &&
+			achvT.ConditionCount == condCount && v.Status == structs.AchvStatus_Active {
 			arrAchv = append(arrAchv, v)
 			arrAchvT = append(arrAchvT, &achvT)
 

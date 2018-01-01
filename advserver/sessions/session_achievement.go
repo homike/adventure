@@ -12,7 +12,11 @@ func (sess *Session) CheckAchievements(condType structs.AchvCondType, condID, ad
 
 	switch condType {
 	case structs.AchvCondType_Collect: // 收集物品 / 资源
+		sess.CheckCollect(condType, condID, addCount)
+
 	case structs.AchvCondType_KillStatue: // 杀巨魔雕像
+		sess.CheckKillStatue(condType, addCount)
+
 	case structs.AchvCondType_KillLevelStatue: // 杀某等级巨魔雕像
 	case structs.AchvCondType_KillBoss: // 杀boss
 	case structs.AchvCondType_ChallengePlayer: // 挑战玩家
@@ -85,8 +89,9 @@ func (sess *Session) RefreshCircleAchievements() {
 	}
 }
 
+// 检测收集成就
 func (sess *Session) CheckCollect(condType structs.AchvCondType, condID, addCount int32) {
-	arrAchv, arrAchvT := sess.PlayerData.Achievement.GetAchievements(condType, condID)
+	arrAchv, arrAchvT := sess.PlayerData.Achievement.GetAchievements(condType, condID, 0)
 	if len(arrAchv) <= 0 || len(arrAchv) != len(arrAchvT) {
 		return
 	}
@@ -94,7 +99,84 @@ func (sess *Session) CheckCollect(condType structs.AchvCondType, condID, addCoun
 	for i := 0; i < len(arrAchv); i++ {
 		if arrAchv[i].TotalCount > arrAchvT[i].ConditionCount {
 			arrAchv[i].Status = structs.AchvStatus_Finish
-			if arrAchvT[i].
+			if !arrAchvT[i].IsConditinCountAddup() {
+				arrAchv[i].TotalCount = arrAchvT[i].ConditionCount
+			}
+			//CZXDO: 如果成就关联了活动，则为玩家开启活动记录
 		}
 	}
+
+	ntf := structs.UpdateAchievementNtf{
+		Achievements: arrAchv,
+	}
+	sess.Send(structs.Protocol_UpdateAchievement_Ntf, ntf)
 }
+
+// 击杀巨魔雕像成就
+// 检测杀boss成就
+// 检测杀boss成就
+// 检测挑战玩家成就
+// 检测战胜玩家的成就
+// 检测普通收集英雄成就
+//CZXDO: 坚持收集点成就
+// 检测主角英雄等级成就
+// 坚持累计普通／元宝招募英雄次数成就
+func (sess *Session) CheckKillStatue(condType structs.AchvCondType, condID, condCount, addCount int32) {
+	arrAchv, arrAchvT := sess.PlayerData.Achievement.GetAchievements(condType, condID, condCount)
+	if len(arrAchv) <= 0 || len(arrAchv) != len(arrAchvT) {
+		return
+	}
+
+	for i := 0; i < len(arrAchv); i++ {
+		arrAchv[i].TotalCount += addCount
+		if arrAchv[i].TotalCount >= arrAchvT[i].ConditionCount {
+			arrAchv[i].Status = structs.AchvStatus_Finish
+
+			if !arrAchvT[i].IsConditinCountAddup() {
+				arrAchv[i].TotalCount = arrAchvT[i].ConditionCount
+			}
+		}
+	}
+	ntf := structs.UpdateAchievementNtf{
+		Achievements: arrAchv,
+	}
+	sess.Send(structs.Protocol_UpdateAchievement_Ntf, ntf)
+}
+
+// 检测杀某等级巨魔雕像成就
+func (sess *Session) CheckKillLevelStatue(condType structs.AchvCondType, level int32) {
+	arrAchv, arrAchvT := sess.PlayerData.Achievement.GetAchievements(condType, 0, level)
+	if len(arrAchv) <= 0 || len(arrAchv) != len(arrAchvT) {
+		return
+	}
+
+	for i := 0; i < len(arrAchv); i++ {
+		arrAchv[i].Status = structs.AchvStatus_Finish
+	}
+	ntf := structs.UpdateAchievementNtf{
+		Achievements: arrAchv,
+	}
+	sess.Send(structs.Protocol_UpdateAchievement_Ntf, ntf)
+}
+
+// 检测开启关卡等级成就
+func (sess *Session) CheckOpenGameLevel(condType structs.AchvCondType, condID, level int32) {
+	arrAchv, arrAchvT := sess.PlayerData.Achievement.GetAchievements(condType, 0, 0)
+	if len(arrAchv) <= 0 || len(arrAchv) != len(arrAchvT) {
+		return
+	}
+
+	for i := 0; i < len(arrAchv); i++ {
+		if arrAchvT[i].ConditionCount <= level {
+			arrAchv[i].Status = structs.AchvStatus_Finish
+		} else {
+			arrAchv[i].TotalCount = level
+		}
+	}
+	ntf := structs.UpdateAchievementNtf{
+		Achievements: arrAchv,
+	}
+	sess.Send(structs.Protocol_UpdateAchievement_Ntf, ntf)
+}
+
+//

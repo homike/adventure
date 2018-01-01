@@ -319,3 +319,10 @@ type AchievementTemplate struct {
 	//OrderId          int32      `val:"排序id"`
 	ActiveTemplateId int32 `val:"关联的活动模板id"`
 }
+
+func (a *AchievementTemplate) IsConditinCountAddup() bool {
+	if a.NextID > 0 && a.ConditionType != AchvCondType_MasterHeroLevel && a.ConditionType != AchvCondType_OpenGameLevel {
+		return true
+	}
+	return false
+}
