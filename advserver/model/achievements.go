@@ -41,7 +41,6 @@ func (pa *PlayerAchievenment) GetAchievements(condType structs.AchvCondType, con
 			achvT.ConditionCount == condCount && v.Status == structs.AchvStatus_Active {
 			arrAchv = append(arrAchv, v)
 			arrAchvT = append(arrAchvT, &achvT)
-
 		}
 	}
 	return arrAchv, arrAchvT

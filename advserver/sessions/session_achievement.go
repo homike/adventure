@@ -15,23 +15,52 @@ func (sess *Session) CheckAchievements(condType structs.AchvCondType, condID, ad
 		sess.CheckCollect(condType, condID, addCount)
 
 	case structs.AchvCondType_KillStatue: // 杀巨魔雕像
-		sess.CheckKillStatue(condType, addCount)
+		sess.CheckCommonAchievement(condType, 0, 0, addCount)
 
 	case structs.AchvCondType_KillLevelStatue: // 杀某等级巨魔雕像
+		sess.CheckCommonAchievement(condType, 0, addCount, 0)
+
 	case structs.AchvCondType_KillBoss: // 杀boss
+		sess.CheckCommonAchievement(condType, condID, 0, addCount)
+
 	case structs.AchvCondType_ChallengePlayer: // 挑战玩家
+		sess.CheckCommonAchievement(condType, 0, 0, addCount)
+
 	case structs.AchvCondType_WinArenaPlayer: // 战胜玩家
+		sess.CheckCommonAchievement(condType, 0, 0, addCount)
+
 	case structs.AchvCondType_CollectHero: // 收集英雄
+		sess.CheckCommonAchievement(condType, condID, 0, addCount)
+
 	case structs.AchvCondType_CollectPoint: // 收集点
-	case structs.AchvCondType_MasterHeroLevel: // 主角英雄等级
+		sess.CheckCommonAchievement(condType, condID, 0, addCount)
+
 	case structs.AchvCondType_RecruitHeros: // 招募英雄
+		sess.CheckCommonAchievement(condType, 0, 0, addCount)
+
 	case structs.AchvCondType_RecruitHeroIngot: // 元宝招募英雄
+		sess.CheckCommonAchievement(condType, 0, 0, addCount)
+
 	case structs.AchvCondType_InvitationFriends: // 邀请好友
-	case structs.AchvCondType_OpenGameLevel: // 开启关卡
+		sess.CheckCommonAchievement(condType, 0, 0, addCount)
+
 	case structs.AchvCondType_FatalismWeapon: // 宿命武器
+		sess.CheckCommonAchievement(condType, 0, addCount, 0)
+
 	case structs.AchvCondType_OpenMenu: // 开启菜单
+		sess.CheckCommonAchievement(condType, 0, addCount, 0)
+
 	case structs.AchvCondType_PassGameLevel: // 通过游戏关卡
+		sess.CheckCommonAchievement(condType, addCount, 0, 0)
+
 	case structs.AchvCondType_PassRiftLevel: // 通过某个秘境
+		sess.CheckCommonAchievement(condType, addCount, 0, 0)
+
+	case structs.AchvCondType_MasterHeroLevel: // 主角英雄等级
+		sess.CheckLevelAchievement(condType, addCount)
+
+	case structs.AchvCondType_OpenGameLevel: // 开启关卡
+		sess.CheckLevelAchievement(condType, addCount)
 	}
 }
 
@@ -121,7 +150,7 @@ func (sess *Session) CheckCollect(condType structs.AchvCondType, condID, addCoun
 //CZXDO: 坚持收集点成就
 // 检测主角英雄等级成就
 // 坚持累计普通／元宝招募英雄次数成就
-func (sess *Session) CheckKillStatue(condType structs.AchvCondType, condID, condCount, addCount int32) {
+func (sess *Session) CheckCommonAchievement(condType structs.AchvCondType, condID, condCount, addCount int32) {
 	arrAchv, arrAchvT := sess.PlayerData.Achievement.GetAchievements(condType, condID, condCount)
 	if len(arrAchv) <= 0 || len(arrAchv) != len(arrAchvT) {
 		return
@@ -144,23 +173,23 @@ func (sess *Session) CheckKillStatue(condType structs.AchvCondType, condID, cond
 }
 
 // 检测杀某等级巨魔雕像成就
-func (sess *Session) CheckKillLevelStatue(condType structs.AchvCondType, level int32) {
-	arrAchv, arrAchvT := sess.PlayerData.Achievement.GetAchievements(condType, 0, level)
-	if len(arrAchv) <= 0 || len(arrAchv) != len(arrAchvT) {
-		return
-	}
+// func (sess *Session) CheckKillLevelStatue(condType structs.AchvCondType, level int32) {
+// 	arrAchv, arrAchvT := sess.PlayerData.Achievement.GetAchievements(condType, 0, level)
+// 	if len(arrAchv) <= 0 || len(arrAchv) != len(arrAchvT) {
+// 		return
+// 	}
 
-	for i := 0; i < len(arrAchv); i++ {
-		arrAchv[i].Status = structs.AchvStatus_Finish
-	}
-	ntf := structs.UpdateAchievementNtf{
-		Achievements: arrAchv,
-	}
-	sess.Send(structs.Protocol_UpdateAchievement_Ntf, ntf)
-}
+// 	for i := 0; i < len(arrAchv); i++ {
+// 		arrAchv[i].Status = structs.AchvStatus_Finish
+// 	}
+// 	ntf := structs.UpdateAchievementNtf{
+// 		Achievements: arrAchv,
+// 	}
+// 	sess.Send(structs.Protocol_UpdateAchievement_Ntf, ntf)
+// }
 
 // 检测开启关卡等级成就
-func (sess *Session) CheckOpenGameLevel(condType structs.AchvCondType, condID, level int32) {
+func (sess *Session) CheckLevelAchievement(condType structs.AchvCondType, level int32) {
 	arrAchv, arrAchvT := sess.PlayerData.Achievement.GetAchievements(condType, 0, 0)
 	if len(arrAchv) <= 0 || len(arrAchv) != len(arrAchvT) {
 		return
