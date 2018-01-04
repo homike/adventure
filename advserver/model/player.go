@@ -5,17 +5,20 @@ import (
 	"adventure/advserver/db/redis"
 	"adventure/advserver/gamedata"
 	"adventure/advserver/log"
-	"adventure/advserver/service"
 	"adventure/common/clog"
 	"adventure/common/structs"
 	"fmt"
 	"time"
 )
 
-var logger *clog.Logger
+var (
+	logger    *clog.Logger
+	playerDao *mysql.PlayerDao
+)
 
 func Init() error {
 	logger = log.GetLogger()
+	playerDao = mysql.NewUserDao()
 
 	return nil
 }
@@ -103,7 +106,7 @@ func NewPlayer(name string, heroTemplateID int32) (*Player, error) {
 		AccountID: player.AccountID,
 		Name:      player.Name,
 	}
-	err = service.PlayerDao.CreatePlayer(dbData)
+	err = playerDao.CreatePlayer(dbData)
 	if err != nil {
 		fmt.Println("NewPlayer() error %v", err)
 		return nil, err

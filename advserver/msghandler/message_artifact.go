@@ -153,5 +153,5 @@ func UpgradeArtifactReq(sess *sessions.Session, msgBody []byte) {
 	resp.AddHP = palyerHero.HP() - oldHP
 	sess.Send(structs.Protocol_UpgradeArtifact_Req, resp)
 
-	//CZXDO: 成就
+	sess.CheckAchievements(structs.AchvCondType_FatalismWeapon, 0, palyerHero.WeaponLevel)
 }

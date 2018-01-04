@@ -104,6 +104,11 @@ const (
 	Protocol_RecieveAchievements_Req  = 2203 // 领取成就奖励
 	Protocol_RecieveAchievements_Resp = 2204
 	Protocol_UpdateAchievement_Ntf    = 2205 // 更新成就状态
+
+	// 公告
+	Protocol_SystemAnnouncement_Ntf     = 2701 // 系统公告
+	Protocol_SystemAnnouncementRich_Ntf = 2702 // 富文本系统公告
+
 )
 
 ///////////////////////////////////////////// 系统 ////////////////////////////////////////
@@ -454,4 +459,19 @@ type RecieveAchievementsResp struct{}
 
 type UpdateAchievementNtf struct { // 更新成就状态
 	Achievements []*Achievement
+}
+
+///////////////////////////////////////// 公告 ////////////////////////////////////////
+
+type SystemAnnouncementNtf struct {
+	Texts           []string
+	Colors          []string
+	LoopCount       int32
+	IsLeftDirection bool
+}
+
+type SystemAnnouncementRichNtf struct {
+	Text            string
+	LoopCount       int32
+	IsLeftDirection bool
 }

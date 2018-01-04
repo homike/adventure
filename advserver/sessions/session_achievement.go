@@ -147,7 +147,7 @@ func (sess *Session) CheckCollect(condType structs.AchvCondType, condID, addCoun
 // 检测挑战玩家成就
 // 检测战胜玩家的成就
 // 检测普通收集英雄成就
-//CZXDO: 坚持收集点成就
+// CZXDO: 坚持收集点成就
 // 检测主角英雄等级成就
 // 坚持累计普通／元宝招募英雄次数成就
 func (sess *Session) CheckCommonAchievement(condType structs.AchvCondType, condID, condCount, addCount int32) {

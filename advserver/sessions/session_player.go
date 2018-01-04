@@ -191,7 +191,9 @@ func (sess *Session) CalculateGetExp(exp int32) []int32 {
 					p.HeroTeam.ReCalculateHeroLevelHp(hero)
 					heroHasUpdate = true
 
-					//CZXDO: 检测主角等级成就
+					if hero.IsPlayer {
+						sess.CheckAchievements(structs.AchvCondType_MasterHeroLevel, 0, hero.Level)
+					}
 				} else {
 					break
 				}
@@ -371,7 +373,7 @@ func (sess *Session) UnLockMenu(menuID int32) {
 			MenuID:     menuID,
 			MenuStatus: structs.MenuStatus_New,
 		})
-		//CZXDO: 成就检测
+		sess.CheckAchievements(structs.AchvCondType_OpenMenu, 0, menuID)
 	}
 	menu.MenuStatus = structs.MenuStatus_New
 }

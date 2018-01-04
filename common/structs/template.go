@@ -292,6 +292,42 @@ const (
 
 )
 
+/// <summary>
+/// 集点类型
+/// </summary>
+
+type AchvCollectPointType uint8
+
+/*0 勇气点---挑战玩家所得
+1 冠军点---挑战玩家所得
+2 力量点---采矿所得
+3 好友点---资源赠送所得
+4 锻造点---锻造装备所得
+5 财富点---充值所得*/
+
+const (
+	PointType_Courage                 = iota // 勇气点
+	PointType_Champion                       //  冠军点
+	PointType_Strength                       // 力量点
+	PointType_Friends                        // 好友点
+	PointType_Forge                          // 锻造点
+	PointType_Money                          // 财富点---充值所得
+	PointType_SendGift                       // 送礼次数
+	PointType_RecvGift                       // 收礼次数
+	PointType_OpenGameBox                    // 开启宝箱
+	PointType_SpeedAdv                       // 加速冒险
+	PointType_WinArena1Player                // 1连胜
+	PointType_WinArena4Player                // 4连胜
+	PointType_WinArena9Player                // 9连胜
+	PointType_RefreshTemple                  // 刷新神殿
+	PointType_FSCallenge                     // 封神之阶的挑战次数成就
+	PointType_TradeTroopGeneralTrade         // 普通贸易队交易次数
+	PointType_TradeTroopAdvancedTrade        // 高级贸易队交易次数
+	PointType_TradeTroopRoyalTrade           // 皇家贸易队交易次数
+	PointType_GetGoldByIngotCount            // 加钱秘籍使用次数
+	PointType_CustomsRiftLevelNum            // 通关秘境关卡数
+)
+
 type AchvStatus uint8
 
 const (

@@ -111,7 +111,7 @@ func OpenGameBoxReq(sess *sessions.Session, msgBody []byte) {
 	resp.Rewards = clientRewards
 	sess.Send(structs.Protocol_OpenGameBox_Resp, resp)
 
-	//CZXDO: 开宝箱成就检测
+	sess.CheckAchievements(structs.AchvCondType_CollectPoint, structs.PointType_OpenGameBox, req.Count)
 }
 
 func GetFightCoolingTimeReq(sess *sessions.Session, msgBody []byte) {
@@ -260,7 +260,15 @@ func AdventureEventReq(sess *sessions.Session, msgBody []byte) {
 
 	//CZXDO: 通过公告
 
-	//CZXDO: 成就检测
+	finishCnt := 0
+	for _, v := range sess.PlayerData.Achievement.Achievements {
+		if v.Status == structs.AchvStatus_Finish {
+			finishCnt++
+		}
+	}
+	if finishCnt == len(gameLevel.CompleteEvent) {
+		sess.CheckAchievements(structs.AchvCondType_PassGameLevel, 0, gameLevel.GameLevelID)
+	}
 
 	sess.Send(structs.Protocol_AdventureEvent_Resp, resp)
 }
