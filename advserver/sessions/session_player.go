@@ -88,15 +88,15 @@ func (sess *Session) SyncGameBoxTopNumNtf() {
 }
 
 func (sess *Session) SyncUserGuidRecords() {
-	records := []structs.GuildRecord{}
-	for i := 0; i < 24; i++ {
-		records = append(records, structs.GuildRecord{
-			UserGuidTypes: uint8(i),
-			TriggerCount:  int32(5),
-		})
-	}
+	// records := []structs.GuildRecord{}
+	// for i := 0; i < 24; i++ {
+	// 	records = append(records, &structs.GuildRecord{
+	// 		UserGuidTypes: uint8(i),
+	// 		TriggerCount:  int32(5),
+	// 	})
+	// }
 	resp := &structs.SyncUserGuidRecordsNtf{
-		Records: records,
+		Records: sess.PlayerData.UserGuidRecords,
 	}
 
 	sess.Send(structs.Protocol_SyncUserGuidRecords_Ntf, resp)

@@ -34,7 +34,7 @@ func LoginServerPlatform(sess *sessions.Session, msgBody []byte) {
 
 		SyncLoginDataFinish(sess)
 	}
-	sess.SyncUserGuidRecords()
+	//sess.SyncUserGuidRecords()
 }
 
 // 1006

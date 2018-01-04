@@ -72,11 +72,25 @@ const (
 	Protocol_GetUsedGameItems_Req  = 1343 // 取得已使用过的物品列表
 	Protocol_GetUsedGameItems_Resp = 1344
 
+	// 角色相关
+	Protocol_EatFood_Req              = 1401 // 吃食物
+	Protocol_EatFood_Resp             = 1402
+	Protocol_UnLockMenu_Req           = 1403 // 解锁菜单
+	Protocol_SyncStrength_Ntf         = 1404 // 同步饱足度
+	Protocol_SyncWorkHeroTop_Ntf      = 1405 // 同步出站英雄上限
+	Protocol_SyncUnlockMenus_Ntf      = 1412 // 同步已解锁菜单列表
+	Protocol_SyncUserGuidRecords_Ntf  = 1413 // 同步新手引导数据
+	Protocol_UpdateUserGuidRecord_Req = 1414 // 更新玩家新手引导数据
+	Protocol_SyncGameBoxTopNum_Ntf    = 1415 // 更新增加的宝箱上限数量
+
 	// 战斗相关
 	Protocol_FightResult_Ntf      = 1600 // 战斗结果
 	Protocol_FightRequest_Req     = 1601 // 人机对战请求
 	Protocol_FightWithPlayer_Req  = 1602 // 玩家对战请求
 	Protocol_FightWithPlayer_Resp = 1603
+
+	// 奖励
+	Protocol_RewardResult_Ntf = 1700 // 奖励物品接口
 
 	// 神器相关
 	//Protocol_UnlockArtifactSeal_Req     = 1900 // 解锁神器封印
@@ -88,16 +102,6 @@ const (
 	Protocol_SyncArtifactStatus_Ntf     = 1906 // 同步神器状态
 	Protocol_SyncArtifactSealStatus_Ntf = 1907 // 同步神器封印状态
 
-	// 角色相关
-	Protocol_SyncStrength_Ntf           = 1404 // 同步饱足度
-	Protocol_SyncWorkHeroTop_Ntf        = 1405 // 同步出站英雄上限
-	Protocol_SyncUnlockMenus_Ntf        = 1412 // 同步已解锁菜单列表
-	Protocol_SyncUserGuidRecords_Ntf    = 1413 // 同步新手引导数据
-	Protocol_UpdateUserGuidRecord_Req   = 1414 // 更新玩家新手引导数据
-	Protocol_SyncGameBoxTopNum_Ntf      = 1415 // 更新增加的宝箱上限数量
-	Protocol_RewardResult_Ntf           = 1700 // 奖励物品接口
-	Protocol_SetPlayerBarrageConfig_Req = 2801 // 弹幕设置
-
 	// 成就相关
 	Protocol_GetAchievements_Req      = 2201 // 取得成就记录数据
 	Protocol_GetAchievements_Resp     = 2202
@@ -105,9 +109,10 @@ const (
 	Protocol_RecieveAchievements_Resp = 2204
 	Protocol_UpdateAchievement_Ntf    = 2205 // 更新成就状态
 
-	// 公告
+	// 其他
 	Protocol_SystemAnnouncement_Ntf     = 2701 // 系统公告
 	Protocol_SystemAnnouncementRich_Ntf = 2702 // 富文本系统公告
+	Protocol_SetPlayerBarrageConfig_Req = 2801 // 弹幕设置
 
 )
 
@@ -170,7 +175,7 @@ type UpdateUserGuidRecordReq struct {
 }
 
 type SyncUserGuidRecordsNtf struct {
-	Records []GuildRecord
+	Records []*GuildRecord
 }
 
 type SyncStrengthNtf struct {
@@ -298,9 +303,9 @@ type SyncAllResouceNtf struct {
 	Strength      int32
 	Detonator     int32
 	MiningToolkit int32
-	Ors           []IDNUM
-	Foods         []IDNUM
-	Badges        []IDNUM
+	Ors           []*IDNUM
+	Foods         []*IDNUM
+	Badges        []*IDNUM
 	UnlockResIds  []int32
 }
 
@@ -344,6 +349,15 @@ type UnlockBagResp struct {
 	Ret         uint8
 	MaxCount    int32
 	UnLockLevel int32
+}
+
+type EatFoodReq struct {
+	FoodID int32
+}
+
+type EatFoodResp struct {
+	Ret      uint8
+	Strength int32
 }
 
 ///////////////////////////////////////////// 冒险 ////////////////////////////////////////

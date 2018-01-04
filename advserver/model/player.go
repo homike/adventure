@@ -74,6 +74,9 @@ func NewPlayer(name string, heroTemplateID int32) (*Player, error) {
 	player.HeroTeam.ReCalculateHeroLevelHp(hero)
 	// 初始化玩家资源
 	player.Res = NewResource()
+	for i := 200; i <= 208; i++ {
+		player.Res.FoodChange(int32(i), 1)
+	}
 
 	// 关卡数据初始化
 	levelT, ok := gamedata.AllTemplates.GameLevelTemplates[1]

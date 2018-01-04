@@ -7,17 +7,17 @@ import (
 )
 
 type Resource struct {
-	Strength      int32           // 体力
-	Ingot         int32           // 元宝(钻石)
-	Money         int32           // 金钱
-	Fragments     int32           // 碎片数
-	Statue        int32           // 巨魔雕像数
-	Detonator     int32           // 雷管
-	MiningToolkit int32           // 挖矿工具包
-	Ores          []structs.IDNUM // 矿石
-	Foods         []structs.IDNUM // 食物
-	Badges        []structs.IDNUM // 徽章
-	UnlockResIDs  []int32         // 已经解锁的资源id列表
+	Strength      int32            // 体力
+	Ingot         int32            // 元宝(钻石)
+	Money         int32            // 金钱
+	Fragments     int32            // 碎片数
+	Statue        int32            // 巨魔雕像数
+	Detonator     int32            // 雷管
+	MiningToolkit int32            // 挖矿工具包
+	Ores          []*structs.IDNUM // 矿石
+	Foods         []*structs.IDNUM // 食物
+	Badges        []*structs.IDNUM // 徽章
+	UnlockResIDs  []int32          // 已经解锁的资源id列表
 }
 
 func NewResource() *Resource {
@@ -43,7 +43,7 @@ func (r *Resource) OresChange(id, num int32) {
 		}
 	}
 
-	r.Ores = append(r.Ores, structs.IDNUM{
+	r.Ores = append(r.Ores, &structs.IDNUM{
 		ID:  id,
 		Num: num,
 	})
@@ -89,10 +89,22 @@ func (r *Resource) FoodChange(id, num int32) {
 		}
 	}
 
-	r.Foods = append(r.Foods, structs.IDNUM{
+	r.Foods = append(r.Foods, &structs.IDNUM{
 		ID:  id,
 		Num: num,
 	})
+}
+
+func (r *Resource) HasEnoughFood(id, num int32) bool {
+	for _, v := range r.Foods {
+		if v.ID == id {
+			if v.Num > num {
+				return true
+			}
+			break
+		}
+	}
+	return false
 }
 
 func (r *Resource) BadgesChange(id, num int32) {
@@ -106,7 +118,7 @@ func (r *Resource) BadgesChange(id, num int32) {
 		}
 	}
 
-	r.Badges = append(r.Badges, structs.IDNUM{
+	r.Badges = append(r.Badges, &structs.IDNUM{
 		ID:  id,
 		Num: num,
 	})

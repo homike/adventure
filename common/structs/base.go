@@ -5,6 +5,48 @@ type IDNUM struct {
 	Num int32 `json:"num"`
 }
 
+type IDNUMARRAY struct {
+	Datas []*IDNUM
+}
+
+func (i *IDNUMARRAY) Add(id, num int32) {
+	for k, v := range i.Datas {
+		if v.ID == id {
+			i.Datas[k].Num += num
+			if i.Datas[k].Num < 0 {
+				i.Datas[k].Num = 0
+			}
+			return
+		}
+	}
+
+	i.Datas = append(i.Datas, &IDNUM{
+		ID:  id,
+		Num: num,
+	})
+}
+
+func (i *IDNUMARRAY) Exist(id, num int32) bool {
+	for _, v := range i.Datas {
+		if v.ID == id {
+			if v.Num > num {
+				return true
+			}
+			break
+		}
+	}
+	return false
+}
+
+func (i *IDNUMARRAY) Count(id int32) int32 {
+	for _, v := range i.Datas {
+		if v.ID == id {
+			return v.Num
+		}
+	}
+	return 0
+}
+
 type GameItem struct {
 	ID         int32 `json:"id"`
 	TemplateID int32 `json:"tid"` // 物品模板ID

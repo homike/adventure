@@ -40,6 +40,7 @@ func Init() error {
 		uint16(structs.Protocol_NameExists_Req):             NameExists,
 		uint16(structs.Protocol_SetPlayerBarrageConfig_Req): SetPlayerBarrageConfig,
 		uint16(structs.Protocol_UpdateUserGuidRecord_Req):   UpdateUserGuidRecord,
+		uint16(structs.Protocol_EatFood_Req):                EatFood,
 	}
 
 	InitMessageLogin()
