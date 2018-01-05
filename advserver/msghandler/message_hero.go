@@ -16,7 +16,7 @@ func InitMessageHero() {
 		uint16(structs.Protocol_SomeRest_Req):          SomeResetReq,      // 一些英雄休息
 		uint16(structs.Protocol_Awake_Req):             AwakeReq,          // 英雄觉醒
 		uint16(structs.Protocol_UpgradeWeapon_Req):     UpgradeWeaponReq,  // 武具升级
-		//uint16(structs.Protocol_SyncEmploy_Req):        TestReq,         // 同步招募信息
+		uint16(structs.Protocol_SyncEmploy_Req):        SyncEmployReq,     // 同步招募信息
 	}
 
 	for k, v := range heroMessage {
@@ -35,6 +35,8 @@ func EmployReq(sess *sessions.Session, msgBody []byte) {
 		Ret: structs.EmployRet_Failed,
 	}
 	/////////////////////////////////////////////Data Check////////////////////////////////////////
+	sess.RefreshPlayerInfo(nil)
+
 	switch structs.EmployType(req.EmployType) {
 	case structs.EmployType_Money:
 	case structs.EmployType_HunLuan:
@@ -319,4 +321,8 @@ func UpgradeWeaponReq(sess *sessions.Session, msgBody []byte) {
 	sess.Send(structs.Protocol_UpgradeWeapon_Resp, resp)
 
 	// CZXDO: 全服通告
+}
+
+func SyncEmployReq(sess *sessions.Session, msgBody []byte) {
+	sess.SyncEmployInfo()
 }

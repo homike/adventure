@@ -300,6 +300,16 @@ type UpgradeWeaponResp struct {
 	AddHP  int32
 }
 
+type SyncEmployReq struct {
+}
+
+type SyncEmployResp struct {
+	Type                       []int32
+	Cost                       []int32
+	LeftSecond                 int32
+	NextFreeIngotEmployLeftSec int32
+}
+
 ///////////////////////////////////////////// 背包 ////////////////////////////////////////
 type SyncAllResouceNtf struct {
 	Money         int32

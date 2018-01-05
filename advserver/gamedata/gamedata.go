@@ -43,7 +43,11 @@ const (
 	MaxHeroWorkTopItem           = 20           // 英雄.英雄最大出战数
 	FreeIngotEmployFirstTimeSpan = 180          // 英雄.首次免费元宝招募间隔
 	FreeIngotEmployTimeSpanItem  = 60 * 60 * 48 // 英雄.免费元宝招募间隔
+	SystemRefreshTime            = 10           // 英雄.系统每天的刷新时间
+)
 
+var (
+	InitialEmployCost = []int32{3000, 1, 1, 1, 60, 580} // 英雄.招募英雄初始支出
 )
 
 func Init() {

@@ -25,6 +25,7 @@ func (sess *Session) OnEnterGame() {
 	sess.SyncHeroWorkTop()                                                       // 同步最大出战英雄数
 	sess.SyncHeroNtf(structs.SyncHeroType_First, sess.PlayerData.HeroTeam.Heros) // 同步英雄信息
 	sess.SyncArtifactStatus(structs.SyncType_First)
+	sess.SyncEmployInfo()
 
 	/****************同步背包数据********************/
 	sess.SyncAllResources()   // 同步所有资源
@@ -394,7 +395,7 @@ func (sess *Session) onUnlockMenu(mType structs.MenuTypes) {
 	switch mType {
 	case structs.MenuTypes_FS: // 封神之阶
 	case structs.MenuTypes_Recruit: // 招募
-		sess.PlayerData.NextFreeIngotTime = time.Now().Add(time.Duration(gamedata.FreeIngotEmployFirstTimeSpan) * time.Second).Unix()
+		sess.PlayerData.HeroTeam.NextFreeIngotTime = time.Now().Add(time.Duration(gamedata.FreeIngotEmployFirstTimeSpan) * time.Second).Unix()
 	case structs.MenuTypes_Rift: // 秘境
 	case structs.MenuTypes_TradeHouse: // 商行
 	case structs.MenuTypes_TradeTroop: // 贸易队
@@ -414,4 +415,33 @@ func (sess *Session) SyncEatFoodList() {
 		EatedDate: dates,
 	}
 	sess.Send(structs.Protocol_GetEatedFoods_Resp, resp)
+}
+
+func (sess *Session) SyncEmployInfo() {
+	leftTime := time.Now().AddDate(0, 0, 1).Add(time.Duration(gamedata.SystemRefreshTime) * time.Second).Sub(time.Now()).Seconds()
+
+	nextTime := int32(0)
+	if sess.PlayerData.HeroTeam.NextFreeIngotTime > time.Now().Unix() {
+		nextTime = int32(time.Unix(sess.PlayerData.HeroTeam.NextFreeIngotTime, 0).Sub(time.Now()).Seconds()) + 1
+	}
+
+	costList := make([]int32, 6, 6)
+	typeList := []int32{}
+	for i := structs.EmployType_Money; i <= structs.EmployType_ManyDiamond; i++ {
+		typeList = append(typeList, int32(i))
+		if i == structs.EmployType_Diamond || i == structs.EmployType_ManyDiamond {
+			costList[i] = gamedata.InitialEmployCost[i]
+		} else {
+			costList[i] = int32(float64(gamedata.InitialEmployCost[i]) * math.Pow(2, float64(sess.PlayerData.HeroTeam.EmployRecord[i])))
+		}
+	}
+
+	resp := &structs.SyncEmployResp{
+		Type:                       typeList,
+		Cost:                       costList,
+		LeftSecond:                 int32(leftTime),
+		NextFreeIngotEmployLeftSec: nextTime,
+	}
+
+	sess.Send(structs.Protocol_SyncEmploy_Resq, resp)
 }

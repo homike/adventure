@@ -8,8 +8,9 @@ import (
 )
 
 type HeroTeams struct {
-	Heros                []*structs.Hero              // 英雄列表
-	MaxWorker            int32                        // 出战人数上限
+	Heros     []*structs.Hero // 英雄列表
+	MaxWorker int32           // 出战人数上限
+
 	EmployRecord         map[structs.EmployType]int32 // 招募英雄记录表
 	EmployTotalCount     int32                        // 招募英雄的总数量
 	EmployCount          int32                        // 招募英雄的总数量(周期的活动值，可刷新)
@@ -19,14 +20,17 @@ type HeroTeams struct {
 	IngotEmployRP        int32                        // 元宝的人品值
 	MaxHeroId            int32                        // 英雄的最大id
 	LastEmployTime       uint64                       // 最近一次刷新的招募时间
+	NextFreeIngotTime    int64                        // 下一次免费招募时间
 }
 
 func NewHeroTeams() *HeroTeams {
 	teams := &HeroTeams{
-		MaxHeroId:    1,
-		MaxWorker:    3,
-		Heros:        make([]*structs.Hero, 0),
-		EmployRecord: make(map[structs.EmployType]int32),
+		MaxHeroId:         1,
+		MaxWorker:         3,
+		Heros:             make([]*structs.Hero, 0),
+		EmployRecord:      make(map[structs.EmployType]int32),
+		LastEmployTime:    0,
+		NextFreeIngotTime: 0,
 	}
 	teams.EmployRecord[structs.EmployType_Money] = 0
 	teams.EmployRecord[structs.EmployType_HunLuan] = 0

@@ -16,7 +16,9 @@ func (sess *Session) DoReward(reward *structs.RewardTemplate, count int32) (*str
 	rNum := int32(0)
 	switch reward.Type {
 	case structs.RewardType_Property: //奖励资源类
-		sess.ResourceChange(reward.Param1, reward.Param2*count, 0)
+		rID = reward.Param1
+		rNum = reward.Param2 * count
+		sess.ResourceChange(rID, rNum, 0)
 
 	case structs.RewardType_RandProperty:
 		rID = reward.Param1
