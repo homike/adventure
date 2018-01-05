@@ -32,7 +32,7 @@ func (r *RandomWeight) GetRandomNum() int32 {
 	randIndex := RandNum(0, r.Total)
 	for i := 0; i < len(r.Range); i++ {
 		if r.Range[i] > randIndex {
-			return r.Range[i]
+			return r.IDs[i]
 		}
 	}
 	return r.IDs[0]

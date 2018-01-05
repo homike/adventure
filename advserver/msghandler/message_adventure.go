@@ -47,7 +47,6 @@ func SelectGameLevelReq(sess *sessions.Session, msgBody []byte) {
 }
 
 func OpenGameBoxReq(sess *sessions.Session, msgBody []byte) {
-	logger.Debug("GetFightCoolingTimeReq")
 
 	req := &structs.OpenGameBoxReq{}
 	sess.UnMarshal(msgBody, req)
@@ -55,7 +54,10 @@ func OpenGameBoxReq(sess *sessions.Session, msgBody []byte) {
 	resp := &structs.OpenGameBoxResp{
 		Ret: structs.AdventureRet_Failed,
 	}
+
+	logger.Debug("OpenGameBoxReq (%v)", req.Count)
 	/////////////////////////////////////////////Data Check////////////////////////////////////////
+	sess.RefreshPlayerInfo(nil)
 
 	gameLevel, err := sess.PlayerData.PlayerGameLevel.GetCurGameLevelData()
 	if err != nil {
@@ -76,6 +78,7 @@ func OpenGameBoxReq(sess *sessions.Session, msgBody []byte) {
 		sess.Send(structs.Protocol_OpenGameBox_Resp, resp)
 		return
 	}
+	logger.Debug("czx@@@ GameBoxIDs:%v, Weight: %v", gameLevelT.GameBoxIDs, gameLevelT.GameBoxWeight)
 	random := util.NewRandom(gameLevelT.GameBoxIDs, gameLevelT.GameBoxWeight)
 	if random == nil {
 		sess.Send(structs.Protocol_OpenGameBox_Resp, resp)
@@ -92,19 +95,28 @@ func OpenGameBoxReq(sess *sessions.Session, msgBody []byte) {
 	clientRewards := []*structs.Reward{}
 	for _, v := range rewardIDs {
 		rewardT, ok := gamedata.AllTemplates.RewardTemplates[v]
+		logger.Debug("rewardT: %v, ok: %v", rewardT, ok)
 		if ok {
 			reward, _ := sess.DoReward(&rewardT, 1)
+			logger.Debug("DoReward: %v ", *reward)
+			bExist := false
 			for _, r := range clientRewards {
 				if r.RewardType == reward.RewardType && r.Param1 == reward.Param1 {
 					r.Param2 += reward.Param2
-				} else {
-					clientRewards = append(clientRewards, reward)
+					bExist = true
 				}
+			}
+			if !bExist {
+				clientRewards = append(clientRewards, reward)
 			}
 		}
 	}
+	// minus box count
+	gameLevel.BoxCount = 0
 
 	sess.SyncCurrentGameLevelNtf()
+
+	logger.Debug("rewardIDs: %v, %v ", rewardIDs, clientRewards)
 
 	resp.Ret = structs.AdventureRet_Success
 	resp.Count = req.Count

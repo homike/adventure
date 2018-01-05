@@ -381,6 +381,25 @@ func (sess *Session) UnLockMenu(menuID int32) {
 		sess.CheckAchievements(structs.AchvCondType_OpenMenu, 0, menuID)
 	}
 	menu.MenuStatus = structs.MenuStatus_New
+
+	ntf := &structs.SyncUnlockMenuNtf{
+		MenuID: menu.MenuID,
+	}
+	sess.Send(structs.Protocol_UnLockMenu_Ntf, ntf)
+
+	sess.onUnlockMenu(structs.MenuTypes(menu.MenuID))
+}
+
+func (sess *Session) onUnlockMenu(mType structs.MenuTypes) {
+	switch mType {
+	case structs.MenuTypes_FS: // 封神之阶
+	case structs.MenuTypes_Recruit: // 招募
+		sess.PlayerData.NextFreeIngotTime = time.Now().Add(time.Duration(gamedata.FreeIngotEmployFirstTimeSpan) * time.Second).Unix()
+	case structs.MenuTypes_Rift: // 秘境
+	case structs.MenuTypes_TradeHouse: // 商行
+	case structs.MenuTypes_TradeTroop: // 贸易队
+	}
+
 }
 
 func (sess *Session) SyncEatFoodList() {

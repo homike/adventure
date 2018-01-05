@@ -35,6 +35,9 @@ type Player struct {
 	BarrageSet        string
 	VipLevel          int32
 	OnlineTime        int
+	NextFreeIngotTime int64                     // 下一次免费招募时间
+	LastEmployTime    int64                     // 最近一次刷新的招募时间
+	AddGameBoxCount   int32                     // 增加的宝箱上限数量
 	HeroTeam          *HeroTeams                // 玩家英雄
 	Res               *Resource                 // 玩家资源
 	PlayerGameLevel   *PlayerGameLevel          // 关卡数据
@@ -43,8 +46,7 @@ type Player struct {
 	MenuStates        []*structs.MenuStatusItem // 菜单状态
 	Artifact          *Artifact                 // 神器
 	Achievement       *PlayerAchievenment       // 成就
-	AddGameBoxCount   int32                     // 增加的宝箱上限数量
-	ExtendData        *ExtendData
+	ExtendData        *ExtendData               // 扩展数据
 	MiningMap         string
 }
 
@@ -81,8 +83,11 @@ func NewPlayer(name string, heroTemplateID int32) (*Player, error) {
 
 	// 初始化玩家资源
 	player.Res = NewResource()
+	for i := 101; i <= 115; i++ {
+		player.Res.Ores.Add(int32(i), 10)
+	}
 	for i := 200; i <= 208; i++ {
-		player.Res.Foods.Add(int32(i), 1)
+		player.Res.Foods.Add(int32(i), 10)
 	}
 
 	// 关卡数据初始化
@@ -111,6 +116,14 @@ func NewPlayer(name string, heroTemplateID int32) (*Player, error) {
 
 	// 成就初始化
 	player.Achievement = NewPlayerAchievenment()
+
+	// 菜单初始化
+	for i := structs.MenuTypes_Temple; i <= structs.MenuTypes_Rift; i++ {
+		player.MenuStates = append(player.MenuStates, &structs.MenuStatusItem{
+			MenuID:     int32(i),
+			MenuStatus: structs.MenuStatus_New,
+		})
+	}
 
 	dbData := &mysql.PlayerDB{
 		AccountID: player.AccountID,

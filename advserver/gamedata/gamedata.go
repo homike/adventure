@@ -6,7 +6,6 @@ import (
 	"adventure/common/csv"
 	"adventure/common/structs"
 	"errors"
-	"fmt"
 )
 
 var logger *clog.Logger
@@ -33,15 +32,18 @@ type Templates struct {
 }
 
 const (
-	EmployReturnExp         = 50000 // 英雄.解雇返回经验需要的总经验值
-	EmployReturnExpPer      = 70    // 英雄.解雇返回经验比例
-	HeroAwakeMinLevel       = 30    // 英雄.英雄觉醒需要的等级
-	MaxStrength             = 72000 // 角色.饱足度上限
-	FightFloatValueMin      = 20    // 战斗.普通攻击浮动下限
-	FightFloatValueMax      = 25    // 战斗.普通攻击浮动上限
-	FightSkillFloatValueMin = 95    // 战斗.技能攻击浮动下限
-	FightSkillFloatValueMax = 105   // 战斗.技能攻击浮动上限
-	MaxHeroWorkTopItem      = 20    // 英雄.英雄最大出战数
+	EmployReturnExp              = 50000        // 英雄.解雇返回经验需要的总经验值
+	EmployReturnExpPer           = 70           // 英雄.解雇返回经验比例
+	HeroAwakeMinLevel            = 30           // 英雄.英雄觉醒需要的等级
+	MaxStrength                  = 72000        // 角色.饱足度上限
+	FightFloatValueMin           = 20           // 战斗.普通攻击浮动下限
+	FightFloatValueMax           = 25           // 战斗.普通攻击浮动上限
+	FightSkillFloatValueMin      = 95           // 战斗.技能攻击浮动下限
+	FightSkillFloatValueMax      = 105          // 战斗.技能攻击浮动上限
+	MaxHeroWorkTopItem           = 20           // 英雄.英雄最大出战数
+	FreeIngotEmployFirstTimeSpan = 180          // 英雄.首次免费元宝招募间隔
+	FreeIngotEmployTimeSpanItem  = 60 * 60 * 48 // 英雄.免费元宝招募间隔
+
 )
 
 func Init() {
@@ -67,8 +69,8 @@ func Init() {
 	}
 	csv.LoadTemplates2(AllTemplates)
 
-	fmt.Println("Skill ", AllTemplates.HeroTemplates[16205].SkillID[1])
-	fmt.Println("battle Name ", AllTemplates.Battlefields[1001].Name)
+	// fmt.Println("Skill ", AllTemplates.HeroTemplates[16205].SkillID[1])
+	// fmt.Println("battle Name ", AllTemplates.Battlefields[1001].Name)
 }
 
 func GetHeroLevelExp(heroLv int32, awakeCnt int32) (int32, error) {

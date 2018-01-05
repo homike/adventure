@@ -297,3 +297,25 @@ type Achievement struct {
 	TotalCount int32      // 累计数
 	Status     AchvStatus // 状态
 }
+
+type MenuTypes uint8
+
+const (
+	MenuTypes_None           MenuTypes = iota
+	MenuTypes_Temple                   // 神殿
+	MenuTypes_TradeHouse               // 商行
+	MenuTypes_MiningWorkshop           // 挖矿-工坊
+	MenuTypes_MiningMap                // 挖矿
+	MenuTypes_Recruit                  // 招募
+	MenuTypes_BaseRoot                 // 基地
+	MenuTypes_Arena                    // 竞技场
+	MenuTypes_Shop                     // 商城
+	MenuTypes_Awaken                   // 觉醒
+	MenuTypes_WeaponUpgrade            // 武具升级
+	MenuTypes_Artifact                 // 神器
+	MenuTypes_UnEmploy                 // 解雇
+	MenuTypes_HeroIndex                // 英雄顺序调整
+	MenuTypes_FS                       // 封神之阶
+	MenuTypes_TradeTroop               // 贸易队
+	MenuTypes_Rift                     // 秘境功能开启
+)

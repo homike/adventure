@@ -25,12 +25,12 @@ func (sess *Session) DoReward(reward *structs.RewardTemplate, count int32) (*str
 
 	case structs.RewardType_HP: //奖励基础战力
 		rID = reward.Param1
-		rNum := reward.Param2 * count
+		rNum = reward.Param2 * count
 		sess.AddMainHeroHP(rNum, structs.AddHP_Type_WinBattle)
 
 	case structs.RewardType_Item: //奖励道具
 		rID = reward.Param1
-		rNum := reward.Param2 * count
+		rNum = reward.Param2 * count
 		item, isNew := sess.PlayerData.Bag.AddItem(rID, rNum)
 		syncType := structs.SyncItem_Type_Update
 		if isNew {

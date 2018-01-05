@@ -75,7 +75,7 @@ const (
 	// 角色相关
 	Protocol_EatFood_Req              = 1401 // 吃食物
 	Protocol_EatFood_Resp             = 1402
-	Protocol_UnLockMenu_Req           = 1403 // 解锁菜单
+	Protocol_UnLockMenu_Ntf           = 1403 // 解锁菜单
 	Protocol_SyncStrength_Ntf         = 1404 // 同步饱足度
 	Protocol_SyncWorkHeroTop_Ntf      = 1405 // 同步出站英雄上限
 	Protocol_GetEatedFoods_Req        = 1410 // 同步已食用过的食物列表
@@ -187,6 +187,10 @@ type SyncStrengthNtf struct {
 ///////////////////////////////////////////// 英雄 ////////////////////////////////////////
 type SyncHeroWorkTopNtf struct {
 	MaxWorker int32
+}
+
+type SyncUnlockMenuNtf struct {
+	MenuID int32
 }
 
 type SyncUnlockMenusNtf struct {
