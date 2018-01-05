@@ -41,6 +41,7 @@ const (
 	FightFloatValueMax      = 25    // 战斗.普通攻击浮动上限
 	FightSkillFloatValueMin = 95    // 战斗.技能攻击浮动下限
 	FightSkillFloatValueMax = 105   // 战斗.技能攻击浮动上限
+	MaxHeroWorkTopItem      = 20    // 英雄.英雄最大出战数
 )
 
 func Init() {

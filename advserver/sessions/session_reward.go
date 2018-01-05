@@ -45,6 +45,7 @@ func (sess *Session) DoReward(reward *structs.RewardTemplate, count int32) (*str
 	case structs.RewardType_UnlockGameLevel: // 解锁游戏关卡
 		rID = reward.Param1
 		gameLevel, err := sess.PlayerData.PlayerGameLevel.UnLockGameLevel(rID)
+		logger.Debug("czx@@@ UnlockGameLevel Reward: %v, Error: %v", rID, err)
 		if err == nil {
 			sess.Send(structs.Protocol_OpenGameLevel_Ntf, &structs.OpenGameLevelNtf{GameLevel: gameLevel})
 		}
@@ -57,8 +58,24 @@ func (sess *Session) DoReward(reward *structs.RewardTemplate, count int32) (*str
 		}
 
 	case structs.RewardType_UnlockMenu: // 解锁菜单
+		rID = reward.Param1
+		sess.UnLockMenu(rID)
+
 	case structs.RewardType_AddHeroWorkTop: // 增加英雄出战数上限
+		rNum = reward.Param1 * count
+		err := sess.PlayerData.HeroTeam.AddWorkHeroTop(rNum)
+		if err == nil {
+			sess.SyncHeroWorkTop()
+		}
+
 	case structs.RewardType_UnlockArtifact: // 解锁神器
+		rID = reward.Param1
+		err := sess.PlayerData.Artifact.UnlockArtifact(rID)
+		if err == nil {
+			sess.SyncArtifactStatus(structs.SyncType_Update)
+			//CZXDO: 全服公告
+		}
+
 	case structs.RewardType_AddGetGiftDayNum: // 增加好友中每日领取礼物次数
 	case structs.RewardType_AddSendGiftDayNum: // 增加好友中每日送礼次数
 	case structs.RewardType_TradeTaskReset: // 商会任务重置
@@ -81,14 +98,41 @@ func (sess *Session) DoSomeReward(itemTemplateID int32, num int32) error {
 }
 
 func (sess *Session) DoSomeRewards(rewardIDs []int32) error {
-	//CZXDO: 动态掉落
+	resRewads := []*structs.Reward{}
+	resContent := ""
+	otherRewads := []*structs.Reward{}
+	otherContent := []string{}
+	for _, rewardID := range rewardIDs {
+		rewardT, ok := gamedata.AllTemplates.RewardTemplates[rewardID]
+		if !ok {
+			logger.Error("can not find reward %v template", rewardID)
+			continue
+		}
+		reward, err := sess.DoReward(&rewardT, 1)
+		if err != nil {
+			logger.Error("DoReward(%v) error %v", rewardID, err)
+			continue
+		}
+		if rewardT.Type == structs.RewardType_Property || rewardT.Type == structs.RewardType_Item {
+			resRewads = append(resRewads, reward)
+			resContent = rewardT.Context
+		} else {
+			otherRewads = append(otherRewads, reward)
+			otherContent = append(otherContent, rewardT.Context)
+		}
+	}
 
-	//rewardIDs := gamedata.AllTemplates.ItemTemplates[itemTemplateID].RewardIDs
-	//_ = rewardIDs
+	if len(resRewads) > 0 {
+		sess.RewardResults(true, resRewads, resContent)
+	} else {
+		for k, v := range otherRewads {
+			sess.RewardResults(false, []*structs.Reward{v}, otherContent[k])
+		}
+	}
 	return nil
 }
 
-func (sess *Session) RewardResults(isRes bool, rewards []structs.Reward, context string) {
+func (sess *Session) RewardResults(isRes bool, rewards []*structs.Reward, context string) {
 	ntf := &structs.RewardResultNtf{
 		IsRes:   isRes,
 		Rewards: rewards,

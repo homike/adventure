@@ -34,11 +34,11 @@ func (sess *Session) ResourceChange(resID int32, resNum int32, resChangeType int
 		sess.SyncResource(resID, resNum)
 
 	case resID >= structs.ResourceType_FoodMin && resID <= structs.ResourceType_FoodMax: // 食物
-		sess.PlayerData.Res.FoodChange(resID, resNum)
+		sess.PlayerData.Res.Foods.Add(resID, resNum)
 		sess.SyncResource(resID, resNum)
 
 	case resID >= structs.ResourceType_BadgesMin && resID <= structs.ResourceType_BadgesMax: // 徽章
-		sess.PlayerData.Res.BadgesChange(resID, resNum)
+		sess.PlayerData.Res.Badges.Add(resID, resNum)
 		sess.SyncResource(resID, resNum)
 	}
 }
@@ -52,10 +52,10 @@ func (sess *Session) SyncAllResources() {
 		Strength:      sess.PlayerData.Res.Strength,
 		Detonator:     sess.PlayerData.Res.Detonator,
 		MiningToolkit: sess.PlayerData.Res.MiningToolkit,
-		Ors:           sess.PlayerData.Res.Ores,
-		Foods:         sess.PlayerData.Res.Foods,
-		Badges:        sess.PlayerData.Res.Badges,
-		UnlockResIds:  sess.PlayerData.Res.UnlockResIDs,
+		Ors:           sess.PlayerData.Res.Ores.Datas,
+		Foods:         sess.PlayerData.Res.Foods.Datas,
+		Badges:        sess.PlayerData.Res.Badges.Datas,
+		UnlockResIds:  sess.PlayerData.Res.UnlockResIDs.Datas,
 	}
 
 	sess.Send(structs.Protocol_SyncAllResouce_Ntf, resp)

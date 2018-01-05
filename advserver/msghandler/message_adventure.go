@@ -129,8 +129,6 @@ func GetFightCoolingTimeReq(sess *sessions.Session, msgBody []byte) {
 
 func AdventureEventReq(sess *sessions.Session, msgBody []byte) {
 
-	logger.Debug("AdventureEventReq")
-
 	req := &structs.AdventureEventReq{}
 	sess.UnMarshal(msgBody, req)
 
@@ -140,6 +138,7 @@ func AdventureEventReq(sess *sessions.Session, msgBody []byte) {
 		EventID:     req.EventID,
 	}
 
+	logger.Debug("AdventureEventReq, EventID: %v", req.EventID)
 	/////////////////////////////////////////////Data Check////////////////////////////////////////
 	sess.RefreshPlayerInfo(nil)
 
@@ -158,6 +157,7 @@ func AdventureEventReq(sess *sessions.Session, msgBody []byte) {
 
 	eventTemplateID := gameLevelT.EvnetIDs[req.EventID]
 	eventT, ok := gamedata.AllTemplates.GameLevelEventTemplates[eventTemplateID]
+	logger.Debug("AdventureEventReq, eventTemplateID: %v", eventTemplateID)
 	if !ok {
 		logger.Error("AdventureEventReq GameLevelEventTemplates(%v)", eventTemplateID)
 		sess.Send(structs.Protocol_AdventureEvent_Resp, resp)
@@ -192,13 +192,13 @@ func AdventureEventReq(sess *sessions.Session, msgBody []byte) {
 	case structs.GameLevelType_NpcTack:
 	case structs.GameLevelType_Item:
 		if !sess.PlayerData.Bag.HasEnoughItem(eventT.ItemId, eventT.Num) {
-			logger.Error("AdventureEventReq (%v) item(%v, %v) not enough ", eventT.ItemId, eventT.Num)
+			logger.Error("AdventureEventReq (%v) item(%v, %v) not enough ", req.EventID, eventT.ItemId, eventT.Num)
 			sess.Send(structs.Protocol_AdventureEvent_Resp, resp)
 			return
 		}
 	case structs.GameLevelType_Res:
-		if !sess.PlayerData.Res.HasEnoughOres(eventT.ResId, eventT.Num) {
-			logger.Error("AdventureEventReq (%v) res(%v, %v) not enough ", eventT.ItemId, eventT.Num)
+		if !sess.PlayerData.Res.Ores.Exist(eventT.ResId, eventT.Num) {
+			logger.Error("AdventureEventReq (%v) res(%v, %v) not enough ", req.EventID, eventT.ResId, eventT.Num)
 			sess.Send(structs.Protocol_AdventureEvent_Resp, resp)
 			return
 		}
@@ -258,6 +258,7 @@ func AdventureEventReq(sess *sessions.Session, msgBody []byte) {
 	// 发放奖励
 	sess.DoSomeRewards(eventT.RewardIDs)
 
+	logger.Debug("czx@@@ eventID: %v, eventT: %v, rewardsID: %v", req.EventID, eventTemplateID, eventT.RewardIDs)
 	//CZXDO: 通过公告
 
 	finishCnt := 0

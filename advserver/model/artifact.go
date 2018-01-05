@@ -3,6 +3,7 @@ package model
 import (
 	"adventure/advserver/gamedata"
 	"adventure/common/structs"
+	"errors"
 )
 
 type Artifact struct {
@@ -20,7 +21,7 @@ func NewArtifact() *Artifact {
 	for _, v := range gamedata.AllTemplates.SpellTemplates {
 		artifact.Status = append(artifact.Status, &structs.ArtifactStatus{
 			ArtifactID: v.ID,
-			Status:     structs.UnLock,
+			Status:     structs.ArtifactStatusType_UnLock,
 		})
 	}
 
@@ -38,7 +39,7 @@ func (a *Artifact) GetArtifactStatus(id int32) *structs.ArtifactStatus {
 
 func (a *Artifact) GetArtifactStatusUse() *structs.ArtifactStatus {
 	for _, v := range a.Status {
-		if v.Status == structs.Use {
+		if v.Status == structs.ArtifactStatusType_Use {
 			return v
 		}
 	}
@@ -48,11 +49,20 @@ func (a *Artifact) GetArtifactStatusUse() *structs.ArtifactStatus {
 func (a *Artifact) GetArtifactStatusUnLockCount() int32 {
 	cnt := int32(0)
 	for _, v := range a.Status {
-		if v.Status != structs.Lock {
+		if v.Status != structs.ArtifactStatusType_Lock {
 			cnt++
 		}
 	}
 	return cnt
+}
+
+func (a *Artifact) UnlockArtifact(id int32) error {
+	status := a.GetArtifactStatus(id)
+	if status == nil {
+		return errors.New("UnlockArtifact faield")
+	}
+	status.Status = structs.ArtifactStatusType_New
+	return nil
 }
 
 func (a *Artifact) ArtifactSealStatus(id int32) *structs.ArtifactSealStatus {

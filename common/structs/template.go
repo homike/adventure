@@ -241,6 +241,10 @@ type ResourceTemplate struct {
 	Description       string  `val:"描述"`
 	ShopID            int32   `val:"商城id"`
 	UpgradeWeaponCost float32 `val:"锻造元宝价格"`
+	AddActive         int32   `val:"恢复体力"`
+	IsOnceEveryday    bool    `val:"是否每天只能使用一次"`
+	MinEatLimit       int32   `val:"最低食用饱足度"`
+	RewardIDs         []int32 `val:"奖励id列表"`
 }
 
 type CombinationSpell struct {

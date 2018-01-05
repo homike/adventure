@@ -9,6 +9,12 @@ type IDNUMARRAY struct {
 	Datas []*IDNUM
 }
 
+func NewIDNUMARRAY(count int) *IDNUMARRAY {
+	return &IDNUMARRAY{
+		Datas: make([]*IDNUM, count),
+	}
+}
+
 func (i *IDNUMARRAY) Add(id, num int32) {
 	for k, v := range i.Datas {
 		if v.ID == id {
@@ -29,7 +35,7 @@ func (i *IDNUMARRAY) Add(id, num int32) {
 func (i *IDNUMARRAY) Exist(id, num int32) bool {
 	for _, v := range i.Datas {
 		if v.ID == id {
-			if v.Num > num {
+			if v.Num >= num {
 				return true
 			}
 			break
@@ -45,6 +51,35 @@ func (i *IDNUMARRAY) Count(id int32) int32 {
 		}
 	}
 	return 0
+}
+
+type INT32ARRAY struct {
+	Datas []int32
+}
+
+func NewINT32ARRAY(count int) *INT32ARRAY {
+	return &INT32ARRAY{
+		Datas: make([]int32, count),
+	}
+}
+
+func (i *INT32ARRAY) Add(data int32) {
+	for _, v := range i.Datas {
+		if v == data {
+			return
+		}
+	}
+
+	i.Datas = append(i.Datas, data)
+}
+
+func (i *INT32ARRAY) Exist(data int32) bool {
+	for _, v := range i.Datas {
+		if v == data {
+			return true
+		}
+	}
+	return false
 }
 
 type GameItem struct {
@@ -231,10 +266,10 @@ const (
 type SyncType uint8
 
 const (
-	First SyncType = iota
-	Add
-	Remove
-	Update
+	SyncType_First SyncType = iota
+	SyncType_Add
+	SyncType_Remove
+	SyncType_Update
 )
 
 type OfflineReward struct {

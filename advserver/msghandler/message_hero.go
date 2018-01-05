@@ -131,9 +131,14 @@ func workResp(sess *sessions.Session, heroID int32) {
 	}
 	hero, err := sess.PlayerData.HeroTeam.GetHero(heroID)
 	if err != nil {
+		logger.Error("cannot find hero %v, err: %v", heroID, err)
 		sess.Send(structs.Protocol_Work_Resp, resp)
+		return
 	}
+
 	hero.IsOutFight = true
+
+	resp.Ret = structs.AdventureRet_Success
 	sess.Send(structs.Protocol_Work_Resp, resp)
 }
 

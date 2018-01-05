@@ -139,6 +139,18 @@ func (h *HeroTeams) GetPlayerHero() *structs.Hero {
 	return nil
 }
 
+func (h *HeroTeams) AddWorkHeroTop(num int32) error {
+	if num <= 0 {
+		return errors.New("AddWorkHeroTop faield")
+	}
+	h.MaxWorker += num
+	if h.MaxWorker > gamedata.MaxHeroWorkTopItem {
+		h.MaxWorker = gamedata.MaxHeroWorkTopItem
+	}
+
+	return nil
+}
+
 type HeroByIndex []*structs.Hero
 
 func (a HeroByIndex) Len() int           { return len(a) }

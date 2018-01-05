@@ -36,12 +36,12 @@ func EquipArtifactReq(sess *sessions.Session, msgBody []byte) {
 		sess.Send(structs.Protocol_EquipArtifact_Resp, resp)
 		return
 	}
-	if aStatus.Status == structs.UnLock {
+	if aStatus.Status == structs.ArtifactStatusType_UnLock {
 		logger.Error("%v is unlock", req.ArtifactID)
 		sess.Send(structs.Protocol_EquipArtifact_Resp, resp)
 		return
 	}
-	if aStatus.Status == structs.Use {
+	if aStatus.Status == structs.ArtifactStatusType_Use {
 		return
 	}
 
@@ -49,10 +49,10 @@ func EquipArtifactReq(sess *sessions.Session, msgBody []byte) {
 
 	eStatusUse := sess.PlayerData.Artifact.GetArtifactStatusUse()
 	if eStatusUse != nil {
-		eStatusUse.Status = structs.UnLock
+		eStatusUse.Status = structs.ArtifactStatusType_UnLock
 	}
 
-	aStatus.Status = structs.Use
+	aStatus.Status = structs.ArtifactStatusType_Use
 
 	resp.Ret = structs.AdventureRet_Success
 	sess.Send(structs.Protocol_EquipArtifact_Resp, resp)
@@ -104,7 +104,7 @@ func UpgradeArtifactReq(sess *sessions.Session, msgBody []byte) {
 		resID := costTemplate.NeedResourceIdList[i]
 		resCnt := costTemplate.NeedResourceCountList[i]
 
-		userResCnt := sess.PlayerData.Res.GetOresCount(resID)
+		userResCnt := sess.PlayerData.Res.Ores.Count(resID)
 		if userResCnt < resCnt {
 			costRes[resID] = userResCnt
 			resT, ok := gamedata.AllTemplates.ResourceTemplates[resID]

@@ -7,17 +7,17 @@ import (
 )
 
 type Resource struct {
-	Strength      int32            // 体力
-	Ingot         int32            // 元宝(钻石)
-	Money         int32            // 金钱
-	Fragments     int32            // 碎片数
-	Statue        int32            // 巨魔雕像数
-	Detonator     int32            // 雷管
-	MiningToolkit int32            // 挖矿工具包
-	Ores          []*structs.IDNUM // 矿石
-	Foods         []*structs.IDNUM // 食物
-	Badges        []*structs.IDNUM // 徽章
-	UnlockResIDs  []int32          // 已经解锁的资源id列表
+	Strength      int32               // 体力
+	Ingot         int32               // 元宝(钻石)
+	Money         int32               // 金钱
+	Fragments     int32               // 碎片数
+	Statue        int32               // 巨魔雕像数
+	Detonator     int32               // 雷管
+	MiningToolkit int32               // 挖矿工具包
+	Ores          *structs.IDNUMARRAY // 矿石
+	Foods         *structs.IDNUMARRAY // 食物
+	Badges        *structs.IDNUMARRAY // 徽章
+	UnlockResIDs  *structs.INT32ARRAY // 已经解锁的资源id列表
 }
 
 func NewResource() *Resource {
@@ -29,99 +29,16 @@ func NewResource() *Resource {
 		Statue:        100,
 		Detonator:     100,
 		MiningToolkit: 100,
+		Ores:          structs.NewIDNUMARRAY(0),
+		Foods:         structs.NewIDNUMARRAY(0),
+		Badges:        structs.NewIDNUMARRAY(0),
+		UnlockResIDs:  structs.NewINT32ARRAY(0),
 	}
 }
 
 func (r *Resource) OresChange(id, num int32) {
-	for k, v := range r.Ores {
-		if v.ID == id {
-			r.Ores[k].Num += num
-			if r.Ores[k].Num < 0 {
-				r.Ores[k].Num = 0
-			}
-			return
-		}
-	}
-
-	r.Ores = append(r.Ores, &structs.IDNUM{
-		ID:  id,
-		Num: num,
-	})
-
-	for _, v := range r.UnlockResIDs {
-		if v == id {
-			return
-		}
-	}
-
-	r.UnlockResIDs = append(r.UnlockResIDs, id)
-}
-
-func (r *Resource) HasEnoughOres(id, num int32) bool {
-	for _, v := range r.Ores {
-		if v.ID == id {
-			if v.Num > num {
-				return true
-			}
-			break
-		}
-	}
-	return false
-}
-
-func (r *Resource) GetOresCount(id int32) int32 {
-	for _, v := range r.Ores {
-		if v.ID == id {
-			return v.Num
-		}
-	}
-	return 0
-}
-
-func (r *Resource) FoodChange(id, num int32) {
-	for k, v := range r.Foods {
-		if v.ID == id {
-			r.Foods[k].Num += num
-			if r.Foods[k].Num < 0 {
-				r.Foods[k].Num = 0
-			}
-			return
-		}
-	}
-
-	r.Foods = append(r.Foods, &structs.IDNUM{
-		ID:  id,
-		Num: num,
-	})
-}
-
-func (r *Resource) HasEnoughFood(id, num int32) bool {
-	for _, v := range r.Foods {
-		if v.ID == id {
-			if v.Num > num {
-				return true
-			}
-			break
-		}
-	}
-	return false
-}
-
-func (r *Resource) BadgesChange(id, num int32) {
-	for k, v := range r.Badges {
-		if v.ID == id {
-			r.Badges[k].Num += num
-			if r.Badges[k].Num < 0 {
-				r.Badges[k].Num = 0
-			}
-			return
-		}
-	}
-
-	r.Badges = append(r.Badges, &structs.IDNUM{
-		ID:  id,
-		Num: num,
-	})
+	r.Ores.Add(id, num)
+	r.UnlockResIDs.Add(id)
 }
 
 func (r *Resource) StrengthChange(num int32) error {

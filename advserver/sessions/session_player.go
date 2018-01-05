@@ -24,7 +24,7 @@ func (sess *Session) OnEnterGame() {
 	/****************同步英雄数据********************/
 	sess.SyncHeroWorkTop()                                                       // 同步最大出战英雄数
 	sess.SyncHeroNtf(structs.SyncHeroType_First, sess.PlayerData.HeroTeam.Heros) // 同步英雄信息
-	sess.SyncArtifactStatus(structs.First)
+	sess.SyncArtifactStatus(structs.SyncType_First)
 
 	/****************同步背包数据********************/
 	sess.SyncAllResources()   // 同步所有资源
@@ -40,11 +40,11 @@ func (sess *Session) SyncPlayerBaseInfo() {
 	fmt.Println("czx@@@ SyncPlayerBaseInfo")
 
 	resp := &structs.SyncPlayerBaseInfoNtf{
-		PlayerID:           1,
+		PlayerID:           int32(sess.PlayerData.AccountID),
 		GameZoonID:         1,
 		IsSupperMan:        true,
 		PlatformType:       1,
-		Viplevel:           1,
+		Viplevel:           sess.PlayerData.VipLevel,
 		TotalRechargeIngot: 1,
 	}
 	sess.Send(structs.Protocol_SyncPlayerBaseInfo_Ntf, resp)
@@ -88,15 +88,16 @@ func (sess *Session) SyncGameBoxTopNumNtf() {
 }
 
 func (sess *Session) SyncUserGuidRecords() {
-	// records := []structs.GuildRecord{}
-	// for i := 0; i < 24; i++ {
-	// 	records = append(records, &structs.GuildRecord{
-	// 		UserGuidTypes: uint8(i),
-	// 		TriggerCount:  int32(5),
-	// 	})
-	// }
+	//CZXDO: 新手引导功能
+	records := []*structs.GuildRecord{}
+	for i := 0; i < 24; i++ {
+		records = append(records, &structs.GuildRecord{
+			UserGuidTypes: uint8(i),
+			TriggerCount:  int32(5),
+		})
+	}
 	resp := &structs.SyncUserGuidRecordsNtf{
-		Records: sess.PlayerData.UserGuidRecords,
+		Records: records, //sess.PlayerData.UserGuidRecords,
 	}
 
 	sess.Send(structs.Protocol_SyncUserGuidRecords_Ntf, resp)
@@ -144,8 +145,12 @@ func (sess *Session) SyncArtifactStatus(stype structs.SyncType) {
 }
 
 func (sess *Session) AddHero(heros []*structs.Hero, bNotify bool) {
+
+	sess.SyncHeroNtf(structs.SyncHeroType_Add, heros)
+
 	for _, hero := range heros {
-		//CZXDO: 添加英雄，成就检测
+		sess.CheckAchievements(structs.AchvCondType_CollectHero, int32(hero.Quality), 1)
+
 		if bNotify && (hero.Quality == structs.QualityType_Gold || hero.Quality == structs.QualityType_SplashGold) {
 			//CZXDO: 获得英雄公告
 		}
@@ -376,4 +381,18 @@ func (sess *Session) UnLockMenu(menuID int32) {
 		sess.CheckAchievements(structs.AchvCondType_OpenMenu, 0, menuID)
 	}
 	menu.MenuStatus = structs.MenuStatus_New
+}
+
+func (sess *Session) SyncEatFoodList() {
+	ids := []int32{}
+	dates := []int64{}
+	for k, v := range sess.PlayerData.ExtendData.EatedFoodRecords {
+		ids = append(ids, k)
+		dates = append(dates, v)
+	}
+	resp := &structs.GetEatedFoodsResp{
+		FoodIDs:   ids,
+		EatedDate: dates,
+	}
+	sess.Send(structs.Protocol_GetEatedFoods_Resp, resp)
 }

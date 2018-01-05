@@ -72,7 +72,7 @@ func (pgl *PlayerGameLevel) GetUnActiveEventCount() int32 {
 func (pgl *PlayerGameLevel) UnLockGameLevel(levelID int32) (*structs.GameLevel, error) {
 
 	gamelevel, err := pgl.GetGameLevelData(levelID)
-	if err != nil || gamelevel.IsUnlock {
+	if err == nil || (gamelevel != nil && gamelevel.IsUnlock) {
 		return gamelevel, errors.New("gamelevel is unlock")
 	}
 

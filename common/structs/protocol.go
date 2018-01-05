@@ -78,6 +78,8 @@ const (
 	Protocol_UnLockMenu_Req           = 1403 // 解锁菜单
 	Protocol_SyncStrength_Ntf         = 1404 // 同步饱足度
 	Protocol_SyncWorkHeroTop_Ntf      = 1405 // 同步出站英雄上限
+	Protocol_GetEatedFoods_Req        = 1410 // 同步已食用过的食物列表
+	Protocol_GetEatedFoods_Resp       = 1411
 	Protocol_SyncUnlockMenus_Ntf      = 1412 // 同步已解锁菜单列表
 	Protocol_SyncUserGuidRecords_Ntf  = 1413 // 同步新手引导数据
 	Protocol_UpdateUserGuidRecord_Req = 1414 // 更新玩家新手引导数据
@@ -239,7 +241,7 @@ type UnEmployResp struct {
 
 type RewardResultNtf struct {
 	IsRes   bool
-	Rewards []Reward
+	Rewards []*Reward
 	Context string
 }
 
@@ -358,6 +360,14 @@ type EatFoodReq struct {
 type EatFoodResp struct {
 	Ret      uint8
 	Strength int32
+}
+
+type GetEatedFoodsReq struct {
+}
+
+type GetEatedFoodsResp struct {
+	FoodIDs   []int32
+	EatedDate []int64
 }
 
 ///////////////////////////////////////////// 冒险 ////////////////////////////////////////

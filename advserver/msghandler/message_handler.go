@@ -41,6 +41,7 @@ func Init() error {
 		uint16(structs.Protocol_SetPlayerBarrageConfig_Req): SetPlayerBarrageConfig,
 		uint16(structs.Protocol_UpdateUserGuidRecord_Req):   UpdateUserGuidRecord,
 		uint16(structs.Protocol_EatFood_Req):                EatFood,
+		uint16(structs.Protocol_GetEatedFoods_Req):          GetEatedFoodList,
 	}
 
 	InitMessageLogin()

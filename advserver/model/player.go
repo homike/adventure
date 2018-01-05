@@ -33,7 +33,7 @@ type Player struct {
 	LastLoginTime     time.Time
 	LastLogoffTime    time.Time
 	BarrageSet        string
-	VipLevel          int
+	VipLevel          int32
 	OnlineTime        int
 	HeroTeam          *HeroTeams                // 玩家英雄
 	Res               *Resource                 // 玩家资源
@@ -68,14 +68,21 @@ func NewPlayer(name string, heroTemplateID int32) (*Player, error) {
 	player := InitPlayer()
 	player.AccountID = playID
 	player.Name = name
+	player.VipLevel = 10
+
 	// 初始化玩家英雄
 	player.HeroTeam = NewHeroTeams()
 	hero, _ := player.HeroTeam.AddHero(player.Name, true, heroTemplateID)
+	hero1, _ := player.HeroTeam.AddHero(player.Name, false, 10001)
+	hero1.IsOutFight = true
+
 	player.HeroTeam.ReCalculateHeroLevelHp(hero)
+	player.HeroTeam.ReCalculateHeroLevelHp(hero1)
+
 	// 初始化玩家资源
 	player.Res = NewResource()
 	for i := 200; i <= 208; i++ {
-		player.Res.FoodChange(int32(i), 1)
+		player.Res.Foods.Add(int32(i), 1)
 	}
 
 	// 关卡数据初始化

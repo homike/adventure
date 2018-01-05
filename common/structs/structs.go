@@ -56,11 +56,11 @@ type GameLevel struct {
 type ArtifactStatusType uint8
 
 const (
-	_      ArtifactStatusType = iota
-	Lock                      // 未解锁
-	UnLock                    // 已解锁
-	Use                       // 使用中
-	New                       // 新解锁（客户端展示用）
+	_                         ArtifactStatusType = iota
+	ArtifactStatusType_Lock                      // 未解锁
+	ArtifactStatusType_UnLock                    // 已解锁
+	ArtifactStatusType_Use                       // 使用中
+	ArtifactStatusType_New                       // 新解锁（客户端展示用）
 )
 
 type ArtifactStatus struct { // 神器的状态
