@@ -35,19 +35,19 @@ type Player struct {
 	BarrageSet        string
 	VipLevel          int32
 	OnlineTime        int
-	NextFreeIngotTime int64                     // 下一次免费招募时间
-	LastEmployTime    int64                     // 最近一次刷新的招募时间
-	AddGameBoxCount   int32                     // 增加的宝箱上限数量
-	HeroTeam          *HeroTeams                // 玩家英雄
-	Res               *Resource                 // 玩家资源
-	PlayerGameLevel   *PlayerGameLevel          // 关卡数据
-	Bag               *Bag                      // 背包
-	UserGuidRecords   []*structs.GuildRecord    // 新手引导记录
-	MenuStates        []*structs.MenuStatusItem // 菜单状态
-	Artifact          *Artifact                 // 神器
-	Achievement       *PlayerAchievenment       // 成就
-	ExtendData        *ExtendData               // 扩展数据
-	MiningMap         string
+
+	AddGameBoxCount int32                     // 增加的宝箱上限数量
+	HeroTeam        *HeroTeams                // 玩家英雄
+	Res             *Resource                 // 玩家资源
+	PlayerGameLevel *PlayerGameLevel          // 关卡数据
+	Bag             *Bag                      // 背包
+	UserGuidRecords []*structs.GuildRecord    // 新手引导记录
+	MenuStates      []*structs.MenuStatusItem // 菜单状态
+	Artifact        *Artifact                 // 神器
+	Achievement     *PlayerAchievenment       // 成就
+	Arena           *Arena                    // 竞技场
+	ExtendData      *ExtendData               // 扩展数据
+	MiningMap       string
 }
 
 func InitPlayer() *Player {
@@ -124,6 +124,9 @@ func NewPlayer(name string, heroTemplateID int32) (*Player, error) {
 			MenuStatus: structs.MenuStatus_New,
 		})
 	}
+
+	// 竞技场数据初始化
+	player.Arena = NewArena()
 
 	dbData := &mysql.PlayerDB{
 		AccountID: player.AccountID,

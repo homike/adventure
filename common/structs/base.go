@@ -319,3 +319,11 @@ const (
 	MenuTypes_TradeTroop               // 贸易队
 	MenuTypes_Rift                     // 秘境功能开启
 )
+
+type ArenaRwdStatus uint8
+
+const (
+	ArenaRwdStatus_UnAtive ArenaRwdStatus = iota
+	ArenaRwdStatus_Ative
+	ArenaRwdStatus_Recieve
+)

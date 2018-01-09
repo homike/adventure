@@ -94,6 +94,16 @@ const (
 	// 奖励
 	Protocol_RewardResult_Ntf = 1700 // 奖励物品接口
 
+	// 竞技场
+	Protocol_OpenArena_Req           = 1800 // 请求打开竞技场
+	Protocol_SyncArena_Ntf           = 1801 // 同步竞技场
+	Protocol_ArenaChallenge_Req      = 1802 // 发起挑战
+	Protocol_ArenaChallenge_Resp     = 1803
+	Protocol_RefreshArena_Req        = 1804 // 刷新竞技场
+	Protocol_RefreshArena_Resp       = 1805
+	Protocol_RecieveArenaReward_Req  = 1806 // 领取竞技场奖励
+	Protocol_RecieveArenaReward_Resp = 1807
+
 	// 神器相关
 	//Protocol_UnlockArtifactSeal_Req     = 1900 // 解锁神器封印
 	//Protocol_UnlockArtifactSeal_Resp    = 1901

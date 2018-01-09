@@ -6,6 +6,7 @@ import (
 	"adventure/common/csv"
 	"adventure/common/structs"
 	"errors"
+	"fmt"
 )
 
 var logger *clog.Logger
@@ -29,6 +30,7 @@ type Templates struct {
 	ResourceTemplates       map[int32]structs.ResourceTemplate       `table:"Resouce"`
 	CombinationSpells       map[int32]structs.CombinationSpell       `table:"CombinationSpell"`
 	AchievementTemplates    map[int32]structs.AchievementTemplate    `table:"achievementAward"`
+	GlobalData              structs.GlobalTemplate                   `table:"GlobalData"`
 }
 
 const (
@@ -73,7 +75,7 @@ func Init() {
 	}
 	csv.LoadTemplates2(AllTemplates)
 
-	// fmt.Println("Skill ", AllTemplates.HeroTemplates[16205].SkillID[1])
+	fmt.Println("EmployReturnExp ", AllTemplates.GlobalData.EmployReturnExp)
 	// fmt.Println("battle Name ", AllTemplates.Battlefields[1001].Name)
 }
 

@@ -366,3 +366,32 @@ func (a *AchievementTemplate) IsConditinCountAddup() bool {
 	}
 	return false
 }
+
+type GlobalTemplate struct {
+	EmployReturnExp              int32 `val:"英雄.解雇返回经验需要的总经验值"`
+	EmployReturnExpPer           int32 `val:"英雄.解雇返回经验比例"`
+	HeroAwakeMinLevel            int32 `val:"英雄.英雄觉醒需要的等级"`
+	MaxStrength                  int32 `val:"角色.饱足度上限"`
+	FightFloatValueMin           int32 `val:"战斗.普通攻击浮动下限"`
+	FightFloatValueMax           int32 `val:"战斗.普通攻击浮动上限"`
+	FightSkillFloatValueMin      int32 `val:"战斗.技能攻击浮动下限"`
+	FightSkillFloatValueMax      int32 `val:"战斗.技能攻击浮动上限"`
+	MaxHeroWorkTopItem           int32 `val:"英雄.英雄最大出战数"`
+	FreeIngotEmployFirstTimeSpan int32 `val:"英雄.首次免费元宝招募间隔"`
+	FreeIngotEmployTimeSpanItem  int32 `val:"英雄.免费元宝招募间隔"`
+	SystemRefreshTime            int32 `val:"英雄.系统每天的刷新时间"`
+
+	MaxChallengePlayerNum int32   `val:"竞技场.可挑战玩家数量"`
+	MaxChallengeCount     int32   `val:"竞技场.最大挑战次数"`
+	RefreshIngot          int32   `val:"竞技场.刷新价格"`
+	RefreshTimeSec        int32   `val:"竞技场.刷新时间间隔"`
+	TotalWinCount         []int32 `val:"竞技场.胜利场次"`
+	CourageAward          []int32 `val:"竞技场.勇气点奖励"`
+	ChampionAward         []int32 `val:"竞技场.冠军点奖励"`
+	HPRange               []int32 `val:"竞技场.战力分组"`
+	RobotHeroIDs          []int32 `val:"竞技场.随机英雄英雄列表"`
+	//RobotName             []string `val:"竞技场.随机武将名字"`
+	RandPlayerLimitHP int32   `val:"竞技场.不给高级玩家的HP限制"`
+	RandomGroup1      []int32 `val:"竞技场.分组选择1"`
+	RandomGroup2      []int32 `val:"竞技场.分组选择2"`
+}

@@ -29,25 +29,67 @@ func LoadTemplates2(templates interface{}) {
 		vtf := vt.Field(i)
 
 		tableName := vtf.Tag.Get("table")
-		structType := vf.Type().Elem() // map value type
 
-		keys, ret := GetAllRowIntKeys(tableName)
-		if ret != GAMEDATA_OK {
-			fmt.Println("GetAllRowIntKeys Error")
-			return
-		}
+		if vf.Type().Kind() == reflect.Struct { // key-value config
+			loadKeyValueData(tableName, vf)
 
-		for _, v := range keys {
-			structEntry := reflect.New(structType).Elem()
+		} else { // map config
+			structType := vf.Type().Elem() // map value type
 
-			loadStructData(tableName, v, structEntry, structType)
+			keys, ret := GetAllRowIntKeys(tableName)
+			if ret != GAMEDATA_OK {
+				fmt.Println("GetAllRowIntKeys Error")
+				return
+			}
 
-			vf.SetMapIndex(reflect.ValueOf(int32(v)), structEntry)
+			for _, v := range keys {
+				structEntry := reflect.New(structType).Elem()
+
+				loadStructData(tableName, v, structEntry, structType)
+
+				vf.SetMapIndex(reflect.ValueOf(int32(v)), structEntry)
+			}
+
 		}
 	}
 
 	// Delete tables
 	tables = make(map[string]*Table)
+}
+
+func loadKeyValueData(tableName string, vf reflect.Value) {
+	for j := 0; j < vf.NumField(); j++ {
+		vff := vf.Field(j)
+		vftf := vf.Type().Field(j)
+
+		key := vftf.Tag.Get("val")
+
+		switch vftf.Type.Kind() {
+		case reflect.Int8, reflect.Int, reflect.Int32, reflect.Int64:
+			intValue, _ := GetInt(tableName, key, "Value")
+			vff.SetInt(int64(intValue))
+
+		case reflect.Slice: // Only for slic int
+			strValue, ret := GetString(tableName, key, "Value")
+			if ret != GAMEDATA_OK {
+				fmt.Printf("reflect.Slice GetString(%v, %v) Error \n", tableName, key)
+				return
+			}
+			arrValue := []int32{}
+			if strValue != "" {
+				strSplits := strings.Split(strValue, ";")
+				for _, v := range strSplits {
+					intValue, err := strconv.Atoi(v)
+					if err != nil {
+						fmt.Printf("reflect.Slice strconv.Atoi(%v) Error %v \n", v, err)
+						return
+					}
+					arrValue = append(arrValue, int32(intValue))
+				}
+			}
+			vff.Set(reflect.ValueOf(arrValue))
+		}
+	}
 }
 
 func loadStructData(tableName string, index int, sVal reflect.Value, sType reflect.Type) {

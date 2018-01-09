@@ -74,3 +74,11 @@ type ArtifactSealStatus struct { // 神器的封印状态
 	Level    int32 // 封印等级
 	Count    int32 // 当前的进度
 }
+
+type FightTarget struct { // 战斗对象
+	PlayerID   int32
+	PlayerName string
+	IconID     int32 // 玩家图标ID
+	IsWin      bool  // 是否战胜
+	HP         int32 // 搜索到时的战力
+}
