@@ -12,10 +12,16 @@ import (
 /*
 type Templates struct {
 	HeroTemplates        map[int32]structs.HeroTemplate        `table:"hero"`
+	GlobalData           structs.GlobalTemplate                `table:"GlobalData"`
 }
+
 type HeroTemplate struct { // 英雄模板
 	HeroName            string  `val:"名字"`
 	SkillID             []int32 `val:"技能ID列表"`
+}
+type GlobalTemplate struct {
+	EmployReturnExp              int32 `val:"英雄.解雇返回经验需要的总经验值"`
+	EmployReturnExpPer           int32 `val:"英雄.解雇返回经验比例"`
 }
 */
 func LoadTemplates2(templates interface{}) {
@@ -34,7 +40,7 @@ func LoadTemplates2(templates interface{}) {
 			loadKeyValueData(tableName, vf)
 
 		} else { // map config
-			structType := vf.Type().Elem() // map value type
+			structType := vf.Type().Elem() // map value type (HeroTemplate)
 
 			keys, ret := GetAllRowIntKeys(tableName)
 			if ret != GAMEDATA_OK {
@@ -42,14 +48,13 @@ func LoadTemplates2(templates interface{}) {
 				return
 			}
 
-			for _, v := range keys {
-				structEntry := reflect.New(structType).Elem()
+			for _, key := range keys {
+				structEntry := reflect.New(structType).Elem() // new HeroTemplate
 
-				loadStructData(tableName, v, structEntry, structType)
+				loadStructData(tableName, key, structEntry, structType)
 
-				vf.SetMapIndex(reflect.ValueOf(int32(v)), structEntry)
+				vf.SetMapIndex(reflect.ValueOf(int32(key)), structEntry) // set map value
 			}
-
 		}
 	}
 
@@ -75,20 +80,28 @@ func loadKeyValueData(tableName string, vf reflect.Value) {
 				fmt.Printf("reflect.Slice GetString(%v, %v) Error \n", tableName, key)
 				return
 			}
-			arrValue := []int32{}
-			if strValue != "" {
+
+			if vftf.Type.Elem().Kind() == reflect.String {
 				strSplits := strings.Split(strValue, ";")
-				for _, v := range strSplits {
-					intValue, err := strconv.Atoi(v)
-					if err != nil {
-						fmt.Printf("reflect.Slice strconv.Atoi(%v) Error %v \n", v, err)
-						return
+				vff.Set(reflect.ValueOf(strSplits))
+
+			} else {
+				arrValue := []int32{}
+				if strValue != "" {
+					strSplits := strings.Split(strValue, ";")
+					for _, v := range strSplits {
+						intValue, err := strconv.Atoi(v)
+						if err != nil {
+							fmt.Printf("reflect.Slice strconv.Atoi(%v) Error %v \n", v, err)
+							return
+						}
+						arrValue = append(arrValue, int32(intValue))
 					}
-					arrValue = append(arrValue, int32(intValue))
 				}
+				vff.Set(reflect.ValueOf(arrValue))
 			}
-			vff.Set(reflect.ValueOf(arrValue))
 		}
+
 	}
 }
 

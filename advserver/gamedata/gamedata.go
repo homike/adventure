@@ -5,8 +5,10 @@ import (
 	"adventure/common/clog"
 	"adventure/common/csv"
 	"adventure/common/structs"
+	"adventure/common/util"
 	"errors"
 	"fmt"
+	"math"
 )
 
 var logger *clog.Logger
@@ -32,6 +34,8 @@ type Templates struct {
 	AchievementTemplates    map[int32]structs.AchievementTemplate    `table:"achievementAward"`
 	GlobalData              structs.GlobalTemplate                   `table:"GlobalData"`
 }
+
+var ArenaRobtosGroup []*structs.PlayerGroup
 
 const (
 	EmployReturnExp              = 50000        // 英雄.解雇返回经验需要的总经验值
@@ -75,6 +79,8 @@ func Init() {
 	}
 	csv.LoadTemplates2(AllTemplates)
 
+	LoadArenaRobots()
+
 	fmt.Println("EmployReturnExp ", AllTemplates.GlobalData.EmployReturnExp)
 	// fmt.Println("battle Name ", AllTemplates.Battlefields[1001].Name)
 }
@@ -100,4 +106,63 @@ func GetHeroLevelExp(heroLv int32, awakeCnt int32) (int32, error) {
 		return template.EXP5, nil
 	}
 	return int32(exp), nil
+}
+
+func LoadArenaRobots() {
+	ArenaRobtosGroup = make([]*structs.PlayerGroup, 0)
+
+	id, robotID, robotNum := int32(0), int32(0), 128
+	minHP, maxHP := int32(0), int32(0)
+	for i := 0; i < len(AllTemplates.GlobalData.HPRange); i++ {
+		id++
+		maxHP = AllTemplates.GlobalData.HPRange[i]
+
+		group := structs.PlayerGroup{
+			ID:      id,
+			MinHP:   minHP,
+			MaxHP:   maxHP,
+			Players: make([]*structs.PlayerBaseInfo, robotNum),
+		}
+		for j := 0; j < robotNum; j++ {
+			robotID++
+			robot := CreateRobot(robotID)
+			robot.HP = util.RandNum(minHP, maxHP-minHP)
+			group.Players[j] = robot
+		}
+
+		ArenaRobtosGroup = append(ArenaRobtosGroup, &group)
+		minHP = maxHP
+	}
+
+	id++
+	ArenaRobtosGroup = append(ArenaRobtosGroup, &structs.PlayerGroup{
+		ID:    id,
+		MinHP: maxHP,
+		MaxHP: math.MaxInt32,
+	})
+}
+
+func CreateRobot(id int32) *structs.PlayerBaseInfo {
+	robot := structs.PlayerBaseInfo{
+		ID:   id,
+		Name: AllTemplates.GlobalData.RobotName[util.RandNum(int32(0), int32(len(AllTemplates.GlobalData.RobotName)))],
+	}
+
+	heros := []*structs.HeroPostion{}
+	for i := 0; i < 20; i++ {
+		templateID := AllTemplates.GlobalData.RobotHeroIDs[util.RandNum(int32(0), int32(len(AllTemplates.GlobalData.RobotHeroIDs)))]
+		template, ok := AllTemplates.HeroTemplates[templateID]
+		if ok {
+			heros = append(heros, &structs.HeroPostion{
+				HeroTemplateID: templateID,
+				HeroIconID:     int32(template.IconID),
+				HeroPosition:   int32(i),
+			})
+		}
+	}
+
+	robot.HeroIDs = heros
+	robot.IconID = heros[0].HeroIconID
+
+	return &robot
 }

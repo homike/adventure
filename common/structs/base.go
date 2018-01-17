@@ -323,7 +323,42 @@ const (
 type ArenaRwdStatus uint8
 
 const (
-	ArenaRwdStatus_UnAtive ArenaRwdStatus = iota
-	ArenaRwdStatus_Ative
-	ArenaRwdStatus_Recieve
+	ArenaRwdStatus_UnAtive ArenaRwdStatus = iota // 未激活
+	ArenaRwdStatus_Ative                         // 已激活
+	ArenaRwdStatus_Recieve                       // 已领取
 )
+
+type HeroPostion struct {
+	HeroTemplateID int32
+	HeroIconID     int32
+	HeroPosition   int32 // 英雄所在位置
+}
+
+type PlayerBaseInfo struct {
+	ID            int32  // 玩家ID
+	Name          string // 玩家名字
+	GameZoneID    int32  // 游戏分区ID
+	IconID        int32  // 玩家图标ID
+	HP            int32  // 战力
+	MaxHP         int32  // 历史最大战力(竞技场)
+	Level         int32  // 等级
+	LastLoginDate int64  // 最后登录时间
+	IsOnline      bool   // 是否在线
+
+	// 战斗信息
+	XianGong          int32
+	ShanBi            int32
+	FangYu            int32
+	WangZhe           int32
+	ArtfcatWeaponID   int32          // 宿命武器ID
+	ArtfcatWeaponName int32          // 宿命武器名字
+	OutFightHerosInfo int32          // 出战人数信息
+	HeroIDs           []*HeroPostion // 出战英雄
+}
+
+type PlayerGroup struct {
+	ID      int32             // 数据库ID
+	MinHP   int32             // 最小战斗力
+	MaxHP   int32             // 最大战斗力
+	Players []*PlayerBaseInfo // 玩家列表
+}

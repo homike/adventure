@@ -523,3 +523,40 @@ type SystemAnnouncementRichNtf struct {
 	LoopCount       int32
 	IsLeftDirection bool
 }
+
+///////////////////////////////////////// 竞技场 ////////////////////////////////////////
+
+type OpenArenaReq struct {
+}
+
+type SyncArenaNtf struct {
+	Targets         []*FightTarget // 可攻击目标
+	LessRefreshTime int32          // 剩余的刷新时间
+	ChallengeCount  int32          // 已经用掉的挑战次数
+}
+
+type ArenaChallengeReq struct { // 竞技场挑战
+	PlayerID int
+}
+
+type ArenaChallengeResp struct {
+	Ret      uint8
+	PlayerID int
+	IsWin    bool
+}
+
+type ArenaRefreshReq struct { // 刷新竞技场
+	UserIngot bool
+}
+
+type ArenaRefreshResp struct {
+	Ret uint8
+}
+
+type ArenaRecieveRewardReq struct { // 领取竞技场奖励
+	StarIndex int
+}
+
+type ArenaRecieveRewardResp struct {
+	RewardRecords []ArenaRwdStatus
+}

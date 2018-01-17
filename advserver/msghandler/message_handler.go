@@ -52,6 +52,8 @@ func Init() error {
 
 	InitMessageArtifact()
 
+	InitMessageArena()
+
 	return nil
 }
 
