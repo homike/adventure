@@ -36,6 +36,7 @@ type Templates struct {
 }
 
 var ArenaRobtosGroup []*structs.PlayerGroup
+var ArenaRobotsMap map[int32]*structs.PlayerBaseInfo
 
 const (
 	EmployReturnExp              = 50000        // 英雄.解雇返回经验需要的总经验值
@@ -110,6 +111,7 @@ func GetHeroLevelExp(heroLv int32, awakeCnt int32) (int32, error) {
 
 func LoadArenaRobots() {
 	ArenaRobtosGroup = make([]*structs.PlayerGroup, 0)
+	ArenaRobotsMap = make(map[int32]*structs.PlayerBaseInfo)
 
 	id, robotID, robotNum := int32(0), int32(0), 128
 	minHP, maxHP := int32(0), int32(0)
@@ -128,6 +130,8 @@ func LoadArenaRobots() {
 			robot := CreateRobot(robotID)
 			robot.HP = util.RandNum(minHP, maxHP-minHP)
 			group.Players[j] = robot
+
+			ArenaRobotsMap[robot.ID] = robot
 		}
 
 		ArenaRobtosGroup = append(ArenaRobtosGroup, &group)

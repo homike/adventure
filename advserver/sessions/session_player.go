@@ -348,7 +348,7 @@ func (sess *Session) DoFightTest(battleFieldID int32) (*structs.FightResult, err
 
 	fmt.Println("playerTeam ", playerTeam.DefaultHP, ",spellIDs ", playerTeam.SpellIDs)
 
-	btTeam := p.GetFightTeamByHeroTemplateIDs(battleFieldT.NpcIDs)
+	btTeam := model.GetFightTeamByHeroTemplateIDs(battleFieldT.NpcIDs)
 	btTeam.DefaultHP = battleFieldT.HP
 	btTeam.ShanBi = battleFieldT.ShanBi
 	btTeam.XianGong = battleFieldT.XianGong

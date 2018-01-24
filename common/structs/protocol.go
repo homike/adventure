@@ -536,12 +536,12 @@ type SyncArenaNtf struct {
 }
 
 type ArenaChallengeReq struct { // 竞技场挑战
-	PlayerID int
+	PlayerID int32
 }
 
 type ArenaChallengeResp struct {
 	Ret      uint8
-	PlayerID int
+	PlayerID int32
 	IsWin    bool
 }
 

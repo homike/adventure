@@ -4,6 +4,7 @@ import (
 	"adventure/advserver/gamedata"
 	"adventure/common/structs"
 	"adventure/common/util"
+	"fmt"
 )
 
 type FightSim struct {
@@ -310,4 +311,84 @@ func computeValue(round, leftDefaultHP, rightDefaultHP, leftHP, rightHP, theDama
 	}
 
 	return result
+}
+
+func GetFightTeamByHeroTemplateIDs(heroTemplateIDs []int32) *structs.FightTeam {
+	team := &structs.FightTeam{}
+	fightHeroTemplateIDs := []int32{}
+	spellIDs := []int32{}
+
+	doCombinationSpellIDs := make(map[int32]struct{}) // 已经处理过的合作技
+	for _, heroTemplateID := range heroTemplateIDs {
+		heroTemplate, ok := gamedata.AllTemplates.HeroTemplates[heroTemplateID]
+		if !ok {
+			continue
+		}
+		fightHeroTemplateIDs = append(fightHeroTemplateIDs, heroTemplateID)
+
+		spell := &structs.SpellTemplate{}
+		for _, spellID := range heroTemplate.SkillID {
+			spellT, ok := gamedata.AllTemplates.SpellTemplates[spellID]
+			fmt.Println("npc spellID: ", spellID, "spell ", spellT)
+			if ok {
+				spell = &spellT
+
+				team.ShanBi += spell.DodgeProp
+				team.XianGong += spell.FirstProp
+				team.FangYu += spell.DefenceProp
+				team.WangZhe += spell.KingProp
+
+				if spell.AttackType != structs.AttackEffectType_None {
+					spellIDs = append(spellIDs, spell.ID)
+				}
+			}
+		}
+
+		// 合作技
+		if heroTemplate.CombinationSpllID > 0 {
+			_, ok := doCombinationSpellIDs[heroTemplate.CombinationSpllID]
+			if ok {
+				continue
+			}
+
+			success := true
+			cspell := gamedata.AllTemplates.CombinationSpells[heroTemplate.CombinationSpllID]
+			for i := 0; i < len(cspell.HeroList); i++ {
+				checkHero := cspell.HeroList[i]
+				checkNum := cspell.HeroNumList[i]
+
+				heroCnt := int32(0)
+				for _, cheroID := range heroTemplateIDs {
+					if cheroID == checkHero {
+						heroCnt++
+					}
+				}
+				if heroCnt < checkNum {
+					success = false
+					break
+				}
+			}
+
+			if success {
+				spellT, _ := gamedata.AllTemplates.SpellTemplates[cspell.SpellId]
+				spell = &spellT
+				if spell != nil {
+					team.ShanBi += spell.DodgeProp
+					team.XianGong += spell.FirstProp
+					team.FangYu += spell.DefenceProp
+					team.WangZhe += spell.KingProp
+					if spell.AttackType != structs.AttackEffectType_None {
+						spellIDs = append(spellIDs, spell.ID)
+					}
+				}
+			}
+
+			doCombinationSpellIDs[heroTemplate.CombinationSpllID] = struct{}{}
+		}
+	}
+
+	team.Models = fightHeroTemplateIDs
+	team.SpellIDs = spellIDs
+
+	return team
 }

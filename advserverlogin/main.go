@@ -32,6 +32,7 @@ func main() {
 func regHandler() *http.ServeMux {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/Login/Api/Fishluv", login.FishluvLogin)
+	mux.HandleFunc("/iaf/", login.FishluvLogin)
 
 	return mux
 }

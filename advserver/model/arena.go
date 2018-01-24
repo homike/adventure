@@ -19,3 +19,13 @@ func NewArena() *Arena {
 		Targets:        []*structs.FightTarget{},
 	}
 }
+
+func (a *Arena) GetWinCount() int32 {
+	isWinCnt := int32(0)
+	for _, v := range a.Targets {
+		if v.IsWin {
+			isWinCnt++
+		}
+	}
+	return isWinCnt
+}

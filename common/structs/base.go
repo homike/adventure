@@ -356,6 +356,14 @@ type PlayerBaseInfo struct {
 	HeroIDs           []*HeroPostion // 出战英雄
 }
 
+func (p *PlayerBaseInfo) GetHeroIDs() []int32 {
+	ids := []int32{}
+	for _, v := range p.HeroIDs {
+		ids = append(ids, v.HeroTemplateID)
+	}
+	return ids
+}
+
 type PlayerGroup struct {
 	ID      int32             // 数据库ID
 	MinHP   int32             // 最小战斗力

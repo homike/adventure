@@ -311,7 +311,7 @@ type AchvCollectPointType uint8
 
 const (
 	PointType_Courage                 = iota // 勇气点
-	PointType_Champion                       //  冠军点
+	PointType_Champion                       // 冠军点
 	PointType_Strength                       // 力量点
 	PointType_Friends                        // 好友点
 	PointType_Forge                          // 锻造点
@@ -381,17 +381,18 @@ type GlobalTemplate struct {
 	FreeIngotEmployTimeSpanItem  int32 `val:"英雄.免费元宝招募间隔"`
 	SystemRefreshTime            int32 `val:"英雄.系统每天的刷新时间"`
 
-	MaxChallengePlayerNum int32    `val:"竞技场.可挑战玩家数量"`
-	MaxChallengeCount     int32    `val:"竞技场.最大挑战次数"`
-	RefreshIngot          int32    `val:"竞技场.刷新价格"`
-	RefreshTimeSec        int32    `val:"竞技场.刷新时间间隔"`
-	TotalWinCount         []int32  `val:"竞技场.胜利场次"`
-	CourageAward          []int32  `val:"竞技场.勇气点奖励"`
-	ChampionAward         []int32  `val:"竞技场.冠军点奖励"`
-	HPRange               []int32  `val:"竞技场.战力分组"`
-	RobotHeroIDs          []int32  `val:"竞技场.随机英雄英雄列表"`
-	RobotName             []string `val:"竞技场.随机武将名字"`
-	RandPlayerLimitHP     int32    `val:"竞技场.不给高级玩家的HP限制"`
-	RandomGroup1          []int32  `val:"竞技场.分组选择1"`
-	RandomGroup2          []int32  `val:"竞技场.分组选择2"`
+	MaxChallengePlayerNum    int32    `val:"竞技场.可挑战玩家数量"`
+	MaxChallengeCount        int32    `val:"竞技场.最大挑战次数"`
+	RefreshIngot             int32    `val:"竞技场.刷新价格"`
+	RefreshTimeSec           int32    `val:"竞技场.刷新时间间隔"`
+	TotalWinCount            []int32  `val:"竞技场.胜利场次"`
+	CourageAward             []int32  `val:"竞技场.勇气点奖励"`
+	ChampionAward            []int32  `val:"竞技场.冠军点奖励"`
+	HPRange                  []int32  `val:"竞技场.战力分组"`
+	RobotHeroIDs             []int32  `val:"竞技场.随机英雄英雄列表"`
+	RobotName                []string `val:"竞技场.随机武将名字"`
+	RandPlayerLimitHP        int32    `val:"竞技场.不给高级玩家的HP限制"`
+	RandomGroup1             []int32  `val:"竞技场.分组选择1"`
+	RandomGroup2             []int32  `val:"竞技场.分组选择2"`
+	FightWithFriendBattleIDs []int32  `val:"好友.切磋.副本id列表"`
 }
