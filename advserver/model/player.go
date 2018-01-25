@@ -46,6 +46,7 @@ type Player struct {
 	Artifact        *Artifact                 // 神器
 	Achievement     *PlayerAchievenment       // 成就
 	Arena           *Arena                    // 竞技场
+	Temple          *Temple                   // 神殿
 	ExtendData      *ExtendData               // 扩展数据
 	MiningMap       string
 }
@@ -125,8 +126,11 @@ func NewPlayer(name string, heroTemplateID int32) (*Player, error) {
 		})
 	}
 
-	// 竞技场数据初始化
+	// 竞技场初始化
 	player.Arena = NewArena()
+
+	// 神殿初始化
+	player.Temple = NewTemple()
 
 	dbData := &mysql.PlayerDB{
 		AccountID: player.AccountID,

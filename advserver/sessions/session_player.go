@@ -445,3 +445,20 @@ func (sess *Session) SyncEmployInfo() {
 
 	sess.Send(structs.Protocol_SyncEmploy_Resq, resp)
 }
+
+func (sess *Session) SyncTemplateHeros() {
+	userTemple := sess.PlayerData.Temple
+
+	userTemple.RefreshTemple()
+
+	t1 := time.Unix(userTemple.NextRefreshTime, 0)
+	leftTime := int32(time.Now().Sub(t1).Seconds())
+
+	resp := &structs.SyncTemplateHerosResp{
+		Heros:        userTemple.TempleHeros,
+		LeftSecond:   leftTime,
+		TradeCount:   userTemple.ToDayTradeCount,
+		RefreshCount: userTemple.RefreshCount,
+	}
+	sess.Send(structs.Protocol_SyncTemplateHeros_Req, resp)
+}

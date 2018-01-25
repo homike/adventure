@@ -32,11 +32,16 @@ type Templates struct {
 	ResourceTemplates       map[int32]structs.ResourceTemplate       `table:"Resouce"`
 	CombinationSpells       map[int32]structs.CombinationSpell       `table:"CombinationSpell"`
 	AchievementTemplates    map[int32]structs.AchievementTemplate    `table:"achievementAward"`
+	VipTemplates            map[int32]structs.VipTemplate            `table:"viplevel"`
 	GlobalData              structs.GlobalTemplate                   `table:"GlobalData"`
 }
 
+// Arena Robots
 var ArenaRobtosGroup []*structs.PlayerGroup
 var ArenaRobotsMap map[int32]*structs.PlayerBaseInfo
+
+// Temple Hero Weights
+var TempleHerosMap map[structs.QualityType]*util.RandomWeight
 
 const (
 	EmployReturnExp              = 50000        // 英雄.解雇返回经验需要的总经验值
@@ -77,10 +82,13 @@ func Init() {
 		ResourceTemplates:       make(map[int32]structs.ResourceTemplate),
 		CombinationSpells:       make(map[int32]structs.CombinationSpell),
 		AchievementTemplates:    make(map[int32]structs.AchievementTemplate),
+		VipTemplates:            make(map[int32]structs.VipTemplate),
 	}
 	csv.LoadTemplates2(AllTemplates)
 
 	LoadArenaRobots()
+
+	LoadTempleHeros()
 
 	fmt.Println("EmployReturnExp ", AllTemplates.GlobalData.EmployReturnExp)
 	// fmt.Println("battle Name ", AllTemplates.Battlefields[1001].Name)
@@ -146,6 +154,34 @@ func LoadArenaRobots() {
 	})
 }
 
+func LoadTempleHeros() {
+	TempleHerosMap = make(map[structs.QualityType]*util.RandomWeight)
+
+	for i := structs.QualityType_White; i <= structs.QualityType_SplashGold; i++ {
+		ids := []int32{}
+		weights := []int32{}
+
+		for k, v := range AllTemplates.HeroTemplates {
+			if v.TempleAppearWeight <= 0 {
+				continue
+			}
+
+			if i == structs.QualityType_Gold {
+				if v.QualityType != structs.QualityType_Gold && v.QualityType != structs.QualityType_SplashGold {
+					continue
+				}
+			} else {
+				if v.QualityType != i {
+					continue
+				}
+			}
+			ids = append(ids, k)
+			weights = append(weights, v.TempleAppearWeight)
+		}
+		TempleHerosMap[i] = util.NewRandom(ids, weights)
+	}
+}
+
 func CreateRobot(id int32) *structs.PlayerBaseInfo {
 	robot := structs.PlayerBaseInfo{
 		ID:   id,
@@ -169,4 +205,17 @@ func CreateRobot(id int32) *structs.PlayerBaseInfo {
 	robot.IconID = heros[0].HeroIconID
 
 	return &robot
+}
+
+func RandomTempleHero(quality structs.QualityType, useIgnot bool) *structs.HeroTemplate {
+	wr, ok := TempleHerosMap[quality]
+	if !ok {
+		return nil
+	}
+	heroId := wr.GetRandomNum()
+	heroT, ok := AllTemplates.HeroTemplates[heroId]
+	if !ok {
+		return nil
+	}
+	return &heroT
 }

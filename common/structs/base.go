@@ -370,3 +370,10 @@ type PlayerGroup struct {
 	MaxHP   int32             // 最大战斗力
 	Players []*PlayerBaseInfo // 玩家列表
 }
+
+type TempleHero struct {
+	Quality        QualityType // 品质
+	HeroTemplateID int32       // 英雄模板ID
+	Cost           int32       // 消耗碎片数量
+	IsTrade        bool        // 是否兑换过
+}

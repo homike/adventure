@@ -85,6 +85,16 @@ const (
 	Protocol_UpdateUserGuidRecord_Req = 1414 // 更新玩家新手引导数据
 	Protocol_SyncGameBoxTopNum_Ntf    = 1415 // 更新增加的宝箱上限数量
 
+	// 神殿相关
+	Protocol_SyncTemplateHeros_Req     = 1501 // 同步神殿英雄
+	Protocol_SyncTemplateHeros_Resp    = 1502
+	Protocol_ExchangeTemplateHero_Req  = 1503 // 兑换神殿英雄
+	Protocol_ExchangeTemplateHero_Resp = 1504
+	Protocol_UnlockTemple_Req          = 1505 // 解锁神殿
+	Protocol_UnlockTemple_Resp         = 1506
+	Protocol_RefreshTemple_Req         = 1507 // 刷新神殿
+	Protocol_RefreshTemple_Resp        = 1508
+
 	// 战斗相关
 	Protocol_FightResult_Ntf      = 1600 // 战斗结果
 	Protocol_FightRequest_Req     = 1601 // 人机对战请求
@@ -559,4 +569,37 @@ type ArenaRecieveRewardReq struct { // 领取竞技场奖励
 
 type ArenaRecieveRewardResp struct {
 	RewardRecords []ArenaRwdStatus
+}
+
+///////////////////////////////////////// 神殿 ////////////////////////////////////////
+
+type SyncTemplateHerosReq struct {
+}
+type SyncTemplateHerosResp struct {
+	Heros        []*TempleHero
+	LeftSecond   int32
+	TradeCount   int32
+	RefreshCount int32
+}
+
+type ExchangeTemplateHeroReq struct {
+	HeroTemplateID int32
+}
+type ExchangeTemplateHeroResp struct {
+	Ret            uint8
+	HeroTemplateID int32
+}
+
+type UnlockTempleReq struct {
+}
+type UnlockTempleResp struct {
+	Ret uint8
+}
+
+type RefreshTempleReq struct {
+	Count int32
+}
+type RefreshTempleResp struct {
+	Ret        uint8
+	SplashGold bool
 }

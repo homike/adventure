@@ -9,27 +9,28 @@ const (
 )
 
 type HeroTemplate struct { // 英雄模板
-	HeroName               string   `val:"名字"`
-	SkillID                []int32  `val:"技能ID列表"`
-	CombinationSpllID      int32    `val:"组合技能ID"`
-	IconID                 int      `val:"模型ID"`
-	QualityType            int      `val:"品质"`
-	Profession             string   `val:"职业"`
-	Ethnicity              string   `val:"种族"`
-	Sex                    string   `val:"性别"`
-	Description            string   `val:"描述"`
-	BaseHP                 int      `val:"基础战力"`
-	Coefficient            float32  `val:"成长系数"`
-	HonorDebris            int      `val:"荣誉碎片"`
-	AwakeCount             int      `val:"觉醒次数上限"`
-	TempleAppearWeight     int      `val:"神殿出现概率权重"`
-	EmployCostFragments    int      `val:"神殿兑换该英雄的花费"`
-	EmployWeight           string   `val:"招募权重"`
-	HeroType               HeroType `val:"英雄类型"`
-	WeaponAdvance_XianGong int32    `val:"武器进阶先攻"`
-	WeaponAdvance_FangYu   int32    `val:"武器进阶防御"`
-	WeaponAdvance_ShanBi   int32    `val:"武器进阶闪避"`
-	WeaponAdvance_WangZhe  int32    `val:"武器进阶王者"`
+	ID                     int32       `val:"ID"`
+	HeroName               string      `val:"名字"`
+	SkillID                []int32     `val:"技能ID列表"`
+	CombinationSpllID      int32       `val:"组合技能ID"`
+	IconID                 int         `val:"模型ID"`
+	QualityType            QualityType `val:"品质"`
+	Profession             string      `val:"职业"`
+	Ethnicity              string      `val:"种族"`
+	Sex                    string      `val:"性别"`
+	Description            string      `val:"描述"`
+	BaseHP                 int         `val:"基础战力"`
+	Coefficient            float32     `val:"成长系数"`
+	HonorDebris            int         `val:"荣誉碎片"`
+	AwakeCount             int         `val:"觉醒次数上限"`
+	TempleAppearWeight     int32       `val:"神殿出现概率权重"`
+	EmployCostFragments    int32       `val:"神殿兑换该英雄的花费"`
+	EmployWeight           string      `val:"招募权重"`
+	HeroType               HeroType    `val:"英雄类型"`
+	WeaponAdvance_XianGong int32       `val:"武器进阶先攻"`
+	WeaponAdvance_FangYu   int32       `val:"武器进阶防御"`
+	WeaponAdvance_ShanBi   int32       `val:"武器进阶闪避"`
+	WeaponAdvance_WangZhe  int32       `val:"武器进阶王者"`
 	// 招募权重，金币\混乱之门 301 \辉煌之门 302 \律动之门 303\万象之门（元宝）\传奇之门普通（元宝）\传奇之门特殊（元宝）
 }
 
@@ -367,6 +368,22 @@ func (a *AchievementTemplate) IsConditinCountAddup() bool {
 	return false
 }
 
+type VipTemplate struct {
+	ID                       int32   `val:"ID"` // vip等级
+	RechargeIngot            int32   `val:"累计充值血钻"`
+	DayofSpeedAdventure      int32   `val:"每天可加速冒险次数"`
+	AddGameBoxCount          int32   `val:"额外宝箱上限"`
+	AddMiningDigCount        int32   `val:"额外的挖矿次数上限"`
+	Describes                string  `val:"描述"`
+	DayofAddFSChallengeCount int32   `val:"每天可购买封神之阶挑战次数"`
+	DayofTradeTempleHero     int32   `val:"每天可兑换神殿英雄次数"`
+	DayofIncreaseGoldCheats  int32   `val:"每天可使用加钱秘籍次数"`
+	ExtraResetRiftNum        int32   `val:"可额外重置秘境次数"`
+	RewardIDs                []int32 `val:"充值奖励"`
+	VipRewardImage           string  `val:"VIP奖励图片"`
+	AddWorker                int32   `val:"出战人数"`
+}
+
 type GlobalTemplate struct {
 	EmployReturnExp              int32 `val:"英雄.解雇返回经验需要的总经验值"`
 	EmployReturnExpPer           int32 `val:"英雄.解雇返回经验比例"`
@@ -395,4 +412,10 @@ type GlobalTemplate struct {
 	RandomGroup1             []int32  `val:"竞技场.分组选择1"`
 	RandomGroup2             []int32  `val:"竞技场.分组选择2"`
 	FightWithFriendBattleIDs []int32  `val:"好友.切磋.副本id列表"`
+
+	TempleRefreshIngot      []int32 `val:"神殿.刷新元宝价格"`
+	TempleHeroQualityQueue  []int32 `val:"神殿.不同品质英雄队列"`
+	TempleHeroCountPerQueue []int32 `val:"神殿.每个品质英雄队列中的英雄数量"`
+	TempleSystemRefreshTime int32   `val:"神殿.系统每天的刷新时间"`
+	TempleUnlockCost        int32   `val:"神殿.解锁消耗金币"`
 }
