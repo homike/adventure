@@ -114,6 +114,46 @@ const (
 	Protocol_RecieveArenaReward_Req  = 1806 // 领取竞技场奖励
 	Protocol_RecieveArenaReward_Resp = 1807
 
+	// 游戏商城
+
+	// 挖矿
+	Protocol_DigRequest_Req                     = 2100 // 挖矿
+	Protocol_DigRequest_Resp                    = 2101
+	Protocol_PickOre_Req                        = 2102 // 拾取矿
+	Protocol_PickOre_Resp                       = 2103
+	Protocol_SyncMiningMap_Req                  = 2104 // 同步挖矿地图
+	Protocol_SyncMiningMap_Resp                 = 2105
+	Protocol_UseDetonator_Req                   = 2106 // 使用雷管
+	Protocol_UseDetonator_Resp                  = 2107
+	Protocol_UseMiningToolkit_Req               = 2108 // 使用挖矿工具包
+	Protocol_UseMiningToolkit_Resp              = 2109
+	Protocol_ResetMiningMap_Req                 = 2110 // 刷新矿区请求
+	Protocol_ResetMiningMap_Resp                = 2111
+	Protocol_UseDetonatorForRock_Req            = 2112 // 使用雷管炸岩石
+	Protocol_UseDetonatorForRock_Resp           = 2113
+	Protocol_FightMonster_Req                   = 2114 // 挑战怪物
+	Protocol_RefreshBoss_Req                    = 2115 // 刷新BOSS
+	Protocol_BuyDigTools_Req                    = 2116 // 购买挖矿辅助工具
+	Protocol_BuyDigTools_Resp                   = 2117
+	Protocol_UpdateTileStatus_Ntf               = 2118 // 更新地块状态
+	Protocol_FightMonster_Resp                  = 2119
+	Protocol_BuyMiningPickTop_Req               = 2120 // 购买矿镐耐久度上限
+	Protocol_BuyMiningPickTop_Resp              = 2121
+	Protocol_BuyDigQueue_Req                    = 2122 // 购买开采队列
+	Protocol_BuyDigQueue_Resp                   = 2123
+	Protocol_AddDiggingProxy_Req                = 2124 // 增加开采代理
+	Protocol_AddDiggingProxy_Resp               = 2125
+	Protocol_GetDiggingProxy_Req                = 2126 // 收获开采代理
+	Protocol_PreDigTest_Req                     = 2128 // 预开采
+	Protocol_PreDigTest_Resp                    = 2129
+	Protocol_UpdateMiningMapBaseData_Ntf        = 2130 // 更新矿区基本信息
+	Protocol_UpdateStatueLevelAndCount_Ntf      = 2131 // 更新巨魔雕像数量
+	Protocol_RequestCoolingTime_Req             = 2132 // 获取战斗冷却时间
+	Protocol_RequestCoolingTime_Resp            = 2133
+	Protocol_SyncMiningMapDigAgentResource_Req  = 1234 // 请求同步挖矿代理可获得矿石种类及数量
+	Protocol_SyncMiningMapDigAgentResource_Resp = 2135
+	Protocol_BuyMiningToolkit_Req               = 2136 // 购买巨力工具包
+
 	// 神器相关
 	//Protocol_UnlockArtifactSeal_Req     = 1900 // 解锁神器封印
 	//Protocol_UnlockArtifactSeal_Resp    = 1901
@@ -131,7 +171,7 @@ const (
 	Protocol_RecieveAchievements_Resp = 2204
 	Protocol_UpdateAchievement_Ntf    = 2205 // 更新成就状态
 
-	// 其他
+	// 公告
 	Protocol_SystemAnnouncement_Ntf     = 2701 // 系统公告
 	Protocol_SystemAnnouncementRich_Ntf = 2702 // 富文本系统公告
 	Protocol_SetPlayerBarrageConfig_Req = 2801 // 弹幕设置
