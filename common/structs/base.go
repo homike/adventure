@@ -377,3 +377,34 @@ type TempleHero struct {
 	Cost           int32       // 消耗碎片数量
 	IsTrade        bool        // 是否兑换过
 }
+
+// 挖矿地图数据
+type DigBlockNode struct {
+	NodeID    int32 // 地块ID
+	X         int8
+	Y         int8
+	StartTime int64 // 开始时间
+}
+
+type BossStatus uint8
+
+const (
+	BossStatus_NoAppear BossStatus = 0 // 未出现
+	BossStatus_Appear                  // 已出现
+	BossStatus_Killed                  // 已击杀
+	BossStatus_OverTime                // 已超时
+)
+
+type BossNode struct {
+	BossID     int32 // BOSS ID
+	NodeID     int32 // 地块ID
+	X          int8
+	Y          int8
+	Status     BossStatus
+	AppearTime int64 // 出现时间
+}
+
+type DigProxy struct {
+	ProjectID int32 // 工程ID
+	StartTime int64 // 开工时间
+}
