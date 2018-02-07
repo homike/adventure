@@ -408,3 +408,20 @@ type DigProxy struct {
 	ProjectID int32 // 工程ID
 	StartTime int64 // 开工时间
 }
+
+type BlockNode struct {
+	X         int8
+	Y         int8
+	IsVisible bool
+}
+
+type NodeList struct {
+	NodeID int32
+	Nodes  []BlockNode
+}
+
+type MineMap struct {
+	NodeList []NodeList // 视野内的资源地块列表
+	BossIDs  []int32    // 出现过的boss id
+	DigCnt   int32      // 挖掘点数
+}
