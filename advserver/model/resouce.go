@@ -56,3 +56,19 @@ func (r *Resource) StrengthChange(num int32) error {
 
 	return nil
 }
+
+func (r *Resource) IngotChange(num int32) error {
+	if num == 0 {
+		return errors.New("IngotChange error, num == 0")
+	}
+
+	r.Strength += num
+	if r.Strength < 0 {
+		r.Strength = 0
+	}
+	if r.Strength > gamedata.MaxStrength {
+		r.Strength = gamedata.MaxStrength
+	}
+
+	return nil
+}

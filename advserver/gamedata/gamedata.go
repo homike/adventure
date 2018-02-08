@@ -16,24 +16,28 @@ var logger *clog.Logger
 var AllTemplates *Templates
 
 type Templates struct {
-	HeroTemplates           map[int32]structs.HeroTemplate           `table:"hero"`
-	GameLevelTemplates      map[int32]structs.GameLevelTemplate      `table:"GameLevel"`
-	HeroLevelTemplates      map[int32]structs.HeroLevelTemplate      `table:"HeroLevel"`
-	UpgradeArtifactCosts    map[int32]structs.UpgradeArtifactCost    `table:"UpgradeArtifactCost"`
-	UpgradeWeaponCosts      map[int32]structs.UpgradeWeaponCost      `table:"UpgradeWeaponCost"`
-	AwakeCosts              map[int32]structs.AwakeCost              `table:"AwakeCost"`
-	ItemTemplates           map[int32]structs.ItemTemplate           `table:"Item"`
-	UnLockBagCosts          map[int32]structs.UnLockBagCost          `table:"UnLockBagCost"`
-	Battlefields            map[int32]structs.Battlefield            `table:"Battlefield"`
-	RewardTemplates         map[int32]structs.RewardTemplate         `table:"Reward"`
-	GameLevelEventTemplates map[int32]structs.GameLevelEventTemplate `table:"GameLevelEvent"`
-	SpellTemplates          map[int32]structs.SpellTemplate          `table:"spell"`
-	ArtifactTemplates       map[int32]structs.ArtifactTemplate       `table:"Artifact"`
-	ResourceTemplates       map[int32]structs.ResourceTemplate       `table:"Resouce"`
-	CombinationSpells       map[int32]structs.CombinationSpell       `table:"CombinationSpell"`
-	AchievementTemplates    map[int32]structs.AchievementTemplate    `table:"achievementAward"`
-	VipTemplates            map[int32]structs.VipTemplate            `table:"viplevel"`
-	GlobalData              structs.GlobalTemplate                   `table:"GlobalData"`
+	HeroTemplates           map[int32]structs.HeroTemplate            `table:"hero"`
+	GameLevelTemplates      map[int32]structs.GameLevelTemplate       `table:"GameLevel"`
+	HeroLevelTemplates      map[int32]structs.HeroLevelTemplate       `table:"HeroLevel"`
+	UpgradeArtifactCosts    map[int32]structs.UpgradeArtifactCost     `table:"UpgradeArtifactCost"`
+	UpgradeWeaponCosts      map[int32]structs.UpgradeWeaponCost       `table:"UpgradeWeaponCost"`
+	AwakeCosts              map[int32]structs.AwakeCost               `table:"AwakeCost"`
+	ItemTemplates           map[int32]structs.ItemTemplate            `table:"Item"`
+	UnLockBagCosts          map[int32]structs.UnLockBagCost           `table:"UnLockBagCost"`
+	Battlefields            map[int32]structs.Battlefield             `table:"Battlefield"`
+	RewardTemplates         map[int32]structs.RewardTemplate          `table:"Reward"`
+	GameLevelEventTemplates map[int32]structs.GameLevelEventTemplate  `table:"GameLevelEvent"`
+	SpellTemplates          map[int32]structs.SpellTemplate           `table:"spell"`
+	ArtifactTemplates       map[int32]structs.ArtifactTemplate        `table:"Artifact"`
+	ResourceTemplates       map[int32]structs.ResourceTemplate        `table:"Resouce"`
+	CombinationSpells       map[int32]structs.CombinationSpell        `table:"CombinationSpell"`
+	AchievementTemplates    map[int32]structs.AchievementTemplate     `table:"achievementAward"`
+	VipTemplates            map[int32]structs.VipTemplate             `table:"viplevel"`
+	GlobalData              structs.GlobalTemplate                    `table:"GlobalData"`
+	MinePickTemplates       map[int32]structs.MinePickTemplate        `table:"MiningPick"`
+	DefaultTileTemplates    map[int32]structs.DefaultOpenTileTemplate `table:"DefaultOpenTile"`
+	TileTemplates           map[int32]structs.TileTemplate            `table:"Tile"`
+	ShopTemplates           map[int32]structs.ShopTemplate            `table:"Shop"`
 }
 
 // Arena Robots
@@ -83,6 +87,10 @@ func Init() {
 		CombinationSpells:       make(map[int32]structs.CombinationSpell),
 		AchievementTemplates:    make(map[int32]structs.AchievementTemplate),
 		VipTemplates:            make(map[int32]structs.VipTemplate),
+		MinePickTemplates:       make(map[int32]structs.MinePickTemplate),
+		DefaultTileTemplates:    make(map[int32]structs.DefaultOpenTileTemplate),
+		TileTemplates:           make(map[int32]structs.TileTemplate),
+		ShopTemplates:           make(map[int32]structs.ShopTemplate),
 	}
 	csv.LoadTemplates2(AllTemplates)
 

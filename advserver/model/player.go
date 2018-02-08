@@ -48,7 +48,7 @@ type Player struct {
 	Arena           *Arena                    // 竞技场
 	Temple          *Temple                   // 神殿
 	ExtendData      *ExtendData               // 扩展数据
-	MiningMap       string
+	MineMap         *MineMap                  // 挖矿地图
 }
 
 func InitPlayer() *Player {
@@ -131,6 +131,10 @@ func NewPlayer(name string, heroTemplateID int32) (*Player, error) {
 
 	// 神殿初始化
 	player.Temple = NewTemple()
+
+	// 挖矿初始化
+	player.MineMap = NewUserMineData()
+	player.MineMap.UserData.DigCnt = player.MineMap.UserData.LvMinePickMax + player.MineMap.UserData.BuyMinePickMax
 
 	dbData := &mysql.PlayerDB{
 		AccountID: player.AccountID,

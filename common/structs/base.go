@@ -417,11 +417,54 @@ type BlockNode struct {
 
 type NodeList struct {
 	NodeID int32
-	Nodes  []BlockNode
+	Nodes  []*BlockNode
+}
+
+func (n *NodeList) AddBlockNode(x, y int8, isVisible bool) {
+	n.Nodes = append(n.Nodes, &BlockNode{
+		X:         x,
+		Y:         y,
+		IsVisible: isVisible,
+	})
 }
 
 type MineMap struct {
-	NodeList []NodeList // 视野内的资源地块列表
-	BossIDs  []int32    // 出现过的boss id
-	DigCnt   int32      // 挖掘点数
+	NodeList []*NodeList // 视野内的资源地块列表
+	BossIDs  []int32     // 出现过的boss id
+	DigCnt   int32       // 挖掘点数
 }
+
+type UserMineData struct {
+	DigNode         *DigBlockNode // 正在开采的node
+	ExpandSight     int32         // 扩展视野, VIP功能扩展
+	MinePickLv      int32         // 矿镐等级
+	LvMinePickMax   int32         // 挖矿次数上限
+	BuyMinePickMax  int32         // 购买挖掘次数上限
+	DigCnt          int32         // 挖矿次数
+	DigDepthMax     int32         // 最大挖掘深度
+	LastResetDate   int64         // 上次刷新地图时间
+	LastRefreshDate int64         // 上次刷新耐久度时间
+	StatueLv        int32         // 巨魔雕像等级
+	StatueCnt       int32         // 巨魔雕像数量
+	DigQueueIDs     []int32       // 开采队列等级
+	Boss            *BossNode     // Boss信息
+	DigProxys       []DigProxy    // 挖矿代理列表
+}
+
+type ShopEnum int16
+
+const (
+	ShopEnum_DigQueue2       ShopEnum = 1001 // 2级开采队列
+	ShopEnum_DigQueue3       ShopEnum = 1002 // 3级开采队列
+	ShopEnum_DigQueue4       ShopEnum = 1003 // 4级开采队列
+	ShopEnum_DigQueue5       ShopEnum = 1004 // 5级开采队列
+	ShopEnum_TradeTaskReset  ShopEnum = 1005 // 商会刷新
+	ShopEnum_MiningToolkitEx ShopEnum = 1006 // 神力矿工包，不在商城中显示
+	ShopEnum_MiningMapReset  ShopEnum = 1007 // 挖矿地图刷新
+	ShopEnum_Chocolate       ShopEnum = 5001 // 巧克力
+	ShopEnum_FriedRice       ShopEnum = 5002 // 蛋炒饭
+	ShopEnum_Detonator       ShopEnum = 5003 // 雷管
+	ShopEnum_MiningToolkit   ShopEnum = 5004 // 神力矿工包
+	ShopEnum_MiningPickTop   ShopEnum = 5005 // 矿镐耐久度上限(属性类的)
+	ShopEnum_AddGameBoxTop   ShopEnum = 5006 // 增加宝箱上限数量
+)

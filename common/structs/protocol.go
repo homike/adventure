@@ -643,3 +643,21 @@ type RefreshTempleResp struct {
 	Ret        uint8
 	SplashGold bool
 }
+
+///////////////////////////////////////// 挖矿 ////////////////////////////////////////
+type UpdateStatueLevelAndCountNtf struct {
+	Level int32
+	Count int32
+}
+
+type SyncMiningMapResp struct {
+	NodeBlocks []*NodeList
+	MapBase    *UserMineData
+}
+
+type ResetMiningMapReq struct {
+	UserIgnot bool
+}
+type ResetMiningMapResp struct {
+	Ret uint8
+}

@@ -35,6 +35,9 @@ func (sess *Session) OnEnterGame() {
 	/****************同步冒险关卡********************/
 	sess.SyncGameLevelNtf()
 	sess.SyncCurrentGameLevelNtf()
+
+	/****************同步挖矿数据********************/
+	sess.SyncMineMapData()
 }
 
 func (sess *Session) SyncPlayerBaseInfo() {

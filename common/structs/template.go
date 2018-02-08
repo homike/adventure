@@ -418,4 +418,70 @@ type GlobalTemplate struct {
 	TempleHeroCountPerQueue []int32 `val:"神殿.每个品质英雄队列中的英雄数量"`
 	TempleSystemRefreshTime int32   `val:"神殿.系统每天的刷新时间"`
 	TempleUnlockCost        int32   `val:"神殿.解锁消耗金币"`
+
+	MineMapWidth          int32 `val:"挖矿.地图格子宽度"`
+	MineMapHeight         int32 `val:"挖矿.地图格子高度"`
+	DefaultSight          int32 `val:"挖矿.默认视野"`
+	MinePickLevelMax      int32 `val:"挖矿.矿镐最大等级"`
+	MinePickLevelDefault  int32 `val:"挖矿.起始矿镐等级"`
+	MinePickRecoverSpeed  int32 `val:"挖矿.矿镐挖掘次数恢复速度"`
+	StatueMinePickNum     int32 `val:"挖矿.巨魔雕像对矿镐耐久度的影响值"`
+	VipMinePickNum        int32 `val:"挖矿.Vip对矿镐耐久度的影响值"`
+	DetonatorEqueTime     int32 `val:"挖矿.1颗雷管可缩短的时间"`
+	MiningToolkitAddNum   int32 `val:"挖矿.1个挖矿工具包可增加的挖矿次数"`
+	MineMapResetDelayTime int32 `val:"挖矿.刷新矿区时间间隔"`
+}
+
+type MinePickTemplate struct {
+	Level  int32  `val:"ID"`
+	Name   string `val:"矿镐名称"`
+	DigNum int32  `val:"挖掘次数"`
+	IconID string `val:"图标id"`
+	Desc   string `val:"描述"`
+}
+
+type DefaultOpenTileTemplate struct {
+	NodeID int32   `val:"ID"`
+	ListX  []int32 `val:"资源地块x坐标列表"`
+	ListY  []int32 `val:"资源地块y坐标列表"`
+}
+
+type TileType int8
+
+const (
+	TileType_Chinese  TileType = iota // 土
+	TileType_Resource                 // 资源
+	TileType_Boss                     // BOSS
+	TileType_Statue                   // 巨魔雕像
+)
+
+type TileTemplate struct {
+	TypeID        int32    `val:"ID"`
+	IconID        string   `val:"图标"`
+	CostResID     int32    `val:"开采需消耗的资源id"`
+	CostResCnt    int32    `val:"开采需消耗的资源数量"`
+	DigCostTime   []int32  `val:"开采耗时"`
+	RewardIDs     []int32  `val:"开采后可获得的奖励id列表"`
+	RewardWeights []int32  `val:"开采后可获得的奖励权重列表"`
+	TileType      TileType `val:"关联类型"`
+	TileID        int32    `val:"关联id"`
+	TileCnt       int32    `val:"关联的矿数量"`
+	PickLvMin     int32    `val:"所需矿镐最低等级"`
+	Desc          string   `val:"描述"`
+	DigPointAdd   int32    `val:"增加的挖掘点"` // 挖掘后增加的成就点数
+}
+
+type ShopTemplate struct {
+	ID              int32   `val:"ID"`
+	Name            string  `val:"名称"`
+	Count           int32   `val:"数量"`
+	ShopPrice       int32   `val:"价格"`
+	IconID          string  `val:"图标"`
+	Desc            string  `val:"描述"`
+	IsInShop        bool    `val:"商城出售"`
+	RewardIDs       []int32 `val:"奖励ID列表"`
+	LimitBuyNum     int32   `val:"限购数量"`
+	IsSpecialPrice  bool    `val:"是否特价"`
+	VipLevel        int32   `val:"需要的Vip等级"`
+	IsRewardPackage bool    `val:"是否礼包"`
 }
