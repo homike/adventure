@@ -10,6 +10,7 @@ type RandomWeight struct {
 	Range []int32
 }
 
+// 测试提交
 func NewRandom(IDs, Weights []int32) *RandomWeight {
 	r := &RandomWeight{
 		IDs:     IDs,
