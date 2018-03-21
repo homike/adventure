@@ -15,7 +15,7 @@ func (sess *Session) CheckAchievements(condType structs.AchvCondType, condID, ad
 		sess.CheckCollect(condType, condID, addCount)
 
 	case structs.AchvCondType_KillStatue: // 杀巨魔雕像
-		sess.CheckKillStatue(condType, addCount)
+		//sess.CheckKillStatue(condType, addCount)
 
 	case structs.AchvCondType_KillLevelStatue: // 杀某等级巨魔雕像
 	case structs.AchvCondType_KillBoss: // 杀boss

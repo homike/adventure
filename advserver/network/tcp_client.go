@@ -16,7 +16,7 @@ type TCPClient struct {
 	Parser    *MsgParser
 	conn      net.Conn
 	WriteChan chan []byte
-	ReadChan  chan []byte
+	//ReadChan  chan []byte
 }
 
 func NewTCPClient(conn net.Conn, parser *MsgParser) *TCPClient {
@@ -24,8 +24,8 @@ func NewTCPClient(conn net.Conn, parser *MsgParser) *TCPClient {
 		AccountID: 0,
 		conn:      conn,
 		WriteChan: make(chan []byte, 128),
-		ReadChan:  make(chan []byte, 128),
-		Parser:    parser,
+		//ReadChan:  make(chan []byte, 128),
+		Parser: parser,
 	}
 
 	go func() {
@@ -50,20 +50,21 @@ func (tc *TCPClient) Write(msgID uint16, msgStruct interface{}) {
 	tc.Lock()
 	defer tc.Unlock()
 
-	data := tc.Parser.Write(msgID, msgStruct)
+	data := tc.Parser.Pack(msgID, msgStruct)
 	tc.WriteChan <- data
 }
 
 func (tc *TCPClient) Run(handler MsgHandler) {
 	bufReader := bufio.NewReader(tc.conn)
 	for {
-		msgID, msgBody, err := tc.Parser.Read(bufReader)
+		msgID, msgBody, err := tc.Parser.UnPack(bufReader)
 		if err != nil {
 			log.Println("gate message read error")
 			return
 		}
 		fmt.Println("msgID", msgID)
 
+		//CZXDO: 是否有必要gorutine
 		go handler(msgID, msgBody, tc)
 	}
 }

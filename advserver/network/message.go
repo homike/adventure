@@ -9,12 +9,6 @@ import (
 	"reflect"
 )
 
-//var MsgParserSingleton *MsgParser
-
-// func init() {
-// 	MsgParserSingleton = NewMsgParser()
-// }
-
 // --------------
 // | len | data |
 // --------------
@@ -32,7 +26,7 @@ func NewMsgParser() *MsgParser {
 	}
 }
 
-func (m *MsgParser) Read(bufReader *bufio.Reader) (uint16, []byte, error) {
+func (m *MsgParser) UnPack(bufReader *bufio.Reader) (uint16, []byte, error) {
 	var headerSize uint32
 	err := binary.Read(bufReader, binary.LittleEndian, &headerSize)
 	if err != nil {
@@ -58,7 +52,7 @@ func (m *MsgParser) Read(bufReader *bufio.Reader) (uint16, []byte, error) {
 	return msgID, bodyData, nil
 }
 
-func (m *MsgParser) Write(msgID uint16, msgStruct interface{}) []byte {
+func (m *MsgParser) Pack(msgID uint16, msgStruct interface{}) []byte {
 	message := m.MsgProcessor.Marshal(msgStruct)
 
 	w := bytes.NewBuffer([]byte{})
