@@ -661,3 +661,12 @@ type ResetMiningMapReq struct {
 type ResetMiningMapResp struct {
 	Ret uint8
 }
+
+type DigReq struct {
+	X                 int8
+	Y                 int8
+	IsOnlyExpandSight bool
+}
+
+type DigResp struct {
+}
