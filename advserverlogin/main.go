@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventure/advServerLogin/login"
+	"cuttleserver/loginserver/login"
 	"fmt"
 	"net/http"
 	"os"

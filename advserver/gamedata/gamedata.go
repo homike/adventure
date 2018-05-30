@@ -6,7 +6,6 @@ import (
 	"adventure/common/csv"
 	"adventure/common/structs"
 	"errors"
-	"fmt"
 )
 
 var logger *clog.Logger
@@ -66,8 +65,8 @@ func Init() {
 	}
 	csv.LoadTemplates2(AllTemplates)
 
-	fmt.Println("Skill ", AllTemplates.HeroTemplates[16205].SkillID[1])
-	fmt.Println("battle Name ", AllTemplates.Battlefields[1001].Name)
+	//fmt.Println("Skill ", AllTemplates.HeroTemplates[16205].SkillID[1])
+	//fmt.Println("battle Name ", AllTemplates.Battlefields[1001].Name)
 }
 
 func GetHeroLevelExp(heroLv int32, awakeCnt int32) (int32, error) {

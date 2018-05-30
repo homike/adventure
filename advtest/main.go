@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/binary"
 	"fmt"
 	"log"
@@ -12,8 +13,8 @@ import (
 	"syscall"
 	"time"
 
-	"CuttleTest/framework"
-	RB "CuttleTest/robot"
+	"github.com/homike/cuttletest/framework"
+	RB "github.com/homike/cuttletest/robot"
 )
 
 func SignalProc() {
@@ -56,9 +57,9 @@ func FanInRobot() chan *Robot {
 
 	curStartTime = time.Now().UnixNano() / 1000000
 	nextStartTime = curStartTime + (int64)(1000*2)
-	robots := make(chan *Robot, 5)
+	robots := make(chan *Robot, 1000)
 
-	for i := 0; i < 5; i++ {
+	for i := 0; i < 1000; i++ {
 		go func(index int) {
 
 			robot := &Robot{
@@ -79,7 +80,7 @@ func DoTest(robots chan *Robot) {
 	var count sync.WaitGroup
 	timeStart := time.Now().Unix()
 
-	count.Add(5)
+	count.Add(1000)
 
 	go func() {
 		count.Wait()
@@ -96,7 +97,7 @@ func DoTest(robots chan *Robot) {
 				fmt.Println("connect error", err.Error())
 				return
 			}
-			fmt.Println(r.RobotIndex, " connect success")
+			//fmt.Println(r.RobotIndex, " connect success")
 
 			defer func() {
 				fmt.Println("robotIndex: ", r.RobotIndex, " Exit")
@@ -104,24 +105,24 @@ func DoTest(robots chan *Robot) {
 				count.Done()
 			}()
 
-			bufReader := bufio.NewReader(conn)
+			//bufReader := bufio.NewReader(conn)
 			for {
 				Write(conn, 1)
 
 				r.SendCnt++
-				_, _, err := Read(bufReader)
-				if err != nil {
-					log.Println("gate message read error")
-					return
-				}
+				//_, _, err := Read(bufReader)
+				//if err != nil {
+				//	fmt.Println("gate message read error")
+				//	return
+				//}
 
 				r.RecvCnt++
-				fmt.Println("robotIndex1: ", r.RobotIndex, "recv count: ", r.RecvCnt)
-				time.Sleep(1 * time.Second)
+				//fmt.Println("robotIndex1: ", r.RobotIndex, "recv count: ", r.RecvCnt)
+				time.Sleep(1 * time.Millisecond)
 
-				if r.RecvCnt >= 10 {
-					return
-				}
+				//if r.RecvCnt >= 10 {
+				//return
+				//}
 			}
 		}()
 	}
@@ -131,7 +132,10 @@ func DoTest(robots chan *Robot) {
 }
 
 func Write(conn net.Conn, msgID uint16) {
-	message := []byte{}
+	//message := []byte{}
+	bytesBuffer := bytes.NewBuffer([]byte{})
+	binary.Write(bytesBuffer, binary.LittleEndian, uint32(10))
+	message := bytesBuffer.Bytes()
 
 	writer := bufio.NewWriter(conn)
 	binary.Write(writer, binary.LittleEndian, uint32(len(message)+6))
