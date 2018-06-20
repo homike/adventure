@@ -64,7 +64,7 @@ func (tc *TCPClient) Run(handler MsgHandler) {
 		}
 		fmt.Println("msgID", msgID)
 
-		//CZXDO: 是否有必要gorutine
+		//czxdo: 是否有必要gorutine
 		go handler(msgID, msgBody, tc)
 	}
 }

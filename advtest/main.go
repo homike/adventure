@@ -57,9 +57,9 @@ func FanInRobot() chan *Robot {
 
 	curStartTime = time.Now().UnixNano() / 1000000
 	nextStartTime = curStartTime + (int64)(1000*2)
-	robots := make(chan *Robot, 1000)
+	robots := make(chan *Robot, 1)
 
-	for i := 0; i < 1000; i++ {
+	for i := 0; i < 1; i++ {
 		go func(index int) {
 
 			robot := &Robot{
@@ -105,20 +105,20 @@ func DoTest(robots chan *Robot) {
 				count.Done()
 			}()
 
-			//bufReader := bufio.NewReader(conn)
+			bufReader := bufio.NewReader(conn)
 			for {
 				Write(conn, 1)
 
 				r.SendCnt++
-				//_, _, err := Read(bufReader)
-				//if err != nil {
-				//	fmt.Println("gate message read error")
-				//	return
-				//}
+				_, _, err := Read(bufReader)
+				if err != nil {
+					fmt.Println("gate message read error")
+					return
+				}
 
 				r.RecvCnt++
 				//fmt.Println("robotIndex1: ", r.RobotIndex, "recv count: ", r.RecvCnt)
-				time.Sleep(1 * time.Millisecond)
+				//time.Sleep(1 * time.Millisecond)
 
 				//if r.RecvCnt >= 10 {
 				//return
