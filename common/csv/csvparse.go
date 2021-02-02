@@ -3,12 +3,17 @@ package csv
 import (
 	"encoding/json"
 	"fmt"
-	"nuanv3/shared/commondata"
 	"reflect"
 	"strconv"
 	"strings"
 	"time"
 )
+
+type Reward struct {
+	ID   uint32 `json:"id"`
+	Type uint32 `json:"type"`
+	Num  int32  `json:"num"`
+}
 
 // type Templates struct {
 // 	HeroTemplate struct { // 英雄模板
@@ -180,7 +185,7 @@ type (
 	Float32 func(i ...interface{}) (float32, error)
 	Float64 func(i ...interface{}) (float64, error)
 	Bool    func(i ...interface{}) (bool, error)
-	Rewards func(i ...interface{}) ([]commondata.Reward, error)
+	Rewards func(i ...interface{}) ([]Reward, error)
 
 	Keys   func() ([]string, error)
 	Counts func() (int32, error)
@@ -733,13 +738,13 @@ func (c *CsvData) getMap(k ...interface{}) (map[string]interface{}, error) {
 	return m, nil
 }
 
-func (c *CsvData) getRewards(k ...interface{}) ([]commondata.Reward, error) {
+func (c *CsvData) getRewards(k ...interface{}) ([]Reward, error) {
 	r, err := c.getStringBase(k)
 	if err != nil {
 		return nil, err
 	}
 
-	var rewards []commondata.Reward
+	var rewards []Reward
 
 	err = json.Unmarshal([]byte(r), &rewards)
 	if err != nil {
